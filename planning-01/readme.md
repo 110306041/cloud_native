@@ -8,6 +8,7 @@
 - 不懂程式 compile 的運作，想藉由寫 OJ 平台的過程慢慢學習
 
 ### 畫面
+#### Wireframe
 https://www.figma.com/design/NA082mffZVGf3jbnRe6d43/Wireframe?node-id=0-1&t=5zCkVl1aAePhw5Nz-1
 ![截圖 2024-10-14 晚上10.03.56](https://hackmd.io/_uploads/HJtR4i9yJl.png)
 ![截圖 2024-10-14 晚上10.04.32](https://hackmd.io/_uploads/Sk6lBscy1e.png)
