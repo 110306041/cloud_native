@@ -10,7 +10,7 @@ const languageResources = {
 };
 
 export async function getAllVMStats() {
-  const vmKeys = await redisClient.keys("worker#*");
+  const vmKeys = await redisClient.keys("worker:*");
   const vmStats = [];
   for (const key of vmKeys) {
     const vmData = await redisClient.hGetAll(key);
@@ -20,7 +20,7 @@ export async function getAllVMStats() {
 }
 
 export async function updateVMStats(vm_id, stats) {
-  const vmKey = `worker#${vm_id}`;
+  const vmKey = `worker:${vm_id}`;
   console.log(vmKey);
   await redisClient.hSet(vmKey, stats);
 }
