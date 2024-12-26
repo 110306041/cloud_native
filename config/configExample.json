@@ -1,0 +1,33 @@
+{
+    "development": {
+      "username": "your-db-username",
+      "password": "your-db-password",
+      "database": "your-db-name",
+      "host": "your-db-host",
+      "port": 5432,
+      "dialect": "postgres",
+      "dialectOptions": {
+        "ssl": {
+          "require": true,
+          "rejectUnauthorized": false
+        }
+      }
+    },
+    "test": {
+      "username": "your-db-username",
+      "password": "your-db-password",
+      "database": "your-db-name",
+      "host": "your-db-host",
+      "port": 5432,
+      "dialect": "postgres"
+    },
+    "production": {
+      "username": "your-db-username",
+      "password": "your-db-password",
+      "database": "your-db-name",
+      "host": "your-db-host",
+      "port": 5432,
+      "dialect": "postgres"
+    }
+  }
+  
