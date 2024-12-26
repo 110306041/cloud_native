@@ -20,14 +20,15 @@ export async function getAllVMStats() {
 }
 
 export async function updateVMStats(vm_id, stats) {
-  const vmKey = `vm#${vm_id}`;
+  const vmKey = `worker#${vm_id}`;
+  console.log(vmKey);
   await redisClient.hSet(vmKey, stats);
 }
 
 export async function selectBestVM(allocatedCpu, allocatedMemory) {
   const vmStats = await getAllVMStats();
   console.log(allocatedCpu, allocatedMemory);
-  console.log(vmStats)
+  console.log(vmStats);
   let bestVM = null;
   let bestScore = Number.MAX_SAFE_INTEGER;
 
@@ -35,7 +36,7 @@ export async function selectBestVM(allocatedCpu, allocatedMemory) {
     const availableCpu = vm.total_cpu - vm.cpu_usage;
     const availableMemory = vm.total_memory - vm.memory_usage;
 
-    console.log(availableCpu,availableMemory )
+    // console.log(availableCpu, availableMemory);
     const isResourceSufficient =
       availableCpu >= allocatedCpu && availableMemory >= allocatedMemory;
 
@@ -56,8 +57,8 @@ export async function handleRequest(req, res) {
     const { questionID, language, code } = req.body;
     const user = req.user;
 
-    console.log(req.body);
-    console.log(req.user.id);
+    // console.log(req.body);
+    // console.log(req.user.id);
 
     const allocatedRecourse = languageResources[language];
     const bestVM = await selectBestVM(
@@ -70,9 +71,9 @@ export async function handleRequest(req, res) {
     }
 
     const { endpoint } = bestVM;
-    console.log(`Selected worker: ${bestVM.vm_id}, Endpoint: ${endpoint}`);
+    console.log(`Selected worker: ${bestVM.id}, Endpoint: ${endpoint}`);
 
-    await updateVMStats(bestVM.vm_id, {
+    await updateVMStats(bestVM.id, {
       cpu_usage: parseFloat(bestVM.cpu_usage) + allocatedRecourse.cpu,
       memory_usage: parseFloat(bestVM.memory_usage) + allocatedRecourse.memory,
       num_runners: parseInt(bestVM.num_runners) + 1,
@@ -80,7 +81,7 @@ export async function handleRequest(req, res) {
 
     res
       .status(200)
-      .json({ message: "Code sent to worker successfully", vm: bestVM });
+      .json({ message: "Code sent to worker successfully" });
   } catch (error) {
     console.error("Error handling request:", error);
     res.status(500).json({ error: error.message });
