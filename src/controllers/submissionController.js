@@ -1,6 +1,7 @@
 import { performDynamicWebSocketOperation } from "../services/connectAgent.js";
 import Submission from "../../models/Submission.js";
 import redisClient from "../../connectRedis.js";
+
 const languageResources = {
   python: { cpu: 20, memory: 500 },
   java: { cpu: 30, memory: 800 },
@@ -36,7 +37,6 @@ export async function selectBestVM(allocatedCpu, allocatedMemory) {
     const availableCpu = vm.total_cpu - vm.cpu_usage;
     const availableMemory = vm.total_memory - vm.memory_usage;
 
-    // console.log(availableCpu, availableMemory);
     const isResourceSufficient =
       availableCpu >= allocatedCpu && availableMemory >= allocatedMemory;
 
@@ -52,13 +52,41 @@ export async function selectBestVM(allocatedCpu, allocatedMemory) {
   return bestVM;
 }
 
+function sendViaWebSocket(endpoint, data) {
+  return new Promise((resolve, reject) => {
+    const workerWs = new WebSocket(endpoint);
+
+    workerWs.onopen = () => {
+      workerWs.send(JSON.stringify(data));
+    };
+
+    workerWs.onmessage = (message) => {
+      try {
+        const response = JSON.parse(message.data);
+        resolve(response);
+        workerWs.close();
+      } catch (error) {
+        reject(error);
+      }
+    };
+
+    workerWs.onerror = (error) => {
+      reject(error);
+      workerWs.close();
+    };
+
+    workerWs.onclose = (event) => {
+      if (!event.wasClean) {
+        reject(new Error("WebSocket connection closed unexpectedly"));
+      }
+    };
+  });
+}
+
 export async function handleRequest(req, res) {
   try {
     const { questionID, language, code } = req.body;
     const user = req.user;
-
-    // console.log(req.body);
-    // console.log(req.user.id);
 
     const allocatedRecourse = languageResources[language];
     const bestVM = await selectBestVM(
@@ -79,9 +107,28 @@ export async function handleRequest(req, res) {
       num_runners: parseInt(bestVM.num_runners) + 1,
     });
 
-    res
-      .status(200)
-      .json({ message: "Code sent to worker successfully" });
+    const submissionData = { questionID, language, code };
+
+    try {
+      const result = await sendViaWebSocket(endpoint, submissionData);
+      console.log("Received result from worker:", result);
+
+      res.json({ status: "success", result });
+    } catch (error) {
+      console.error("Error during WebSocket communication:", error);
+
+      await updateVMStats(bestVM.id, {
+        cpu_usage: parseFloat(bestVM.cpu_usage) - allocatedRecourse.cpu,
+        memory_usage:
+          parseFloat(bestVM.memory_usage) - allocatedRecourse.memory,
+        num_runners: parseInt(bestVM.num_runners) - 1,
+      });
+
+      res.status(500).json({
+        status: "error",
+        message: "Error processing request",
+      });
+    }
   } catch (error) {
     console.error("Error handling request:", error);
     res.status(500).json({ error: error.message });

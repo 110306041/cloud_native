@@ -1,9 +1,15 @@
-import { DataTypes } from "sequelize";
-import sequelize from "../syncDB.js";
+// import { DataTypes } from "sequelize";
+// import sequelize from "../syncDB.js";
+export default (sequelize, DataTypes) => {
 const Exam = sequelize.define(
   "Exam",
   {
-    ID: { type: DataTypes.UUID, primaryKey: true, allowNull: false },
+    ID: {
+      type: DataTypes.UUID,
+      primaryKey: true,
+      defaultValue: DataTypes.UUIDV4,
+      allowNull: false,
+    },
     Name: { type: DataTypes.STRING(100), allowNull: false },
     StartDate: { type: DataTypes.DATE, allowNull: false },
     DueDate: { type: DataTypes.DATE, allowNull: false },
@@ -20,4 +26,6 @@ const Exam = sequelize.define(
     timestamps: false, // Disable createdAt and updatedAt
   }
 );
-export default Exam;
+return Exam;
+};
+// export default Exam;

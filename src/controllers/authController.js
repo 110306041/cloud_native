@@ -1,5 +1,8 @@
 // import User from "../models/User.js"; 
-import User from "../../models/User.js"
+// import User from "../../models/User.js"
+import db from "../../models/index.js";  
+
+const {User } = db;
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
@@ -72,6 +75,12 @@ export const login = async (req, res) => {
       //   message: "Login successful",
       accessToken,
       refreshToken,
+      user: {
+        id: user.ID,        
+        username: user.Name,
+        role: user.Type,
+        email: user.Email
+      }
     });
   } catch (error) {
     res.status(500).json({ error: error.message });
