@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Client to Server</title>
+</head>
+<body>
+    <button id="sendBtn">Send Data to Server</button>
+
+    <script>
+        const sendBtn = document.getElementById('sendBtn');
+
+        sendBtn.addEventListener('click', async () => {
+            const dataToSend = {
+                language: 'javascript',
+                code: `
+            console.log('Hello from JavaScript!');
+            const sum = (a, b) => a + b;
+            console.log('5 + 3 =', sum(5, 3));
+        `
+            };
+
+            try {
+                // 發送 POST 請求到後端
+                const response = await fetch('http://localhost:3000/send-task', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(dataToSend)
+                });
+
+                const result = await response.json();
+                console.log('Response from server:', result);
+            } catch (error) {
+                console.error('Error sending data:', error);
+            }
+        });
+    </script>
+</body>
+</html>
