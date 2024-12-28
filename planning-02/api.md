@@ -30,7 +30,7 @@
 Request:
 ```json
 {
-    "username": "string",
+    "email": "string",
     "password": "string"
 }
 ```
@@ -285,7 +285,8 @@ Response: (200 OK)
     "sample_test_cases": [
         {
             "input": "string",
-            "expected_output": "string"
+            "expected_output": "string",
+            
         }
     ],
     "finish_num": int,
@@ -350,8 +351,8 @@ Request:
     "difficulty": "string",
     "due_date": "datetime",
     "time_limit": int,
+    "memory_limit": int,
     "submission_limit": int,
-    "due_date": int,
     "description": "string",
     "test_cases": [
         {
