@@ -143,21 +143,23 @@ export const createAssignment = async (req, res) => {
       Description: description,
       CourseID: courseID,
     });
+    res.status(201).end();
 
     // Return the created assignment
-    res.status(201).json({
-      message: "Assignment created successfully.",
-      assignment: {
-        id: newAssignment.ID,
-        name: newAssignment.Name,
-        due_date: newAssignment.DueDate,
-        description: newAssignment.Description,
-        course: {
-          id: course.ID,
-          name: course.Name,
-        },
-      },
-    });
+    // res.status(201)
+    // .json({
+    //   message: "Assignment created successfully.",
+    //   assignment: {
+    //     id: newAssignment.ID,
+    //     name: newAssignment.Name,
+    //     due_date: newAssignment.DueDate,
+    //     description: newAssignment.Description,
+    //     course: {
+    //       id: course.ID,
+    //       name: course.Name,
+    //     },
+    //   },
+    // });
   } catch (error) {
     console.error("Error creating assignment:", error);
     res.status(500).json({ error: "Failed to create assignment." });

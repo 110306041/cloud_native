@@ -99,7 +99,7 @@ export const getQuestionDetails = async (req, res) => {
         "TimeLimit",
         "MemoryLimit",
         "Constraints",
-     ],
+      ],
       raw: true,
     });
 
@@ -110,9 +110,14 @@ export const getQuestionDetails = async (req, res) => {
     // Fetch sample test cases for the question
     const sampleTestCases = await TestCase.findAll({
       where: { QuestionID: questionID },
-      attributes: ["Input", "Output", "Sequence"],
+      attributes: ["Input", "Output"],
       raw: true,
     });
+
+    const formattedTestCases = sampleTestCases.map((testCase) => ({
+      input: testCase.Input,
+      expected_output: testCase.Output,
+    }));
 
     const finishNum = await Submission.count({
       where: { QuestionID: questionID },
@@ -120,22 +125,29 @@ export const getQuestionDetails = async (req, res) => {
       col: "UserID",
     });
 
-    const AC_num = await Submission.count({
+    const ACNum = await Submission.count({
       where: {
         QuestionID: questionID,
-        Score: 100, // Assuming 'Score' field exists in the 'Submission' model
+        Score: 100, 
       },
       distinct: true,
       col: "UserID",
     });
 
-    // Add test cases to the response
-    question.sample_test_cases = sampleTestCases;
-    question.finishNum = finishNum;
-    question.AC_num = AC_num;
+    const response = {
+      id: question.ID,
+      name: question.Name,
+      description: question.Description,
+      difficulty: question.Difficulty,
+      time_limit: question.TimeLimit,
+      memory_limit: question.MemoryLimit,
+      constraints: question.Constraints,
+      sample_test_cases: formattedTestCases,
+      finish_num: finishNum,
+      AC_num: ACNum,
+    };
 
-    // Send response
-    res.status(200).json(question);
+    res.status(200).json(response);
   } catch (error) {
     console.error("Error fetching question details:", error);
     res.status(500).json({ error: "Failed to fetch question details" });
@@ -259,20 +271,21 @@ export const createQuestion = async (req, res) => {
     }
 
     // Return the created question
-    res.status(201).json({
-      message: "Question created successfully.",
-      question: {
-        id: newQuestion.ID,
-        name:question_name,
-        difficulty: newQuestion.Difficulty,
-        time_limit: newQuestion.TimeLimit,
-        memory_limit:newQuestion.MemoryLimit,
-        submission_limit: newQuestion.SubmissionLimit,
-        due_date: newQuestion.DueDate,
-        description: newQuestion.Description,
-        test_cases: test_cases || [],
-      },
-    });
+    res.status(201).end();
+    // .json({
+    //   message: "Question created successfully.",
+    //   question: {
+    //     id: newQuestion.ID,
+    //     name:question_name,
+    //     difficulty: newQuestion.Difficulty,
+    //     time_limit: newQuestion.TimeLimit,
+    //     memory_limit:newQuestion.MemoryLimit,
+    //     submission_limit: newQuestion.SubmissionLimit,
+    //     due_date: newQuestion.DueDate,
+    //     description: newQuestion.Description,
+    //     test_cases: test_cases || [],
+    //   },
+    // });
   } catch (error) {
     console.error("Error creating question:", error);
     res.status(500).json({ error: "Failed to create question." });

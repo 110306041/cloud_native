@@ -110,12 +110,26 @@ export const getQuestionDetails = async (req, res) => {
       attributes: ["Input", "Output", "Sequence"],
       raw: true,
     });
+    const formattedTestCases = sampleTestCases.map((testCase) => ({
+      input: testCase.Input,
+      expected_output: testCase.Output,
+    }));
+    const response = {
+      id: question.ID,
+      name: question.Name,
+      description: question.Description,
+      difficulty: question.Difficulty,
+      time_limit: question.TimeLimit,
+      memory_limit: question.MemoryLimit,
+      constraints: question.Constraints,
+      sample_test_cases: formattedTestCases,
+    };
 
     // Add test cases to the response
-    question.sample_test_cases = sampleTestCases;
+    // question.sample_test_cases = sampleTestCases;
 
     // Send response
-    res.status(200).json(question);
+    res.status(200).json(response);
   } catch (error) {
     console.error("Error fetching question details:", error);
     res.status(500).json({ error: "Failed to fetch question details" });

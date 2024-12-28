@@ -99,15 +99,16 @@ export const createCourse = async (req, res) => {
       CourseID: newCourse.ID,
     });
 
-    res.status(201).json({
-      message: "Course created successfully.",
-      course: {
-        id: newCourse.ID,
-        name: newCourse.Name,
-        semester: newCourse.Semester,
-        student_limit: newCourse.StudentLimit,
-      },
-    });
+    res.status(201).end();
+    // .json({
+    //   message: "Course created successfully.",
+    //   course: {
+    //     id: newCourse.ID,
+    //     name: newCourse.Name,
+    //     semester: newCourse.Semester,
+    //     student_limit: newCourse.StudentLimit,
+    //   },
+    // });
   } catch (error) {
     console.error("Error creating course:", error);
     res.status(500).json({ error: "Failed to create course." });

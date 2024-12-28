@@ -58,20 +58,21 @@ export const createExam = async (req, res) => {
         });
 
         // Return the created exam
-        res.status(201).json({
-            message: 'Exam created successfully.',
-            exam: {
-                id: newExam.ID,
-                name: newExam.Name,
-                start_date: newExam.StartDate,
-                due_date: newExam.DueDate,
-                description: newExam.Description,
-                course: {
-                    id: course.ID,
-                    name: course.Name,
-                },
-            },
-        });
+        res.status(201).end();
+        // .json({
+        //     message: 'Exam created successfully.',
+        //     exam: {
+        //         id: newExam.ID,
+        //         name: newExam.Name,
+        //         start_date: newExam.StartDate,
+        //         due_date: newExam.DueDate,
+        //         description: newExam.Description,
+        //         course: {
+        //             id: course.ID,
+        //             name: course.Name,
+        //         },
+        //     },
+        // });
     } catch (error) {
         console.error('Error creating exam:', error);
         res.status(500).json({ error: 'Failed to create exam.' });
