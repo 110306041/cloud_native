@@ -1,0 +1,57 @@
+.problem-loading-spinner {
+  display: block;
+  position: fixed;
+  z-index: 1000;
+  top: 50%;
+  right: 50%;
+}
+
+.problem-page-left {
+  width: 40%;
+  padding: 5px 30px 40px 30px;
+  margin: 10px;
+  background-color: rgba(238, 241, 241, 0.829);
+  border-radius: 10px;
+  overflow-y: auto;
+}
+
+.problem-page-right {
+  width: 60%;
+  margin: 10px 10px 10px 0px;
+}
+
+.problem-page-right-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.code-editor {
+  flex: 7;
+  overflow: hidden;
+  overflow-y: auto;
+  border-radius: 10px;
+}
+
+.result-table {
+  flex: 3;
+  overflow-y: auto;
+  margin: 10px 0px 0px 0px;
+  padding: 0px 20px 20px 20px;
+  background-color: rgba(238, 241, 241, 0.829);
+  border-radius: 10px;
+}
+
+.result-accepted-icon{
+    margin-left: 10px;
+    margin-bottom: -3px;
+    transform: scale(1.2);
+    color: rgba(10, 184, 10, 0.747);
+}
+
+.result-error-icon{
+    margin-left: 10px;
+    margin-bottom: -3px;
+    transform: scale(1.2);
+    color: rgba(233, 25, 25, 0.849);
+}

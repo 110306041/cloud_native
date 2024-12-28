@@ -1,0 +1,27 @@
+.courses-container{
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.courses-left{
+    flex: 1;
+}
+
+.courses-right{
+    margin: 40px 50px 40px 50px;
+    flex: 4;
+}
+
+.courses-searchbar{
+    margin-bottom: 10px;
+}
+
+.courses-spinner{
+    display: block;
+    position: fixed;
+    z-index: 2;
+    top: 50%;
+    right: 50%;
+}

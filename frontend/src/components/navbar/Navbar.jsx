@@ -1,0 +1,113 @@
+import { Button } from "@mui/material";
+import Menu from "@mui/material/Menu";
+import MenuItem from "@mui/material/MenuItem";
+import React, { useContext, useState } from "react";
+import { Link } from "react-router-dom";
+import { AuthContext } from "../../authContext";
+
+import "./navbar.css";
+
+export default function NavBar(props) {
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [selectedIndex, setSelectedIndex] = useState(0);
+
+  const options = ["", "View Profile", "Logout"];
+
+  const appContext = useContext(AuthContext);
+  const { login, setLogin } = appContext;
+
+  const handleClickListItem = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleMenuItemClick = (event, index) => {
+    setSelectedIndex(index);
+    setAnchorEl(null);
+    if (options[index] === "View Profile") window.location = "/dashboard";
+    else {
+      localStorage.removeItem("login");
+      localStorage.removeItem("access-token");
+      localStorage.removeItem("username");
+      setLogin(false);
+      window.location = "/";
+    }
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  return (
+    <div className="navbar">
+      <div className="navbarWrapper">
+        <div className="navLeft">
+          <Link to="/" className="logo">
+            OJ
+          </Link>
+          <div className="navbarList">
+            {login ? ( //TODO: decide which tab should show through tab
+              <>
+                <Link to="/courses" className="navbarItem">
+                  Courses
+                </Link>
+                <Link to="/addproblem" className="navbarItem">
+                  Add Problem
+                </Link>
+                <Link to="/submissions" className="navbarItem">
+                  My Submissions
+                </Link>
+              </>
+            ) : null}
+          </div>
+        </div>
+        <div className="navRight">
+          {login ? (
+            <>
+              <Button
+                aria-controls="simple-menu"
+                aria-haspopup="true"
+                onClick={handleClickListItem}
+              >
+                <img
+                  src="https://images.unsplash.com/photo-1513789181297-6f2ec112c0bc?ixid=MnwxMjA3fDB8MHxzZWFyY2h8MXx8aGFja2VyfGVufDB8fDB8fA%3D%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60"
+                  alt="avatar"
+                  className="navbarAvatar"
+                />
+              </Button>
+              <Menu
+                id="simple-menu"
+                keepMounted
+                anchorEl={anchorEl}
+                open={Boolean(anchorEl)}
+                onClose={handleClose}
+              >
+                {options.map((option, index) => (
+                  <MenuItem
+                    key={option}
+                    disabled={index === 0}
+                    selected={index === selectedIndex}
+                    onClick={(event) => handleMenuItemClick(event, index)}
+                  >
+                    {option}
+                  </MenuItem>
+                ))}
+              </Menu>
+            </>
+          ) : (
+            <Link to="/signin" style={{ textDecoration: "none" }}>
+              <Button
+                type="submit"
+                color="primary"
+                variant="contained"
+                className="signin-btn"
+                fullWidth
+              >
+                Sign In
+              </Button>
+            </Link>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
