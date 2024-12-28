@@ -1,3 +1,8 @@
+export const userType = [
+  "Student",
+  "Professor",
+]
+
 export const tagsData = [
   "Binary Search",
   "Bitmasks",
