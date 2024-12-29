@@ -1,10 +1,10 @@
 import axios from "axios";
 import React, { useEffect, useLayoutEffect, useState } from "react";
 import { BeatLoader } from "react-spinners";
-// import { ToastContainer, toast } from "react-toastify";
+import { ToastContainer, toast } from "react-toastify";
 import { BACK_SERVER_URL } from "../../config/config";
 
-// import "react-toastify/dist/ReactToastify.css";
+import "react-toastify/dist/ReactToastify.css";
 import "./problemset.css";
 
 import Chip from "@mui/material/Chip";
@@ -18,8 +18,8 @@ import TablePagination from "@mui/material/TablePagination";
 import TableRow from "@mui/material/TableRow";
 // import SearchBar from "material-ui-search-bar";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { getDateTime } from "../../utils";
 
-import { getDifficulty, problemsetFake } from "../../utils";
 
 const columns = [
   { id: "id", label: "#", minWidth: 10 },
@@ -29,28 +29,28 @@ const columns = [
 ];
 
 export default function ProblemSet() {
-  //   const classes = useStyles();
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(12);
-  // const [allProblems, setAllProblems] = useState([]);
-  const [allProblems, setAllProblems] = useState(problemsetFake);
+  const [allProblems, setAllProblems] = useState([]);
   const [rows, setRows] = useState([]);
   const [loader, setLoader] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
-  const param = useParams();
+  const { id } = useParams();
   const location = useLocation();
   const problemsetInfo = location.state?.problemsetInfo;
   const navigate = useNavigate();
 
   useLayoutEffect(() => {
     axios
-      .get(`${BACK_SERVER_URL}/api/problem`)
+      .get(`${BACK_SERVER_URL}/api/student/${problemsetInfo.problemType}/questions/${id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("access-token")}`
+          }
+        }
+      )
       .then((res) => {
-        let problems = res.data;
-
-        problems.forEach((problem, i) => {
-          problem["difficulty"] = getDifficulty(problem);
-        });
+        let problems = res.data.questions;
 
         setAllProblems(problems);
         setRows(problems);
@@ -58,17 +58,17 @@ export default function ProblemSet() {
       })
       .catch((err) => {
         const error = err.response ? err.response.data.message : err.message;
-        // toast.error(error, {
-        //   position: "top-right",
-        //   autoClose: 5000,
-        //   hideProgressBar: false,
-        //   closeOnClick: true,
-        //   pauseOnHover: true,
-        //   draggable: true,
-        //   progress: undefined,
-        // });
+        toast.error(error, {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
       });
-  }, []);
+  }, [id]);
 
   useEffect(() => {
     const getPageData = () => {
@@ -104,7 +104,7 @@ export default function ProblemSet() {
 
   return (
     <div className="problemset-container">
-      {/* <ToastContainer /> */}
+      <ToastContainer />
       {/* <div className="problemset-left">
         <Sidebar
           problems={allProblems}
@@ -125,19 +125,18 @@ export default function ProblemSet() {
         <div className="problemset-spinner">
           <BeatLoader color={"#343a40"} size={30} loading={loader} />
         </div>
-        {/* <Paper className={classes.root}> */}
         <div className="problemset-courseInfo">
           {problemsetInfo.courseInfo.semester} {problemsetInfo.courseInfo.name}
         </div>
         <div className="problemset-info">{problemsetInfo.problemsetName}</div>
         <div className="problemset-info">
+          {/* Start Date: {getDateTime(problemsetInfo.startDate)} */}
           Start Date: {problemsetInfo.startDate}
         </div>
         <div className="problemset-info">
-          Due Date: {problemsetInfo.dueDate}
+          Due Date: {getDateTime(problemsetInfo.dueDate)}
         </div>
         <Paper sx={{ width: "100%", height: "950px" }}>
-          {/* <TableContainer className={classes.container}> */}
           <TableContainer sx={{ maxHeight: 950 }}>
             <Table stickyHeader aria-label="sticky table">
               <TableHead>
@@ -186,9 +185,8 @@ export default function ProblemSet() {
                               </TableCell>
                             );
                           } else if (column.id === "difficulty") {
-                            let badgeColor = "#FF980d";
-
-                            if (value === "Easy") badgeColor = "#5caf5c";
+                            let badgeColor = "#5caf5c";
+                            if (value === "Easy") badgeColor = "#FF980d";
                             else if (value === "Hard") badgeColor = "#F44336";
 
                             return (

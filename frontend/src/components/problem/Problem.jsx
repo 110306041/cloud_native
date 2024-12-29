@@ -1,24 +1,25 @@
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import CancelIncon from "@mui/icons-material/HighlightOff";
+import Chip from "@mui/material/Chip";
 import axios from "axios";
 import React, { useEffect, useRef, useState } from "react";
 import { Navigate, useParams } from "react-router-dom";
 import { BeatLoader } from "react-spinners";
-// import { ToastContainer, toast } from "react-toastify";
-// import "react-toastify/dist/ReactToastify.css";
-import CheckCircleIcon from "@mui/icons-material/CheckCircle";
-import CancelIncon from "@mui/icons-material/HighlightOff";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 import { BACK_SERVER_URL, JUDGE_URL } from "../../config/config";
 
 import CodeEditor from "./codeEditor/CodeEditor";
 
-import { problemFake, resultFake } from "../../utils";
+import { resultFake } from "../../utils";
 import "./problem.css";
 
 const Problem = (props) => {
   const resultRef = useRef(null);
-  const [loading, setLoading] = useState(false); // true
+  const [loading, setLoading] = useState(true);
   const [problemDoesNotExists, setProblemDoesNotExists] = useState(false);
-  const [problem, setProblem] = useState(problemFake); //{}
+  const [problem, setProblem] = useState({});
   const [language, setLanguage] = useState("C++");
   const [darkMode, setDarkMode] = useState(false);
   const [code, setCode] = useState("");
@@ -26,44 +27,51 @@ const Problem = (props) => {
   const [result, setResult] = useState(resultFake); //{}
   const [runLoading, setRunLoading] = useState(false);
   const [submitLoading, setSubmitLoading] = useState(false);
-  const problemId = useParams();
+  const [badgeColor, setBadgeColor] = useState("#5caf5c");
+  const { id } = useParams();
 
   const languageExtention = {
-    C: "c",
+    Javascript: "javascript",
     "C++": "cpp",
     Java: "java",
     Python: "py",
   };
 
   useEffect(() => {
-    // const problemId = props.match.params.id;
-
     axios
-      .get(`${BACK_SERVER_URL}/api/problem/${problemId}`)
+      .get(`${BACK_SERVER_URL}/api/student/questions/${id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('access-token')}`
+          }
+        }
+      )
       .then((res) => {
         if (!res.data || res.data.length === 0) setProblemDoesNotExists(true);
         else {
           setProblem(res.data);
         }
         setLoading(false);
+        if (problem.difficulty === "easy") setBadgeColor("#FF980d");
+        else if (problem.difficulty === "hard") setBadgeColor("#F44336");
       })
       .catch((err) => {
-        // setLoading(false);
-        // setProblemDoesNotExists(true);
+        setLoading(false);
+        setProblemDoesNotExists(true);
         const error = err.response ? err.response.data.message : err.message;
-        // toast.error(error, {
-        //   position: "top-right",
-        //   autoClose: 5000,
-        //   hideProgressBar: false,
-        //   closeOnClick: true,
-        //   pauseOnHover: true,
-        //   draggable: true,
-        //   progress: undefined,
-        // });
+        toast.error(error, {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
       });
 
-    return () => {};
-  }, [problemId]);
+    return () => { };
+  }, [id]);
 
   const handleLanguageSelect = (e) => {
     e.preventDefault();
@@ -124,20 +132,20 @@ const Problem = (props) => {
               },
               { headers: { Authorization: `Bearer ${accessToken}` } }
             )
-            .then(() => {})
+            .then(() => { })
             .catch((err) => {
               const error = err.response
                 ? err.response.data.message
                 : err.message;
-              //   toast.error(error, {
-              //     position: "top-right",
-              //     autoClose: 5000,
-              //     hideProgressBar: false,
-              //     closeOnClick: true,
-              //     pauseOnHover: true,
-              //     draggable: true,
-              //     progress: undefined,
-              //   });
+              toast.error(error, {
+                position: "top-right",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+              });
             });
         }
         // setResults(res.data.result);
@@ -155,15 +163,15 @@ const Problem = (props) => {
         setRunLoading(false);
         setSubmitLoading(false);
         const error = err.response ? err.response.data.message : err.message;
-        // toast.error(error, {
-        //   position: "top-right",
-        //   autoClose: 5000,
-        //   hideProgressBar: false,
-        //   closeOnClick: true,
-        //   pauseOnHover: true,
-        //   draggable: true,
-        //   progress: undefined,
-        // });
+        toast.error(error, {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
       });
   };
 
@@ -177,10 +185,22 @@ const Problem = (props) => {
     </div>
   ) : (
     <div>
-      {/* <ToastContainer /> */}
+      <ToastContainer />
       <div style={{ display: "flex", height: "92.5vh" }}>
         <div className="problem-page-left">
           <h2>{problem.name}</h2>
+          <Chip
+            label={problem.difficulty}
+            style={{
+              fontWeight: "bold",
+              color: "white",
+              display: "flex",
+              backgroundColor: badgeColor,
+              width: "25%",
+            }}
+          />
+          <div>Time Limit: {problem.time_limit}</div>
+          <div>Memory Limit: {problem.memory_limit}</div>
           <h3>Description</h3>
           <div>{problem.description}</div>
           <br />
