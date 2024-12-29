@@ -1,11 +1,11 @@
 import axios from "axios";
 import React, { useEffect, useLayoutEffect, useState } from "react";
-import { BeatLoader } from "react-spinners";
-// import { ToastContainer, toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+import { BeatLoader } from "react-spinners";
+import { ToastContainer, toast } from "react-toastify";
 import { BACK_SERVER_URL } from "../../config/config";
 
-// import "react-toastify/dist/ReactToastify.css";
+import "react-toastify/dist/ReactToastify.css";
 import "./courses.css";
 
 import Paper from "@mui/material/Paper";
@@ -18,7 +18,6 @@ import TablePagination from "@mui/material/TablePagination";
 import TableRow from "@mui/material/TableRow";
 // import SearchBar from "material-ui-search-bar";
 
-import { coursesFake, getDifficulty } from "../../utils";
 
 const columns = [
   { id: "id", label: "#", minWidth: 10 },
@@ -31,7 +30,7 @@ const columns = [
 export default function Courses() {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(12);
-  const [allCourses, setAllCourses] = useState(coursesFake); // useState([])
+  const [allCourses, setAllCourses] = useState([]);
   const [rows, setRows] = useState([]);
   const [loader, setLoader] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
@@ -39,29 +38,29 @@ export default function Courses() {
 
   useLayoutEffect(() => {
     axios
-      .get(`${BACK_SERVER_URL}/api/problem`)
+      .get(`${BACK_SERVER_URL}/api/student/courses`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("access-token")}`,
+        },
+      })
       .then((res) => {
-        let problems = res.data;
+        let courses = res.data.courses;
 
-        problems.forEach((problem, i) => {
-          problem["difficulty"] = getDifficulty(problem);
-        });
-
-        setAllCourses(problems);
-        setRows(problems);
+        setAllCourses(courses);
+        setRows(courses);
         setLoader(false);
       })
       .catch((err) => {
         const error = err.response ? err.response.data.message : err.message;
-        // toast.error(error, {
-        //   position: "top-right",
-        //   autoClose: 5000,
-        //   hideProgressBar: false,
-        //   closeOnClick: true,
-        //   pauseOnHover: true,
-        //   draggable: true,
-        //   progress: undefined,
-        // });
+        toast.error(error, {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
       });
   }, []);
 
@@ -99,7 +98,7 @@ export default function Courses() {
 
   return (
     <div className="courses-container">
-      {/* <ToastContainer /> */}
+      <ToastContainer />
       <div className="courses-right">
         {/* <SearchBar
           value={searchQuery}
@@ -162,10 +161,24 @@ export default function Courses() {
                                     color: "#1a237e",
                                   }}
                                 >
-                                  {row.doneHw} / {row.totalHw}
+                                  {row.completed_assignments} / {row.total_assignments}
                                 </span>
                               </TableCell>
                             );
+                          } else if (column.id === "exam"){
+                            return (
+                              <TableCell key={column.id} align={column.align}>
+                                <span
+                                  style={{
+                                    fontWeight: "bold",
+                                    fontSize: "15px",
+                                    color: "#1a237e",
+                                  }}
+                                >
+                                  {row.active_exams}
+                                </span>
+                              </TableCell>
+                            )
                           } else {
                             return (
                               <TableCell key={column.id} align={column.align}>

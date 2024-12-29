@@ -10,16 +10,15 @@ import {
 import Checkbox from "@mui/material/Checkbox";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import React, { useState } from "react";
-// import PhoneInput, { parsePhoneNumber } from "react-phone-number-input";
-// import "react-phone-number-input/style.css";
 
 import CircularProgress from "@mui/material/CircularProgress";
 import axios from "axios";
 import { Navigate } from "react-router";
-// import { ToastContainer, toast } from "react-toastify";
-// import "react-toastify/dist/ReactToastify.css";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import { BACK_SERVER_URL } from "../../config/config";
 
+import { userType } from "../../utils";
 import "./signUp.css";
 
 const Copyright = () => {
@@ -38,18 +37,15 @@ const Copyright = () => {
 };
 
 const SignUp = () => {
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
+  const [type, setType] = useState("");
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [emailError, setEmailError] = useState("");
-  const [contact, setContact] = useState("");
   const [password, setPassword] = useState("");
   const [passwordError, setPasswordError] = useState("");
-  const [description, setDescription] = useState("");
   const [signedUp, setSignedUp] = useState(false);
   const [loading, setLoading] = useState(false);
-  
+
   const validateEmail = (e) => {
     const emailreg =
       /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)+$/;
@@ -61,10 +57,10 @@ const SignUp = () => {
 
   const validatePassword = (e) => {
     const passwordreg =
-      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%#*?&])[A-Za-z\d@$!%#*?&]{8,}$/;
+      /^(?=.*[a-z])(?=.*\d)[A-Za-z\d@$!%#*?&]{8,}$/;
     if (!e.target.value.match(passwordreg))
       setPasswordError(
-        "Use 8 or more characters with a mix of letters, numbers & symbols :)"
+        "Use 8 or more characters with a mix of letters & numbers:)"
       );
     else setPasswordError("");
     setPassword(e.target.value);
@@ -74,36 +70,12 @@ const SignUp = () => {
     e.preventDefault();
     setLoading(true);
 
-    // const _contact = parsePhoneNumber(contact);
-
     axios
-      .post(`${BACK_SERVER_URL}/api/auth/signup`, {
-        firstName,
-        lastName,
+      .post(`${BACK_SERVER_URL}/api/auth/register`, {
+        type,
         username,
         email,
-        contact,
-        // country: _contact.country,
         password,
-        description,
-        stats: {
-          "totalCount": 0,
-          "verdicts": {
-            "ACCount": 0,
-            "WACount": 0,
-            "TLECount": 0,
-            "MLECount": 0,
-            "CECount": 0,
-            "RTECount": 0,
-          },
-          "tags":{
-          },
-          "difficulties": {
-            "easy": 0,
-            "medium": 0,
-            "hard": 0,
-          }
-        },
       })
       .then((res) => {
         setSignedUp(true);
@@ -111,15 +83,15 @@ const SignUp = () => {
       .catch((err) => {
         setLoading(false);
         const error = err.response ? err.response.data.message : err.message;
-    //     toast.error(error, {
-    //       position: "top-right",
-    //       autoClose: 5000,
-    //       hideProgressBar: false,
-    //       closeOnClick: true,
-    //       pauseOnHover: true,
-    //       draggable: true,
-    //       progress: undefined,
-    //     });
+        toast.error(error, {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
       });
   };
 
@@ -127,7 +99,7 @@ const SignUp = () => {
 
   return (
     <Grid align="center" className="signup-container">
-      {/* <ToastContainer /> */}
+      <ToastContainer />
       <Paper className="signup-paper">
         <Grid align="center">
           <Avatar className="signup-avatar">
@@ -139,28 +111,25 @@ const SignUp = () => {
           </Typography>
         </Grid>
         <form onSubmit={handleSubmit}>
-          <div className="signup-name-container">
-            <TextField
-              fullWidth
-              id="firstName"
-              name="firstName"
-              label="First Name"
-              placeholder="Enter your first name"
-              value={firstName}
-              onChange={(e) => setFirstName(e.target.value)}
-              autoFocus
-              required
-            />
-            <TextField
-              fullWidth
-              id="lastName"
-              label="Last Name"
-              name="lastName"
-              placeholder="Enter your last name"
-              value={lastName}
-              onChange={(e) => setLastName(e.target.value)}
-            />
-          </div>
+          <select
+            required
+            id="type"
+            name="type"
+            value={type}
+            onChange={(event) => {
+              setType(event.target.value);
+            }}
+            style={{ width: "100%", height: "55px", fontSize: "15px", marginBottom: "10px", paddingLeft: "10px", borderRadius: "5px" }}
+          >
+            <option value="">Select Your Role</option>
+            {userType.map((role, index) => {
+              return (
+                <option key={index} value={role.toLowerCase()}>
+                  {role}
+                </option>
+              );
+            })}
+          </select>
           <TextField
             fullWidth
             id="username"
@@ -169,6 +138,7 @@ const SignUp = () => {
             placeholder="Enter username"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
+            style={{marginBottom: "10px"}}
           />
           <TextField
             fullWidth
@@ -181,16 +151,8 @@ const SignUp = () => {
             helperText={emailError}
             onChange={(e) => validateEmail(e)}
             error={emailError.length > 0}
+            style={{marginBottom: "10px"}}
           />
-          {/* <PhoneInput
-            id="contact"
-            name="contact"
-            className="signup-contact"
-            placeholder="Enter your contact no."
-            value={contact}
-            onChange={setContact}
-            required
-          /> */}
           <TextField
             fullWidth
             label="Password"
@@ -202,18 +164,6 @@ const SignUp = () => {
             helperText={passwordError}
             onChange={(e) => validatePassword(e)}
             error={passwordError.length > 0}
-          />
-          <TextField
-            fullWidth
-            label="About Yourself"
-            placeholder="About Yourself"
-            id="description"
-            name="description"
-            multiline
-            rows={3}
-            rowsMax={4}
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
           />
           <FormControlLabel
             style={{ marginTop: "20px" }}

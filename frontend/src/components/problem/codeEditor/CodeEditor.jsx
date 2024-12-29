@@ -47,7 +47,7 @@ const CodeEditor = ({
 }) => {
 //   const classes = useStyles();
 
-  const languageList = ["C", "C++", "Java", "Python"];
+  const languageList = ["Javascript", "C++", "Java", "Python"];
 
   const handleThemeChange = (e) => {
     handleModeChange(e.target.checked);
