@@ -1,5 +1,12 @@
-import React, { useState } from "react";
+import axios from "axios";
+
+import React, { useEffect, useLayoutEffect, useState } from "react";
+import { BeatLoader } from "react-spinners";
+import { ToastContainer, toast } from "react-toastify";
+import { BACK_SERVER_URL } from "../../config/config";
 import Paper from "@mui/material/Paper";
+import "react-toastify/dist/ReactToastify.css";
+import "./problemset.css";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
@@ -8,65 +15,15 @@ import TableHead from "@mui/material/TableHead";
 import TablePagination from "@mui/material/TablePagination";
 import TableRow from "@mui/material/TableRow";
 import Chip from "@mui/material/Chip";
-import { ToastContainer, toast } from "react-toastify";
-
-const mockProblems = [
-  { id: 1, name: "Binary Tree Traversal", difficulty: "Easy", score: 85 },
-  {
-    id: 2,
-    name: "Depth First Search Implementation",
-    difficulty: "Medium",
-    score: 92,
-  },
-  {
-    id: 3,
-    name: "Dynamic Programming Challenge",
-    difficulty: "Hard",
-    score: 78,
-  },
-  { id: 4, name: "Stack Operations", difficulty: "Easy", score: 100 },
-  { id: 5, name: "Graph Coloring Problem", difficulty: "Hard", score: 88 },
-  { id: 6, name: "Breadth First Search", difficulty: "Medium", score: 95 },
-  { id: 7, name: "Heap Sort Algorithm", difficulty: "Medium", score: 90 },
-  {
-    id: 8,
-    name: "Binary Search Implementation",
-    difficulty: "Easy",
-    score: 100,
-  },
-  { id: 9, name: "Network Flow Problem", difficulty: "Hard", score: 82 },
-  { id: 10, name: "Tree Balancing", difficulty: "Medium", score: 88 },
-];
-
+import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { getDateTime } from "../../utils";
 const columns = [
-  { id: "id", label: "#", minWidth: 50, maxWidth: 70, align: "center" },
-  { id: "name", label: "Problem Name", minWidth: 150, align: "left" },
-  {
-    id: "difficulty",
-    label: "Difficulty",
-    minWidth: 100,
-    maxWidth: 120,
-    align: "center",
-  },
-  {
-    id: "score",
-    label: "Score",
-    minWidth: 100,
-    maxWidth: 120,
-    align: "center",
-  },
+  { id: "id", label: "#", minWidth: 10 },
+  { id: "name", label: "Problem Name", minWidth: 200 },
+  { id: "difficulty", label: "Difficulty", minWidth: 50 },
+  { id: "score", label: "Score", minWidth: 100 },
 ];
 
-const mockProblemsetInfo = {
-  courseInfo: {
-    semester: "113-1",
-    name: "Data Structures and Algorithms",
-  },
-  problemsetName: "Assignment 1",
-  startDate: "2024-03-01T00:00:00",
-  dueDate: "2024-03-15T23:59:59",
-  problemType: "assignment",
-};
 const styles = {
   assignmentTitle: {
     marginBottom: "1rem",
@@ -77,28 +34,86 @@ const styles = {
     display: "flex",
     flexDirection: "column",
     marginTop: "1rem",
+    marginBottom: "1rem",
   },
   infoLabel: {
     display: "block",
-    marginBottom: "0.5rem",
+    marginBottom: "0.2rem",
   },
 };
 export default function ProblemSet() {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(12);
+  const [allProblems, setAllProblems] = useState([]);
+  const [rows, setRows] = useState([]);
+  const [loader, setLoader] = useState(true);
+  const [searchQuery, setSearchQuery] = useState("");
+  const { id } = useParams();
+  const location = useLocation();
+  const problemsetInfo = location.state?.problemsetInfo;
+  const navigate = useNavigate();
 
-  const handleChangePage = (event, newPage) => {
+  useLayoutEffect(() => {
+    axios
+      .get(
+        `${BACK_SERVER_URL}/api/student/${problemsetInfo.problemType}/questions/${id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("access-token")}`,
+          },
+        }
+      )
+      .then((res) => {
+        let problems = res.data.questions;
+
+        setAllProblems(problems);
+        setRows(problems);
+        setLoader(false);
+      })
+      .catch((err) => {
+        const error = err.response ? err.response.data.message : err.message;
+        toast.error(error, {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
+      });
+  }, [id]);
+
+  useEffect(() => {
+    const getPageData = () => {
+      let filtered = allProblems;
+      if (searchQuery) {
+        filtered = allProblems.filter((p) =>
+          p.name.toLowerCase().startsWith(searchQuery.toLowerCase())
+        );
+        setRows(filtered);
+      } else {
+        setRows(filtered);
+      }
+    };
+    getPageData();
+
+    // eslint-disable-next-line
+  }, [searchQuery, allProblems]);
+
+  const handleChangePage = (e, newPage) => {
     setPage(newPage);
   };
 
-  const handleChangeRowsPerPage = (event) => {
-    setRowsPerPage(+event.target.value);
+  const handleChangeRowsPerPage = (e) => {
+    setRowsPerPage(e.target.value);
     setPage(0);
   };
 
-  const getDateTime = (dateString) => {
-    const date = new Date(dateString);
-    return date.toLocaleString();
+  const handleRowClick = (problemId, problemsetInfo) => {
+    navigate(`/problemset/${problemId}`, {
+      state: { problemsetInfo }, // 傳遞額外資訊
+    });
   };
 
   return (
@@ -106,20 +121,22 @@ export default function ProblemSet() {
       <ToastContainer />
       <div className="courses-right">
         <h2 style={styles.assignmentTitle}>
-          {mockProblemsetInfo.courseInfo.semester}{" "}
-          {mockProblemsetInfo.courseInfo.name}
+          {problemsetInfo.courseInfo.semester} {problemsetInfo.courseInfo.name}
         </h2>
-        <h2 style={styles.assignmentTitle}>
-          {mockProblemsetInfo.problemsetName}
-        </h2>
+        <h2 style={styles.assignmentTitle}>{problemsetInfo.problemsetName}</h2>
 
         <div style={styles.problemsetInfo}>
           <div style={styles.infoLabel}>
-            <span>Start Date: {getDateTime(mockProblemsetInfo.startDate)}</span>
+            <span>
+              Start Date:{" "}
+              {problemsetInfo.startDate
+                ? getDateTime(problemsetInfo.startDate)
+                : problemsetInfo.startDate}
+            </span>
           </div>
 
           <span style={styles.infoLabel}>
-            Due Date: {getDateTime(mockProblemsetInfo.dueDate)}
+            Due Date: {getDateTime(problemsetInfo.dueDate)}
           </span>
         </div>
 
@@ -155,7 +172,7 @@ export default function ProblemSet() {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {mockProblems
+                {rows
                   .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                   .map((row, index) => {
                     return (
@@ -240,7 +257,7 @@ export default function ProblemSet() {
           <TablePagination
             rowsPerPageOptions={[10, 25, 100]}
             component="div"
-            count={mockProblems.length}
+            count={rows.length}
             rowsPerPage={rowsPerPage}
             page={page}
             onPageChange={handleChangePage}
