@@ -42,9 +42,10 @@ export default function NavBar(props) {
     <div className="navbar">
       <div className="navbarWrapper">
         <div className="navLeft">
-          <Link to="/" className="logo">
+          {/* <Link to="/" className="logo">
             NCCU MIS OJ
-          </Link>
+          </Link> */}
+          <div className="logo">NCCU MIS OJ</div>
           <div className="navbarList">
             {login ? ( //TODO: decide which tab should show through tab
               <>
