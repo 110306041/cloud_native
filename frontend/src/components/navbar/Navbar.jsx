@@ -28,7 +28,7 @@ export default function NavBar(props) {
       localStorage.removeItem("login");
       localStorage.removeItem("access-token");
       localStorage.removeItem("role");
-      localStorage.removeItem("username")
+      localStorage.removeItem("username");
       setLogin(false);
       window.location = "/";
     }
@@ -135,9 +135,10 @@ export default function NavBar(props) {
                 variant="contained"
                 className="signin-btn"
                 sx={{
-                  backgroundColor: "#5F8397",
+                  backgroundColor: "#445E93",
+                  fontWeight: "bold",
                   "&:hover": {
-                    backgroundColor: "#3b6b82",
+                    backgroundColor: "#29335C",
                   },
                 }}
               >

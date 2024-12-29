@@ -1,39 +1,15 @@
-.problemset-container{
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+.assignment-title {
+  margin-bottom: 1rem; /* 每個標題之間增加垂直間隔 */
 }
 
-.problemset-left{
-    flex: 1;
+.problemset-info {
+  display: flex;
+  flex-direction: column; /* 垂直排列 */
+  gap: 1rem; /* 每個項目之間增加間隔 */
+  margin-top: 1rem; /* 與標題保持適當間距 */
 }
 
-.problemset-right{
-    margin: 40px 50px 40px 50px;
-    flex: 4;
-}
-
-.problem-searchbar{
-    margin-bottom: 10px;
-}
-
-.problemset-spinner{
-    display: block;
-    position: fixed;
-    z-index: 2;
-    top: 50%;
-    right: 50%;
-}
-
-.problemset-courseInfo{
-    font-weight: bold;
-    font-size: 25px;
-    color: white;
-}
-
-.problemset-info{
-    font-weight: bold;
-    font-size: 20px;
-    color: white;
+.info-label {
+  display: block; /* 確保每個項目獨占一行 */
+  margin-bottom: 0.5rem; /* 增加間隔 */
 }

@@ -15,24 +15,22 @@ export default function Course() {
   const courseInfo = location.state?.courseInfo;
   console.log(courseInfo);
 
-  const [hws, setHws] = useState([])
-  const [exams, setExams] = useState([])
+  const [hws, setHws] = useState([]);
+  const [exams, setExams] = useState([]);
   const [loader, setLoader] = useState(true);
 
   useEffect(() => {
     axios
-      .get(`${BACK_SERVER_URL}/api/student/assignmentsAndExams/${id}`,
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("access-token")}`,
-          }
-        }
-      )
+      .get(`${BACK_SERVER_URL}/api/student/assignmentsAndExams/${id}`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("access-token")}`,
+        },
+      })
       .then((res) => {
-        console.log(res.data.assignments)
-        setHws(res.data.assignments)
-        setExams(res.data.exams)
-        setLoader(false)
+        console.log(res.data.assignments);
+        setHws(res.data.assignments);
+        setExams(res.data.exams);
+        setLoader(false);
       })
       .catch((err) => {
         const error = err.response ? err.response.data.message : err.message;
@@ -45,31 +43,27 @@ export default function Course() {
           draggable: true,
           progress: undefined,
         });
-        setLoader(false)
-      })
-  }, [id])
+        setLoader(false);
+      });
+  }, [id]);
 
   return (
-    <>
+    <div className="courses-container">
+
       <ToastContainer />
       {loader ? (
         <BeatLoader color={"#343a40"} size={30} loading={loader} />
       ) : (
-        <>
-          <span
-            style={{
-              fontWeight: "bold",
-              fontSize: "25px",
-              color: "white",
-              margin: "50px",
-            }}
-          >
+        <div className="courses-right">
+        <h2 style={{ padding: "20px 0" }}>
+            {" "}
             {courseInfo?.semester} {courseInfo?.name}
-          </span>
+          </h2>
+
           <CourseHw hws={hws} courseInfo={courseInfo}></CourseHw>
           <CourseExam exams={exams} courseInfo={courseInfo}></CourseExam>
-        </>
+        </div>
       )}
-    </>
+    </div>
   );
 }

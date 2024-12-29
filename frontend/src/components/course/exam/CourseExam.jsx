@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-
 import "react-toastify/dist/ReactToastify.css";
 import "./courseExam.css";
 
@@ -13,14 +12,31 @@ import TableHead from "@mui/material/TableHead";
 import TablePagination from "@mui/material/TablePagination";
 import TableRow from "@mui/material/TableRow";
 import { getDateTime } from "../../../utils";
-// import SearchBar from "material-ui-search-bar";
 
 const columns = [
-  { id: "id", label: "#", minWidth: 10 },
-  { id: "name", label: "Homework Name", minWidth: 100 },
-  { id: "startDate", label: "Start Date", minWidth: 50 },
-  { id: "dueDate", label: "Due Date", minWidth: 50 },
-  { id: "score", label: "Score", minWidth: 100 },
+  { id: "id", label: "#", minWidth: 50, maxWidth: 70, align: "center" },
+  { id: "name", label: "Homework Name", minWidth: 150, align: "left" },
+  {
+    id: "startDate",
+    label: "Start Date",
+    minWidth: 120,
+    maxWidth: 150,
+    align: "center",
+  },
+  {
+    id: "dueDate",
+    label: "Due Date",
+    minWidth: 120,
+    maxWidth: 150,
+    align: "center",
+  },
+  {
+    id: "score",
+    label: "Score",
+    minWidth: 100,
+    maxWidth: 120,
+    align: "center",
+  },
 ];
 
 export default function CourseHw({ exams = [], courseInfo }) {
@@ -44,8 +60,6 @@ export default function CourseHw({ exams = [], courseInfo }) {
       }
     };
     getPageData();
-
-    // eslint-disable-next-line
   }, [searchQuery, allExams]);
 
   const handleChangePage = (e, newPage) => {
@@ -59,137 +73,139 @@ export default function CourseHw({ exams = [], courseInfo }) {
 
   const handleRowClick = (problemsetId, problemsetInfo) => {
     navigate(`/problemset/${problemsetId}`, {
-      state: { problemsetInfo }, // 傳遞額外資訊
+      state: { problemsetInfo },
     });
   };
 
   return (
-    <div className="courses-container">
-      {/* <ToastContainer /> */}
-      <div className="courses-right">
-        {/* <SearchBar
-          value={searchQuery}
-          onChange={(newValue) => setSearchQuery(newValue)}
-          onRequestSearch={() => setSearchQuery(searchQuery)}
-          className="courses-searchbar"
-        /> */}
-        <span style={{ color: "white" }}>Exam</span>
-        <Paper sx={{ width: "100%", height: "300px" }}>
-          <TableContainer sx={{ maxHeight: 400 }}>
-            <Table stickyHeader aria-label="sticky table">
-              <TableHead>
-                <TableRow>
-                  {columns.map((column) => (
-                    <TableCell
-                      key={column.id}
-                      align={column.align}
-                      style={{ minWidth: column.minWidth }}
-                    >
-                      {column.label}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {rows
-                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                  .map((row, index) => {
-                    return (
-                      <TableRow
-                        hover
-                        role="checkbox"
-                        tabIndex={-1}
-                        key={index}
-                        onClick={() =>
-                          handleRowClick(
-                            allExams[page * rowsPerPage + index].id,
-                            {
-                              courseInfo: courseInfo,
-                              problemType: "exams",
-                              problemsetName: row.name,
-                              startDate: row.start_date,
-                              dueDate: row.due_date,
-                            }
-                          )
-                        }
-                        style={{ cursor: "pointer" }}
-                      >
-                        {columns.map((column) => {
-                          const value =
-                            column.id === "id"
-                              ? page * rowsPerPage + index + 1
-                              : row[column.id];
-                          if (column.id === "dueDate") {
-                            return (
-                              <TableCell key={column.id} align={column.align}>
-                                <span
-                                  style={{
-                                    fontWeight: "bold",
-                                    fontSize: "15px",
-                                    color: "#1a237e",
-                                  }}
-                                >
-                                  {getDateTime(row.due_date)}
-                                </span>
-                              </TableCell>
-                            );
-                          } else if (column.id === "score") {
-                            return (
-                              <TableCell key={column.id} align={column.align}>
-                                <div
-                                  style={{ display: "flex", columnGap: "5px" }}
-                                >
-                                  {value} / 100
-                                </div>
-                              </TableCell>
-                            );
-                          } else if (column.id === "startDate") {
-                            return (
-                              <TableCell key={column.id} align={column.align}>
-                                <span
-                                  style={{
-                                    fontWeight: "bold",
-                                    fontSize: "15px",
-                                    color: "#1a237e",
-                                  }}
-                                >
-                                  {getDateTime(row.start_date)}
-                                </span>
-                              </TableCell>
-                            );
-                          } else {
-                            return (
-                              <TableCell key={column.id} align={column.align}>
-                                <span
-                                  style={{
-                                    fontWeight: "bold",
-                                    fontSize: "15px",
-                                    color: "#1a237e",
-                                  }}
-                                >
-                                  {value}
-                                </span>
-                              </TableCell>
-                            );
+    <div>
+      <h3 style={{ padding: "20px 0" }}>Exam</h3>
+      <Paper
+        sx={{
+          width: "100%",
+          height: "550px",
+          borderRadius: "16px",
+          overflow: "hidden",
+          marginBottom: "40px",
+        }}
+      >
+        <TableContainer sx={{ maxHeight: 550 }}>
+          <Table stickyHeader aria-label="sticky table">
+            <TableHead>
+              <TableRow>
+                {columns.map((column) => (
+                  <TableCell
+                    key={column.id}
+                    align={column.align}
+                    style={{
+                      minWidth: column.minWidth,
+                      maxWidth: column.maxWidth,
+                      fontWeight: "bold",
+                      fontSize: "16px",
+                      backgroundColor: "#FFF9D0",
+                    }}
+                  >
+                    {column.label}
+                  </TableCell>
+                ))}
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {rows
+                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                .map((row, index) => {
+                  return (
+                    <TableRow
+                      hover
+                      role="checkbox"
+                      tabIndex={-1}
+                      key={index}
+                      onClick={() =>
+                        handleRowClick(
+                          allExams[page * rowsPerPage + index].id,
+                          {
+                            courseInfo: courseInfo,
+                            problemType: "exams",
+                            problemsetName: row.name,
+                            startDate: row.start_date,
+                            dueDate: row.due_date,
                           }
-                        })}
-                      </TableRow>
-                    );
-                  })}
-              </TableBody>
-            </Table>
-          </TableContainer>
-          <TablePagination
-            rowsPerPageOptions={[10, 25, 100]}
-            component="div"
-            count={rows.length}
-            rowsPerPage={rowsPerPage}
-            page={page}
-            onPageChange={handleChangePage}
-            onRowsPerPageChange={handleChangeRowsPerPage}
-          />
-        </Paper>
-      </div>
+                        )
+                      }
+                      style={{ cursor: "pointer" }}
+                    >
+                      {columns.map((column) => {
+                        const value =
+                          column.id === "id"
+                            ? page * rowsPerPage + index + 1
+                            : row[column.id];
+                        if (
+                          column.id === "dueDate" ||
+                          column.id === "startDate"
+                        ) {
+                          return (
+                            <TableCell key={column.id} align={column.align}>
+                              <span
+                                style={{
+                                  fontWeight: "regular",
+                                  fontSize: "16px",
+                                  color: "#222222",
+                                }}
+                              >
+                                {getDateTime(
+                                  column.id === "dueDate"
+                                    ? row.due_date
+                                    : row.start_date
+                                )}
+                              </span>
+                            </TableCell>
+                          );
+                        } else if (column.id === "score") {
+                          return (
+                            <TableCell key={column.id} align={column.align}>
+                              <span
+                                style={{
+                                  fontWeight: "regular",
+                                  fontSize: "16px",
+                                  color: "#222222",
+                                }}
+                              >
+                                {value} / 100
+                              </span>
+                            </TableCell>
+                          );
+                        } else {
+                          return (
+                            <TableCell key={column.id} align={column.align}>
+                              <span
+                                style={{
+                                  fontWeight: "regular",
+                                  fontSize: "16px",
+                                  color: "#222222",
+                                }}
+                              >
+                                {value}
+                              </span>
+                            </TableCell>
+                          );
+                        }
+                      })}
+                    </TableRow>
+                  );
+                })}
+            </TableBody>
+          </Table>
+        </TableContainer>
+        <TablePagination
+          rowsPerPageOptions={[10, 25, 100]}
+          component="div"
+          count={rows.length}
+          rowsPerPage={rowsPerPage}
+          page={page}
+          onPageChange={handleChangePage}
+          onRowsPerPageChange={handleChangeRowsPerPage}
+        />
+      </Paper>
     </div>
   );
 }

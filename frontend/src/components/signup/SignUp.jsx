@@ -122,11 +122,11 @@ const SignUp = () => {
               marginBottom: "10px",
               paddingLeft: "10px",
               borderRadius: "5px",
-              border: "1px solid #5f8397",
-              color: type ? "#000000" : "#5f8397", // 選擇完後變黑色
+              border: "1px solid #445E93",
+              color: type ? "#000000" : "445E937", // 選擇完後變黑色
             }}
           >
-            <option value="" disabled style={{ color: "#5f8397" }}>
+            <option value="" disabled style={{ color: "#445E93" }}>
               Select Your Role
             </option>
             {userType.map((role, index) => {
@@ -150,7 +150,7 @@ const SignUp = () => {
             sx={{
               "& .MuiOutlinedInput-root": {
                 "& fieldset": {
-                  borderColor: "#5f8397", // 邊框顏色
+                  borderColor: "#445E93", // 邊框顏色
                 },
                 "&:hover fieldset": {
                   borderColor: "#3b6b82", // 滑鼠懸停時的顏色
@@ -160,7 +160,7 @@ const SignUp = () => {
                 },
               },
               "& .MuiInputLabel-root": {
-                color: "#5f8397", // 標籤顏色
+                color: "#445E93", // 標籤顏色
               },
               "& .MuiInputLabel-root.Mui-focused": {
                 color: "#1b4b62", // 聚焦時的標籤顏色
@@ -182,7 +182,7 @@ const SignUp = () => {
             sx={{
               "& .MuiOutlinedInput-root": {
                 "& fieldset": {
-                  borderColor: "#5f8397", // 邊框顏色
+                  borderColor: "#445E93", // 邊框顏色
                 },
                 "&:hover fieldset": {
                   borderColor: "#3b6b82", // 滑鼠懸停時的顏色
@@ -192,7 +192,7 @@ const SignUp = () => {
                 },
               },
               "& .MuiInputLabel-root": {
-                color: "#5f8397", // 標籤顏色
+                color: "#445E93", // 標籤顏色
               },
               "& .MuiInputLabel-root.Mui-focused": {
                 color: "#1b4b62", // 聚焦時的標籤顏色
@@ -213,7 +213,7 @@ const SignUp = () => {
             sx={{
               "& .MuiOutlinedInput-root": {
                 "& fieldset": {
-                  borderColor: "#5f8397", // 邊框顏色
+                  borderColor: "#445E93", // 邊框顏色
                 },
                 "&:hover fieldset": {
                   borderColor: "#3b6b82", // 滑鼠懸停時的顏色
@@ -223,7 +223,7 @@ const SignUp = () => {
                 },
               },
               "& .MuiInputLabel-root": {
-                color: "#5f8397", // 標籤顏色
+                color: "#445E93", // 標籤顏色
               },
               "& .MuiInputLabel-root.Mui-focused": {
                 color: "#1b4b62", // 聚焦時的標籤顏色
@@ -236,9 +236,9 @@ const SignUp = () => {
               <Checkbox
                 name="checkedA"
                 sx={{
-                  color: "#5f8397",
+                  color: "#445E93",
                   "&.Mui-checked": {
-                    color: "#3b6b82", // 勾選後的顏色
+                    color: "#29335C", // 勾選後的顏色
                   },
                 }}
               />
@@ -252,12 +252,12 @@ const SignUp = () => {
               color="primary"
               style={{
                 marginTop: "10px",
-                backgroundColor: "#5f8397", // 按鈕背景色
+                backgroundColor: "#445E93", // 按鈕背景色
                 color: "white", // 字體顏色
               }}
               sx={{
                 "&:hover": {
-                  backgroundColor: "#3b6b82", // 滑鼠懸停時的背景色
+                  backgroundColor: "#29335C", // 滑鼠懸停時的背景色
                 },
               }}
               fullWidth

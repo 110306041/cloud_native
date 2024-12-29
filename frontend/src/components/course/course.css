@@ -1,0 +1,50 @@
+html,
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  overflow-x: hidden;
+}
+
+.courses-container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: #e9e9e9;
+  overflow: hidden;
+  flex: 1 0 auto; 
+}
+.courses-content {
+  flex: 1;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.courses-left {
+  flex: 1;
+}
+
+.courses-right {
+  margin: 40px 50px;
+  flex: 4;
+  display: flex;
+  flex-direction: column;
+  gap: 60px; /* 作業和考試表格之間的間距 */
+}
+
+.courses-spinner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: fixed;
+  z-index: 2;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.courses-container th,
+.courses-container td {
+  vertical-align: middle;
+}

@@ -1,13 +1,4 @@
-import axios from "axios";
-import React, { useEffect, useLayoutEffect, useState } from "react";
-import { BeatLoader } from "react-spinners";
-import { ToastContainer, toast } from "react-toastify";
-import { BACK_SERVER_URL } from "../../config/config";
-
-import "react-toastify/dist/ReactToastify.css";
-import "./problemset.css";
-
-import Chip from "@mui/material/Chip";
+import React, { useState } from "react";
 import Paper from "@mui/material/Paper";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
@@ -16,130 +7,133 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TablePagination from "@mui/material/TablePagination";
 import TableRow from "@mui/material/TableRow";
-// import SearchBar from "material-ui-search-bar";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
-import { getDateTime } from "../../utils";
+import Chip from "@mui/material/Chip";
+import { ToastContainer, toast } from "react-toastify";
 
-const columns = [
-  { id: "id", label: "#", minWidth: 10 },
-  { id: "name", label: "Problem Name", minWidth: 200 },
-  { id: "difficulty", label: "Difficulty", minWidth: 50 },
-  { id: "score", label: "Score", minWidth: 100 },
+const mockProblems = [
+  { id: 1, name: "Binary Tree Traversal", difficulty: "Easy", score: 85 },
+  {
+    id: 2,
+    name: "Depth First Search Implementation",
+    difficulty: "Medium",
+    score: 92,
+  },
+  {
+    id: 3,
+    name: "Dynamic Programming Challenge",
+    difficulty: "Hard",
+    score: 78,
+  },
+  { id: 4, name: "Stack Operations", difficulty: "Easy", score: 100 },
+  { id: 5, name: "Graph Coloring Problem", difficulty: "Hard", score: 88 },
+  { id: 6, name: "Breadth First Search", difficulty: "Medium", score: 95 },
+  { id: 7, name: "Heap Sort Algorithm", difficulty: "Medium", score: 90 },
+  {
+    id: 8,
+    name: "Binary Search Implementation",
+    difficulty: "Easy",
+    score: 100,
+  },
+  { id: 9, name: "Network Flow Problem", difficulty: "Hard", score: 82 },
+  { id: 10, name: "Tree Balancing", difficulty: "Medium", score: 88 },
 ];
 
+const columns = [
+  { id: "id", label: "#", minWidth: 50, maxWidth: 70, align: "center" },
+  { id: "name", label: "Problem Name", minWidth: 150, align: "left" },
+  {
+    id: "difficulty",
+    label: "Difficulty",
+    minWidth: 100,
+    maxWidth: 120,
+    align: "center",
+  },
+  {
+    id: "score",
+    label: "Score",
+    minWidth: 100,
+    maxWidth: 120,
+    align: "center",
+  },
+];
+
+const mockProblemsetInfo = {
+  courseInfo: {
+    semester: "113-1",
+    name: "Data Structures and Algorithms",
+  },
+  problemsetName: "Assignment 1",
+  startDate: "2024-03-01T00:00:00",
+  dueDate: "2024-03-15T23:59:59",
+  problemType: "assignment",
+};
+const styles = {
+  assignmentTitle: {
+    marginBottom: "1rem",
+    fontSize: "1.5rem",
+    fontWeight: "bold",
+  },
+  problemsetInfo: {
+    display: "flex",
+    flexDirection: "column",
+    marginTop: "1rem",
+  },
+  infoLabel: {
+    display: "block",
+    marginBottom: "0.5rem",
+  },
+};
 export default function ProblemSet() {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(12);
-  const [allProblems, setAllProblems] = useState([]);
-  const [rows, setRows] = useState([]);
-  const [loader, setLoader] = useState(true);
-  const [searchQuery, setSearchQuery] = useState("");
-  const { id } = useParams();
-  const location = useLocation();
-  const problemsetInfo = location.state?.problemsetInfo;
-  const navigate = useNavigate();
 
-  useLayoutEffect(() => {
-    axios
-      .get(
-        `${BACK_SERVER_URL}/api/student/${problemsetInfo.problemType}/questions/${id}`,
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("access-token")}`,
-          },
-        }
-      )
-      .then((res) => {
-        let problems = res.data.questions;
-
-        setAllProblems(problems);
-        setRows(problems);
-        setLoader(false);
-      })
-      .catch((err) => {
-        const error = err.response ? err.response.data.message : err.message;
-        toast.error(error, {
-          position: "top-right",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-        });
-      });
-  }, [id]);
-
-  useEffect(() => {
-    const getPageData = () => {
-      let filtered = allProblems;
-      if (searchQuery) {
-        filtered = allProblems.filter((p) =>
-          p.name.toLowerCase().startsWith(searchQuery.toLowerCase())
-        );
-        setRows(filtered);
-      } else {
-        setRows(filtered);
-      }
-    };
-    getPageData();
-
-    // eslint-disable-next-line
-  }, [searchQuery, allProblems]);
-
-  const handleChangePage = (e, newPage) => {
+  const handleChangePage = (event, newPage) => {
     setPage(newPage);
   };
 
-  const handleChangeRowsPerPage = (e) => {
-    setRowsPerPage(e.target.value);
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(+event.target.value);
     setPage(0);
   };
 
-  const handleRowClick = (problemId, problemsetInfo) => {
-    navigate(`/problemset/${problemId}`, {
-      state: { problemsetInfo }, // 傳遞額外資訊
-    });
+  const getDateTime = (dateString) => {
+    const date = new Date(dateString);
+    return date.toLocaleString();
   };
 
   return (
-    <div className="problemset-container">
+    <div className="courses-container">
       <ToastContainer />
-      {/* <div className="problemset-left">
-        <Sidebar
-          problems={allProblems}
-          setRows={setRows}
-          searchQuery={searchQuery}
-          setSearchQuery={setSearchQuery}
-          tagsSelected={tagsSelected}
-          setTagsSelected={setTagsSelected}
-        />
-      </div> */}
-      <div className="problemset-right">
-        {/* <SearchBar
-          value={searchQuery}
-          onChange={(newValue) => setSearchQuery(newValue)}
-          onRequestSearch={() => setSearchQuery(searchQuery)}
-          className="problem-searchbar"
-        /> */}
-        <div className="problemset-spinner">
-          <BeatLoader color={"#343a40"} size={30} loading={loader} />
+      <div className="courses-right">
+        <h2 style={styles.assignmentTitle}>
+          {mockProblemsetInfo.courseInfo.semester}{" "}
+          {mockProblemsetInfo.courseInfo.name}
+        </h2>
+        <h2 style={styles.assignmentTitle}>
+          {mockProblemsetInfo.problemsetName}
+        </h2>
+
+        <div style={styles.problemsetInfo}>
+          <div style={styles.infoLabel}>
+            <span>Start Date: {getDateTime(mockProblemsetInfo.startDate)}</span>
+          </div>
+
+          <span style={styles.infoLabel}>
+            Due Date: {getDateTime(mockProblemsetInfo.dueDate)}
+          </span>
         </div>
-        <div className="problemset-courseInfo">
-          {problemsetInfo.courseInfo.semester} {problemsetInfo.courseInfo.name}
-        </div>
-        <div className="problemset-info">{problemsetInfo.problemsetName}</div>
-        <div className="problemset-info">
-          {problemsetInfo.startDate
-            ? `Start Date: ${getDateTime(problemsetInfo.startDate)}`
-            : `Start Date: ${problemsetInfo.startDate}`}
-          {/* Start Date: {getDateTime(problemsetInfo.startDate)} */}
-        </div>
-        <div className="problemset-info">
-          Due Date: {getDateTime(problemsetInfo.dueDate)}
-        </div>
-        <Paper sx={{ width: "100%", height: "950px" }}>
-          <TableContainer sx={{ maxHeight: 950 }}>
+
+        <Paper
+          sx={{
+            width: "100%",
+            height: "800px",
+            borderRadius: "16px",
+            overflow: "hidden",
+            marginBottom: "40px",
+            marginTop: "20px",
+          }}
+        >
+          <TableContainer>
             <Table stickyHeader aria-label="sticky table">
               <TableHead>
                 <TableRow>
@@ -147,7 +141,13 @@ export default function ProblemSet() {
                     <TableCell
                       key={column.id}
                       align={column.align}
-                      style={{ minWidth: column.minWidth }}
+                      style={{
+                        minWidth: column.minWidth,
+                        maxWidth: column.maxWidth,
+                        fontWeight: "bold",
+                        fontSize: "16px",
+                        backgroundColor: "#FFF9D0",
+                      }}
                     >
                       {column.label}
                     </TableCell>
@@ -155,7 +155,7 @@ export default function ProblemSet() {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {rows
+                {mockProblems
                   .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                   .map((row, index) => {
                     return (
@@ -164,13 +164,6 @@ export default function ProblemSet() {
                         role="checkbox"
                         tabIndex={-1}
                         key={index}
-                        onClick={() =>
-                          navigate(
-                            `/problem/${
-                              allProblems[page * rowsPerPage + index].id
-                            }`
-                          )
-                        }
                         style={{ cursor: "pointer" }}
                       >
                         {columns.map((column) => {
@@ -178,20 +171,36 @@ export default function ProblemSet() {
                             column.id === "id"
                               ? page * rowsPerPage + index + 1
                               : row[column.id];
+
                           if (column.id === "score") {
                             return (
                               <TableCell key={column.id} align={column.align}>
-                                <div
-                                  style={{ display: "flex", columnGap: "5px" }}
+                                <span
+                                  style={{
+                                    fontWeight: "regular",
+                                    fontSize: "16px",
+                                    color: "#222222",
+                                  }}
                                 >
                                   {value} / 100
-                                </div>
+                                </span>
                               </TableCell>
                             );
                           } else if (column.id === "difficulty") {
-                            let badgeColor = "#5caf5c";
-                            if (value === "Easy") badgeColor = "#FF980d";
-                            else if (value === "Hard") badgeColor = "#F44336";
+                            let badgeColor;
+                            switch (value) {
+                              case "Easy":
+                                badgeColor = "#8ACB88";
+                                break;
+                              case "Hard":
+                                badgeColor = "#FA7272";
+                                break;
+                              case "Medium":
+                                badgeColor = "#5AB2FF";
+                                break;
+                              default:
+                                badgeColor = "#D9D9D9";
+                            }
 
                             return (
                               <TableCell key={column.id} align={column.align}>
@@ -200,8 +209,8 @@ export default function ProblemSet() {
                                   style={{
                                     fontWeight: "bold",
                                     color: "white",
-                                    display: "flex",
                                     backgroundColor: badgeColor,
+                                    textTransform: "capitalize",
                                   }}
                                 />
                               </TableCell>
@@ -211,9 +220,9 @@ export default function ProblemSet() {
                               <TableCell key={column.id} align={column.align}>
                                 <span
                                   style={{
-                                    fontWeight: "bold",
-                                    fontSize: "15px",
-                                    color: "#1a237e",
+                                    fontWeight: "regular",
+                                    fontSize: "16px",
+                                    color: "#222222",
                                   }}
                                 >
                                   {value}
@@ -231,7 +240,7 @@ export default function ProblemSet() {
           <TablePagination
             rowsPerPageOptions={[10, 25, 100]}
             component="div"
-            count={rows.length}
+            count={mockProblems.length}
             rowsPerPage={rowsPerPage}
             page={page}
             onPageChange={handleChangePage}
