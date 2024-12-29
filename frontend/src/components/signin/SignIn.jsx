@@ -41,6 +41,7 @@ import { BACK_SERVER_URL } from "../../config/config";
           localStorage.setItem("access-token", res.data.accessToken);
           localStorage.setItem("login", true);
           localStorage.setItem("role", res.data.user.role);
+          localStorage.setItem("username", res.data.user.username);
           setLogin(true);
         })
         .catch((err) => {

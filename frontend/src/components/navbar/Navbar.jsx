@@ -28,6 +28,7 @@ export default function NavBar(props) {
       localStorage.removeItem("login");
       localStorage.removeItem("access-token");
       localStorage.removeItem("role");
+      localStorage.removeItem("username")
       setLogin(false);
       window.location = "/";
     }
@@ -94,7 +95,7 @@ export default function NavBar(props) {
                       marginBottom: "6px", // 控制下方間距
                     }}
                   >
-                    {"username"}
+                    {localStorage.getItem("username")}
                   </span>
                   <span
                     style={{
@@ -103,7 +104,7 @@ export default function NavBar(props) {
                       lineHeight: "1",
                     }}
                   >
-                    {"identity"}
+                    {localStorage.getItem("role")}
                   </span>
                 </div>
               </div>
