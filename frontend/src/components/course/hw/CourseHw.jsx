@@ -12,40 +12,11 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TablePagination from "@mui/material/TablePagination";
 import TableRow from "@mui/material/TableRow";
-import { getDateTime } from "../../../utils";
+import { courseHwStudentColumn, courseHwTeacherColumn, getDateTime } from "../../../utils";
 
-const columns = [
-  { id: "id", label: "#", minWidth: 50, maxWidth: 70, align: "center" },
-  { id: "name", label: "Homework Name", minWidth: 150, align: "left" },
-  {
-    id: "question_count",
-    label: "Question amount",
-    minWidth: 100,
-    maxWidth: 120,
-    align: "center",
-  },
-  {
-    id: "status",
-    label: "Status",
-    minWidth: 100,
-    maxWidth: 120,
-    align: "center",
-  },
-  {
-    id: "dueDate",
-    label: "Due Date",
-    minWidth: 120,
-    maxWidth: 150,
-    align: "center",
-  },
-  {
-    id: "score",
-    label: "Score",
-    minWidth: 100,
-    maxWidth: 120,
-    align: "center",
-  },
-];
+const columns = localStorage.getItem("role") === "student"
+  ? courseHwStudentColumn
+  : courseHwTeacherColumn;
 
 export default function CourseHw({ hws = [], courseInfo }) {
   const [page, setPage] = useState(0);
@@ -218,6 +189,10 @@ export default function CourseHw({ hws = [], courseInfo }) {
                                       fontWeight: "regular",
                                       fontSize: "16px",
                                       color: "#222222",
+                                      textOverflow: "ellipsis",
+                                      maxWidth: column.maxWidth,
+                                      display: "inline-block",
+                                      overflow: "hidden",
                                     }}
                                   >
                                     {value}
