@@ -80,6 +80,25 @@ import { BACK_SERVER_URL } from "../../config/config";
             fullWidth
             required
             style={{marginBottom: "10px"}}
+            sx={{
+              "& .MuiOutlinedInput-root": {
+                "& fieldset": {
+                  borderColor: "#5f8397", // 邊框顏色
+                },
+                "&:hover fieldset": {
+                  borderColor: "#3b6b82", // 滑鼠懸停時的顏色
+                },
+                "&.Mui-focused fieldset": {
+                  borderColor: "#1b4b62", // 聚焦時的顏色
+                },
+              },
+              "& .MuiInputLabel-root": {
+                color: "#5f8397", // 標籤顏色
+              },
+              "& .MuiInputLabel-root.Mui-focused": {
+                color: "#1b4b62", // 聚焦時的標籤顏色
+              },
+            }}
           />
           <TextField
             label="Password"
@@ -90,6 +109,25 @@ import { BACK_SERVER_URL } from "../../config/config";
             onChange={(e) => setPassword(e.target.value)}
             fullWidth
             required
+            sx={{
+              "& .MuiOutlinedInput-root": {
+                "& fieldset": {
+                  borderColor: "#5f8397", // 邊框顏色
+                },
+                "&:hover fieldset": {
+                  borderColor: "#3b6b82", // 滑鼠懸停時的顏色
+                },
+                "&.Mui-focused fieldset": {
+                  borderColor: "#1b4b62", // 聚焦時的顏色
+                },
+              },
+              "& .MuiInputLabel-root": {
+                color: "#5f8397", // 標籤顏色
+              },
+              "& .MuiInputLabel-root.Mui-focused": {
+                color: "#1b4b62", // 聚焦時的標籤顏色
+              },
+            }}
           />
           <Button
             type="submit"
@@ -98,6 +136,12 @@ import { BACK_SERVER_URL } from "../../config/config";
             className="signin-btn"
             onClick={handleSignIn}
             fullWidth
+            sx={{
+              backgroundColor: "#5F8397",
+              "&:hover": {
+                backgroundColor: "#3b6b82",
+              },
+            }}
           >
             {loading ? (
               <CircularProgress size={"23px"} style={{ color: "white" }} />
@@ -107,7 +151,7 @@ import { BACK_SERVER_URL } from "../../config/config";
           </Button>
           <Typography>
             Do you have an account?
-            <Link href="/signup" style={{ margin: "5px", cursor: "pointer" }}>
+            <Link href="/signup" style={{ margin: "5px", cursor: "pointer",color:"#5F8397" }}>
               Sign Up
             </Link>
           </Typography>

@@ -42,7 +42,7 @@ export default function NavBar(props) {
       <div className="navbarWrapper">
         <div className="navLeft">
           <Link to="/" className="logo">
-            OJ
+            NCCU MIS OJ
           </Link>
           <div className="navbarList">
             {login ? ( //TODO: decide which tab should show through tab
@@ -51,10 +51,10 @@ export default function NavBar(props) {
                   Courses
                 </Link>
                 <Link to="/addproblem" className="navbarItem">
-                  Add Problem
+                  Problems
                 </Link>
                 <Link to="/submissions" className="navbarItem">
-                  My Submissions
+                  Submissions
                 </Link>
               </>
             ) : null}
@@ -63,17 +63,50 @@ export default function NavBar(props) {
         <div className="navRight">
           {login ? (
             <>
-              <Button
-                aria-controls="simple-menu"
-                aria-haspopup="true"
-                onClick={handleClickListItem}
+              <div
+                style={{ display: "flex", alignItems: "center", gap: "10px" }}
               >
-                <img
-                  src="https://images.unsplash.com/photo-1513789181297-6f2ec112c0bc?ixid=MnwxMjA3fDB8MHxzZWFyY2h8MXx8aGFja2VyfGVufDB8fDB8fA%3D%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60"
-                  alt="avatar"
-                  className="navbarAvatar"
-                />
-              </Button>
+                <Button
+                  aria-controls="simple-menu"
+                  aria-haspopup="true"
+                  onClick={handleClickListItem}
+                  style={{ padding: 0 }}
+                >
+                  <img
+                    src="/images/avatar.jpg"
+                    alt="avatar"
+                    className="navbarAvatar"
+                  />
+                </Button>
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    padding: 0,
+                    margin: 0,
+                  }}
+                >
+                  <span
+                    style={{
+                      color: "#F8F8F8",
+                      fontSize: "16px",
+                      lineHeight: "1", // 減小行距
+                      marginBottom: "6px", // 控制下方間距
+                    }}
+                  >
+                    {"username"}
+                  </span>
+                  <span
+                    style={{
+                      color: "#F8F8F8",
+                      fontSize: "16px",
+                      lineHeight: "1",
+                    }}
+                  >
+                    {"identity"}
+                  </span>
+                </div>
+              </div>
               <Menu
                 id="simple-menu"
                 keepMounted
@@ -100,7 +133,12 @@ export default function NavBar(props) {
                 color="primary"
                 variant="contained"
                 className="signin-btn"
-                fullWidth
+                sx={{
+                  backgroundColor: "#5F8397",
+                  "&:hover": {
+                    backgroundColor: "#3b6b82",
+                  },
+                }}
               >
                 Sign In
               </Button>

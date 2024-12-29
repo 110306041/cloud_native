@@ -17,14 +17,12 @@ import TableHead from "@mui/material/TableHead";
 import TablePagination from "@mui/material/TablePagination";
 import TableRow from "@mui/material/TableRow";
 // import SearchBar from "material-ui-search-bar";
-
-
 const columns = [
-  { id: "id", label: "#", minWidth: 10 },
-  { id: "semester", label: "Semester", minWidth: 50 },
-  { id: "name", label: "Course Name", minWidth: 100 },
-  { id: "hw", label: "Homework", minWidth: 50 },
-  { id: "exam", label: "Exam", minWidth: 50 },
+  { id: "id", label: "#", minWidth: 30, maxWidth: 50, align: "center" },
+  { id: "semester", label: "Semester", minWidth: 120, maxWidth: 150, align: "left" },
+  { id: "name", label: "Course Name", minWidth: 250, align: "left" },
+  { id: "hw", label: "Homework", minWidth: 100, maxWidth: 120, align: "center" },
+  { id: "exam", label: "Exam", minWidth: 100, maxWidth: 120, align: "center" },
 ];
 
 export default function Courses() {
@@ -36,32 +34,68 @@ export default function Courses() {
   const [searchQuery, setSearchQuery] = useState("");
   const navigate = useNavigate();
 
-  useLayoutEffect(() => {
-    axios
-      .get(`${BACK_SERVER_URL}/api/student/courses`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("access-token")}`,
-        },
-      })
-      .then((res) => {
-        let courses = res.data.courses;
+  // useLayoutEffect(() => {
+  //   axios
+  //     .get(`${BACK_SERVER_URL}/api/student/courses`, {
+  //       headers: {
+  //         Authorization: `Bearer ${localStorage.getItem("access-token")}`,
+  //       },
+  //     })
+  //     .then((res) => {
+  //       let courses = res.data.courses;
 
-        setAllCourses(courses);
-        setRows(courses);
-        setLoader(false);
-      })
-      .catch((err) => {
-        const error = err.response ? err.response.data.message : err.message;
-        toast.error(error, {
-          position: "top-right",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-        });
-      });
+  //       setAllCourses(courses);
+  //       setRows(courses);
+  //       setLoader(false);
+  //     })
+  //     .catch((err) => {
+  //       const error = err.response ? err.response.data.message : err.message;
+  //       toast.error(error, {
+  //         position: "top-right",
+  //         autoClose: 5000,
+  //         hideProgressBar: false,
+  //         closeOnClick: true,
+  //         pauseOnHover: true,
+  //         draggable: true,
+  //         progress: undefined,
+  //       });
+  //     });
+  // }, []);
+  useLayoutEffect(() => {
+    // 假資料
+    const mockCourses = [
+      {
+        id: "1",
+        semester: "Fall 2024",
+        name: "Introduction to Programming",
+        completed_assignments: 3,
+        total_assignments: 5,
+        active_exams: 2,
+      },
+      {
+        id: "2",
+        semester: "Spring 2024",
+        name: "Data Structures",
+        completed_assignments: 4,
+        total_assignments: 4,
+        active_exams: 1,
+      },
+      {
+        id: "3",
+        semester: "Fall 2023",
+        name: "Database Systems",
+        completed_assignments: 2,
+        total_assignments: 3,
+        active_exams: 0,
+      },
+    ];
+
+    // 模擬 API 延遲
+    setTimeout(() => {
+      setAllCourses(mockCourses);
+      setRows(mockCourses);
+      setLoader(false);
+    }, 1000); // 模擬 1 秒延遲
   }, []);
 
   useEffect(() => {
@@ -100,17 +134,19 @@ export default function Courses() {
     <div className="courses-container">
       <ToastContainer />
       <div className="courses-right">
-        {/* <SearchBar
-          value={searchQuery}
-          onChange={(newValue) => setSearchQuery(newValue)}
-          onRequestSearch={() => setSearchQuery(searchQuery)}
-          className="courses-searchbar"
-        /> */}
         <div className="courses-spinner">
           <BeatLoader color={"#343a40"} size={30} loading={loader} />
         </div>
-        <Paper sx={{ width: "100%", height: "950px" }}>
-          <TableContainer sx={{ maxHeight: 950 }}>
+        <h2 style={{ padding: "20px 0" }}>Course</h2>
+        <Paper
+          sx={{
+            width: "100%",
+            height: "550px",
+            borderRadius: "16px",
+            overflow: "hidden",
+          }}
+        >
+          <TableContainer sx={{ maxHeight: 550 }}>
             <Table stickyHeader aria-label="sticky table">
               <TableHead>
                 <TableRow>
@@ -118,7 +154,12 @@ export default function Courses() {
                     <TableCell
                       key={column.id}
                       align={column.align}
-                      style={{ minWidth: column.minWidth }}
+                      style={{
+                        minWidth: column.minWidth,
+                        fontWeight: "bold",
+                        fontSize: "16px",
+                        backgroundColor: "#FFF9D0", // 設置背景顏色
+                      }}
                     >
                       {column.label}
                     </TableCell>
@@ -156,37 +197,54 @@ export default function Courses() {
                               <TableCell key={column.id} align={column.align}>
                                 <span
                                   style={{
-                                    fontWeight: "bold",
-                                    fontSize: "15px",
-                                    color: "#1a237e",
+                                    fontWeight: "regular",
+                                    fontSize: "16px",
+                                    color: "#222222",
                                   }}
                                 >
-                                  {row.completed_assignments} / {row.total_assignments}
+                                  {row.completed_assignments} /{" "}
+                                  {row.total_assignments}
                                 </span>
                               </TableCell>
                             );
-                          } else if (column.id === "exam"){
+                          } else if (column.id === "exam") {
                             return (
                               <TableCell key={column.id} align={column.align}>
                                 <span
                                   style={{
-                                    fontWeight: "bold",
-                                    fontSize: "15px",
-                                    color: "#1a237e",
+                                    fontWeight: "regular",
+                                    fontSize: "16px",
+                                    color: "#222222",
+                                  }}
+                                >
+                                  {row.completed_assignments} /{" "}
+                                  {row.total_assignments}
+                                </span>
+                              </TableCell>
+                            );
+                          } else if (column.id === "exam") {
+                            return (
+                              <TableCell key={column.id} align={column.align}>
+                                <span
+                                  style={{
+                                    minWidth: column.minWidth,
+                                    fontWeight: "regular",
+                                    fontSize: "16px",
+                                    color: "#222222",
                                   }}
                                 >
                                   {row.active_exams}
                                 </span>
                               </TableCell>
-                            )
+                            );
                           } else {
                             return (
                               <TableCell key={column.id} align={column.align}>
                                 <span
                                   style={{
-                                    fontWeight: "bold",
-                                    fontSize: "15px",
-                                    color: "#1a237e",
+                                    fontWeight: "regular",
+                                    fontSize: "16px",
+                                    color: "#222222",
                                   }}
                                 >
                                   {value}

@@ -1,86 +1,103 @@
-.navbar{
-    width: 100%;
-    height: 50px;
-    background-color: rgb(15, 5, 54);
-    position: sticky;
-    top: 0;
-    right: 0;
-    left: 0;
-    z-index: 999;
+* {
+  margin: 0;
+  padding: 0;
+}
+.navbar {
+  font-family: Arial, sans-serif;
+  width: 100%;
+  height: 70px;
+  background-color: rgb(34, 34, 34);
+  position: sticky;
+  top: 0;
+  right: 0;
+  left: 0;
+  z-index: 999;
 }
 
-.navbarWrapper{
-    height: 100%;
-    width: 100%;
-    padding: 0px 20px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+.navbarWrapper {
+  height: 70px; /* 與 Navbar 高度保持一致 */
+  width: 100%;
+  padding: 0px 20px;
+  display: flex;
+  justify-content: space-between; /* 左右元素分開 */
+  align-items: center; /* 垂直置中 */
+  box-sizing: border-box; /* 確保 padding 不影響寬度 */
 }
 
-.logo{
-    font-weight: bold;
-    font-size: 30px;
-    color: white;
-    cursor: pointer;
-    text-decoration: none;
+.logo {
+  font-weight: 600;
+  font-size: 25px;
+  color: #f8f8f8;
+  cursor: pointer;
+  text-decoration: none;
+  display: flex; /* 使用 flexbox */
+  align-items: center; /* 垂直置中 */
+  justify-content: center; /* 水平置中 */
+  height: auto; /* 不需要特定高度 */
+  margin-left: 25px; /* 保留內間距 */
+  border: 2px solid #f8f8f8;
+  border-radius: 8px;
+  padding: 5px 10px;
+  font-family: -apple-system, Arial, sans-serif; /* 優先使用 Roboto 字體 */
 }
 
-.navLeft{
-    display: flex;
-    align-items: flex-end;
+.navLeft {
+  display: flex;
+  align-items: center; /* 垂直置中 */
+  height: 100%; /* 與 Navbar 高度保持一致 */
 }
 
-.navbarList{
-    display: flex;
-    margin-left: 30px;
+.navbarList {
+  display: flex;
+  margin-left: 30px;
 }
 
-.navbarItem{
-    /* font-weight: bold; */
-    font-size: 16px;
-    color: rgb(195, 195, 195);
-    cursor: pointer;
-    padding: 5px;
-    margin-left: 10px;
-    text-decoration: none;
+.navbarItem {
+  /* font-weight: bold; */
+  font-size: 20px;
+  color: rgb(248, 248, 248);
+  cursor: pointer;
+  margin-left: 30px;
+  text-decoration: none;
+  cursor: pointer;
+  align-items: center;
 }
 
-.navbarItem.active, .navbarItem:hover{
-    color:rgb(245, 245, 245);
+.navbarItem.active,
+.navbarItem:hover {
+  color: rgb(245, 245, 245);
 }
 
-.navRight{
-    display: flex;
-    align-items: center;
+.navRight {
+  display: flex;
+  align-items: center;
 }
 
-.navbarIconContainer{
-    position: relative;
-    cursor: pointer;
-    margin-right: 10px;
-    color: #555;
+.navbarIconContainer {
+  position: relative;
+  cursor: pointer;
+  margin-right: 10px;
+  color: #555;
 }
 
-.iconBadge{
-    width: 15px;
-    height: 15px;
-    position: absolute;
-    top: -5px;
-    right: 0px;
-    background-color: red;
-    color: white;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 10px;
+.iconBadge {
+  width: 15px;
+  height: 15px;
+  position: absolute;
+  top: -5px;
+  right: 0px;
+  background-color: red;
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
 }
 
-.navbarAvatar{
-    width: 40px;
-    height: 40px;
-    margin-right: 30px;
-    border-radius: 50%;
-    cursor: pointer;
+.navbarAvatar {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  cursor: pointer;
 }

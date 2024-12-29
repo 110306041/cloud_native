@@ -1,11 +1,7 @@
 // import logo from './logo.svg';
 import React, { useState } from "react";
-import {
-  Route,
-  BrowserRouter as Router,
-  Routes
-} from "react-router-dom";
-import './App.css';
+import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
+import "./App.css";
 import { AuthContext } from "./authContext";
 import Course from "./components/course/Course";
 import Courses from "./components/courses/Courses";
@@ -17,26 +13,26 @@ import SignUp from "./components/signup/SignUp";
 import UserSubmissions from "./components/userSubmissions/UserSubmissions";
 
 function App() {
-  const [login, setLogin] = useState(false);
-  
+  const [login, setLogin] = useState(true);
+
   return (
     <AuthContext.Provider value={{ login, setLogin }}>
-    <div style={{ backgroundColor: "#282c34", height: "100%" }}>
-      <Router>
-        <NavBar />
-        <Routes basename='/'>
-          <Route path="/" element={<Courses />}/>
-          <Route path="/courses" element={<Courses />}/>
-          <Route path="course/:id" element={<Course/>}/>
-          <Route path="/problemset" element={<ProblemSet />}/>
-          <Route path="/problemset/:id" element={<ProblemSet />}/>
-          <Route path="/problem/:id" element={<Problem />}/>
-          <Route path="/submissions" element={<UserSubmissions />}/>
-          <Route path="/signin" element={<SignIn />}/>
-          <Route path="/signup" element={<SignUp />}/>
-        </Routes>
-      </Router>
-    </div>
+      <div style={{ backgroundColor: "#E9E9E9", height: "100%" }}>
+        <Router>
+          <NavBar />
+          <Routes basename="/">
+            <Route path="/" element={<Courses />} />
+            <Route path="/courses" element={<Courses />} />
+            <Route path="course/:id" element={<Course />} />
+            <Route path="/problemset" element={<ProblemSet />} />
+            <Route path="/problemset/:id" element={<ProblemSet />} />
+            <Route path="/problem/:id" element={<Problem />} />
+            <Route path="/submissions" element={<UserSubmissions />} />
+            <Route path="/signin" element={<SignIn />} />
+            <Route path="/signup" element={<SignUp />} />
+          </Routes>
+        </Router>
+      </div>
     </AuthContext.Provider>
   );
 }

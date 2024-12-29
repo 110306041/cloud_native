@@ -56,8 +56,7 @@ const SignUp = () => {
   };
 
   const validatePassword = (e) => {
-    const passwordreg =
-      /^(?=.*[a-z])(?=.*\d)[A-Za-z\d@$!%#*?&]{8,}$/;
+    const passwordreg = /^(?=.*[a-z])(?=.*\d)[A-Za-z\d@$!%#*?&]{8,}$/;
     if (!e.target.value.match(passwordreg))
       setPasswordError(
         "Use 8 or more characters with a mix of letters & numbers:)"
@@ -106,9 +105,6 @@ const SignUp = () => {
             <AddCircleOutlineOutlinedIcon />
           </Avatar>
           <h2 className="signup-title">Sign Up</h2>
-          <Typography variant="caption" gutterBottom>
-            Please fill this form to create an account !
-          </Typography>
         </Grid>
         <form onSubmit={handleSubmit}>
           <select
@@ -119,9 +115,20 @@ const SignUp = () => {
             onChange={(event) => {
               setType(event.target.value);
             }}
-            style={{ width: "100%", height: "55px", fontSize: "15px", marginBottom: "10px", paddingLeft: "10px", borderRadius: "5px" }}
+            style={{
+              width: "100%",
+              height: "55px",
+              fontSize: "15px",
+              marginBottom: "10px",
+              paddingLeft: "10px",
+              borderRadius: "5px",
+              border: "1px solid #5f8397",
+              color: type ? "#000000" : "#5f8397", // 選擇完後變黑色
+            }}
           >
-            <option value="">Select Your Role</option>
+            <option value="" disabled style={{ color: "#5f8397" }}>
+              Select Your Role
+            </option>
             {userType.map((role, index) => {
               return (
                 <option key={index} value={role.toLowerCase()}>
@@ -130,6 +137,7 @@ const SignUp = () => {
               );
             })}
           </select>
+
           <TextField
             fullWidth
             id="username"
@@ -138,7 +146,26 @@ const SignUp = () => {
             placeholder="Enter username"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
-            style={{marginBottom: "10px"}}
+            style={{ marginBottom: "10px" }}
+            sx={{
+              "& .MuiOutlinedInput-root": {
+                "& fieldset": {
+                  borderColor: "#5f8397", // 邊框顏色
+                },
+                "&:hover fieldset": {
+                  borderColor: "#3b6b82", // 滑鼠懸停時的顏色
+                },
+                "&.Mui-focused fieldset": {
+                  borderColor: "#1b4b62", // 聚焦時的顏色
+                },
+              },
+              "& .MuiInputLabel-root": {
+                color: "#5f8397", // 標籤顏色
+              },
+              "& .MuiInputLabel-root.Mui-focused": {
+                color: "#1b4b62", // 聚焦時的標籤顏色
+              },
+            }}
           />
           <TextField
             fullWidth
@@ -151,7 +178,26 @@ const SignUp = () => {
             helperText={emailError}
             onChange={(e) => validateEmail(e)}
             error={emailError.length > 0}
-            style={{marginBottom: "10px"}}
+            style={{ marginBottom: "10px" }}
+            sx={{
+              "& .MuiOutlinedInput-root": {
+                "& fieldset": {
+                  borderColor: "#5f8397", // 邊框顏色
+                },
+                "&:hover fieldset": {
+                  borderColor: "#3b6b82", // 滑鼠懸停時的顏色
+                },
+                "&.Mui-focused fieldset": {
+                  borderColor: "#1b4b62", // 聚焦時的顏色
+                },
+              },
+              "& .MuiInputLabel-root": {
+                color: "#5f8397", // 標籤顏色
+              },
+              "& .MuiInputLabel-root.Mui-focused": {
+                color: "#1b4b62", // 聚焦時的標籤顏色
+              },
+            }}
           />
           <TextField
             fullWidth
@@ -164,26 +210,66 @@ const SignUp = () => {
             helperText={passwordError}
             onChange={(e) => validatePassword(e)}
             error={passwordError.length > 0}
+            sx={{
+              "& .MuiOutlinedInput-root": {
+                "& fieldset": {
+                  borderColor: "#5f8397", // 邊框顏色
+                },
+                "&:hover fieldset": {
+                  borderColor: "#3b6b82", // 滑鼠懸停時的顏色
+                },
+                "&.Mui-focused fieldset": {
+                  borderColor: "#1b4b62", // 聚焦時的顏色
+                },
+              },
+              "& .MuiInputLabel-root": {
+                color: "#5f8397", // 標籤顏色
+              },
+              "& .MuiInputLabel-root.Mui-focused": {
+                color: "#1b4b62", // 聚焦時的標籤顏色
+              },
+            }}
           />
           <FormControlLabel
             style={{ marginTop: "20px" }}
-            control={<Checkbox name="checkedA" />}
+            control={
+              <Checkbox
+                name="checkedA"
+                sx={{
+                  color: "#5f8397",
+                  "&.Mui-checked": {
+                    color: "#3b6b82", // 勾選後的顏色
+                  },
+                }}
+              />
+            }
             label="I accept the terms and conditions."
           />
-          <Button
-            type="submit"
-            variant="contained"
-            color="primary"
-            style={{ marginTop: "20px" }}
-          >
-            {loading ? (
-              <CircularProgress size={"23px"} style={{ color: "white" }} />
-            ) : (
-              "Sign Up"
-            )}
-          </Button>
+          <div style={{ marginTop: "10px" }}>
+            <Button
+              type="submit"
+              variant="contained"
+              color="primary"
+              style={{
+                marginTop: "10px",
+                backgroundColor: "#5f8397", // 按鈕背景色
+                color: "white", // 字體顏色
+              }}
+              sx={{
+                "&:hover": {
+                  backgroundColor: "#3b6b82", // 滑鼠懸停時的背景色
+                },
+              }}
+              fullWidth
+            >
+              {loading ? (
+                <CircularProgress size={"23px"} style={{ color: "white" }} />
+              ) : (
+                "Sign Up"
+              )}
+            </Button>
+          </div>
         </form>
-        <Copyright />
       </Paper>
     </Grid>
   );
