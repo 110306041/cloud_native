@@ -10,7 +10,7 @@ export const getAssignmentsAndExams = async (req, res) => {
     // Fetch assignments
     const assignments = await Assignment.findAll({
       where: { CourseID: courseID },
-      attributes: ["ID", "Name", "DueDate"],
+      attributes: ["ID", "Name", "DueDate", "StartDate"],
       include: [
         {
           model: Question,
@@ -49,6 +49,7 @@ export const getAssignmentsAndExams = async (req, res) => {
           id: assignment.ID,
           name: assignment.Name,
           due_date: assignment.DueDate,
+          start_date:assignment.StartDate,
           question_count: assignment.question_count || 0,
           score: score || 0,
         };

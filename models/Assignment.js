@@ -19,6 +19,7 @@ export default (sequelize, DataTypes) => {
         references: { model: "Course", key: "ID" },
         onDelete: "CASCADE",
       },
+      StartDate: { type: DataTypes.DATE, allowNull: true },
     },
     {
       tableName: "Assignment",

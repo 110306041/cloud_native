@@ -30,6 +30,7 @@ export const getAssignmentsAndExams = async (req, res) => {
         "Name",
         "DueDate",
         "Description",
+        "StartDate",
         [
           Sequelize.fn("COUNT", Sequelize.col("Questions.ID")),
           "question_count",
@@ -54,6 +55,7 @@ export const getAssignmentsAndExams = async (req, res) => {
       id: assignment.ID,
       name: assignment.Name,
       due_date: assignment.DueDate,
+      start_date: assignment.StartDate,
       description: assignment.Description,
       question_count: assignment.dataValues.question_count || 0,
       course: {
@@ -100,7 +102,7 @@ export const getAssignmentsAndExams = async (req, res) => {
 export const createAssignment = async (req, res) => {
   try {
     const { courseID } = req.params;
-    const { assignment_name, due_date, description } = req.body;
+    const { assignment_name, due_date, description, start_date } = req.body;
     const teacherID = req.user.id;
 
     // Validate if the course exists and the user is its teacher
@@ -140,6 +142,7 @@ export const createAssignment = async (req, res) => {
       // ID: uuidv4(), // Generate a unique ID for the assignment
       Name: assignment_name,
       DueDate: new Date(due_date),
+      StartDate: new Date(start_date),
       Description: description,
       CourseID: courseID,
     });

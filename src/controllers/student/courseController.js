@@ -14,6 +14,7 @@ export const getCoursesByStudent = async (req, res) => {
         model: Course,
         attributes: ["ID", "Name", "Semester"],
       },
+      order: [[{ model: Course }, "Semester", "DESC"]],
     });
 
     const courses = await Promise.all(

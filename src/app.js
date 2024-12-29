@@ -1,5 +1,6 @@
 import express from "express";
 import morgan from "morgan";
+import cors from "cors";
 import User from "../models/User.js";
 import submissionRoute from "./routes/submission.js";
 import authRoute from "./routes/userAuth.js";
@@ -10,7 +11,9 @@ import studentRoute from "./routes/student.js";
 
 const app = express();
 app.use(morgan("tiny"));
+app.use(cors());
 app.use(express.json());
+
 
 // app.get("/", (req, res) => {
 //   res.send("Hello");
