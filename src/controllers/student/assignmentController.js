@@ -69,18 +69,37 @@ export const getAssignmentsAndExams = async (req, res) => {
       raw: true,
     });
 
+  
+
     // Map exams to include is_active field
-    const examsWithActiveStatus = exams.map((exam) => ({
-      id: exam.ID,
-      name: exam.Name,
-      start_date: exam.StartDate,
-      due_date: exam.DueDate,
-      course: {
-        id: exam["Course.ID"],
-        name: exam["Course.Name"],
-      },
-      is_active: new Date() >= exam.StartDate && new Date() <= exam.DueDate,
-    }));
+    const examsWithActiveStatus = await Promise.all(
+      exams.map(async (exam) => {
+        const score = await Submission.sum("Score", {
+          where: {
+            QuestionID: {
+              [Op.in]: Sequelize.literal(`
+                (SELECT "Question"."ID" FROM "Question" WHERE "Question"."ExamID" = '${exam.ID}')
+              `),
+            },
+            UserID: studentID,
+          },
+        });
+    
+        return {
+          id: exam.ID,
+          name: exam.Name,
+          start_date: exam.StartDate,
+          due_date: exam.DueDate,
+          course: {
+            id: exam["Course.ID"],
+            name: exam["Course.Name"],
+          },
+          is_active: new Date() >= exam.StartDate && new Date() <= exam.DueDate,
+          score: score || 0,
+        };
+      })
+    );
+    
 
     // Send response
     res.status(200).json({
