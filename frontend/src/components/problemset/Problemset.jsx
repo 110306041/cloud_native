@@ -151,6 +151,11 @@ export default function ProblemSet() {
           }}
         >
           <TableContainer>
+          {loader && (
+    <div className="loader-container">
+      <BeatLoader color={"#343a40"} size={30} loading={loader} />
+    </div>
+  )}
             <Table stickyHeader aria-label="sticky table">
               <TableHead>
                 <TableRow>
@@ -167,11 +172,15 @@ export default function ProblemSet() {
                       }}
                     >
                       {column.label}
+                      
                     </TableCell>
+                    
                   ))}
+                  
                 </TableRow>
               </TableHead>
               <TableBody>
+
                 {rows
                   .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                   .map((row, index) => {

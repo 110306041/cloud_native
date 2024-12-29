@@ -13,3 +13,15 @@
   display: block; /* 確保每個項目獨占一行 */
   margin-bottom: 0.5rem; /* 增加間隔 */
 }
+.loader-container {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1000;
+}
+
+.TableContainer {
+  position: relative;
+  min-height: 200px; /* 確保在沒有數據時也有足夠的空間顯示 loader */
+}
