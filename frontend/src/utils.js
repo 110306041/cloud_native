@@ -52,115 +52,32 @@ export const getDateTime = (value) => {
   return date + " " + time;
 };
 
-// fake data
-export const problemsetFake = [
+const mockHws = [
   {
     id: 1,
-    name: 'test',
-    score: 80,
-    difficulty: 'Hard'
-  },
-  {
-    id: 1,
-    name: 'test',
-    score: 80,
-    difficulty: 'Hard'
-  },
-  {
-    id: 1,
-    name: 'test',
-    score: 80,
-    difficulty: 'Hard'
-  },
-  {
-    id: 1,
-    name: 'test',
-    score: 80,
-    difficulty: 'Hard'
-  },
-  {
-    id: 1,
-    name: 'test',
-    score: 80,
-    difficulty: 'Hard'
-  },
-  {
-    id: 1,
-    name: 'test',
-    score: 80,
-    difficulty: 'Hard'
-  },
-  {
-    id: 1,
-    name: 'test',
-    score: 80,
-    difficulty: 'Hard'
-  },
-  {
-    id: 1,
-    name: 'test',
-    score: 80,
-    difficulty: 'Hard'
-  },
-  {
-    id: 1,
-    name: 'test',
-    score: 80,
-    difficulty: 'Hard'
-  },
-  {
-    id: 1,
-    name: 'test',
-    score: 80,
-    difficulty: 'Hard'
-  },
-  {
-    id: 1,
-    name: 'test',
-    score: 80,
-    difficulty: 'Hard'
-  },
-]
-
-export const coursesFake = [
-  {
-    id: 1,
-    semester: '113-1',
-    name: 'test',
-    totalHw: 5,
-    doneHw: 5, //TODO: receive total amount of hw  & finished num
-    exam: 1,
+    name: "Assignment 1",
+    question_count: 10,
+    status: "completed", // 測試狀態
+    due_date: "2024-01-15T23:59:59",
+    score: 85,
   },
   {
     id: 2,
-    semester: '113-1',
-    name: 'test2',
-    totalHw: 5,
-    doneHw: 5,
-    exam: 1,
-  },
-]
-
-export const courseHwFake = [
-  {
-    id: 1,
-    name: 'test',
-    questions: 2,
-    status: 'overdue',
-    startDate: '2024/12/20',
-    dueDate: '2024/12/26',
-    score: 80,
+    name: "Assignment 2",
+    question_count: 8,
+    status: "in progress", // 測試狀態
+    due_date: "2024-01-20T23:59:59",
+    score: 70,
   },
   {
-    id: 2,
-    name: 'test',
-    questions: 2,
-    status: 'In progress',
-    startDate: '2024/12/20',
-    dueDate: '2024/12/26',
-    score: 80,
-  }
-]
+    id: 3,
+    name: "Assignment 3",
+    question_count: 12,
+    status: "overdue", // 測試狀態
+    due_date: "2024-01-10T23:59:59",
+    score: 50,
+  },
+];
 
 export const problemFake = {
   id: 1,

@@ -50,36 +50,8 @@ const columns = [
 export default function CourseHw({ hws = [], courseInfo }) {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(12);
-
-  const mockHws = [
-    {
-      id: 1,
-      name: "Assignment 1",
-      question_count: 10,
-      status: "completed", // 測試狀態
-      due_date: "2024-01-15T23:59:59",
-      score: 85,
-    },
-    {
-      id: 2,
-      name: "Assignment 2",
-      question_count: 8,
-      status: "in progress", // 測試狀態
-      due_date: "2024-01-20T23:59:59",
-      score: 70,
-    },
-    {
-      id: 3,
-      name: "Assignment 3",
-      question_count: 12,
-      status: "overdue", // 測試狀態
-      due_date: "2024-01-10T23:59:59",
-      score: 50,
-    },
-  ];
-
-  const [allHws, setAllHws] = useState(mockHws);
-  const [rows, setRows] = useState(mockHws);
+  const [allHws, setAllHws] = useState(hws);
+  const [rows, setRows] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [loader, setLoader] = useState(false);
   const navigate = useNavigate();
