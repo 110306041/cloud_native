@@ -13,7 +13,7 @@ import SignUp from "./components/signup/SignUp";
 import UserSubmissions from "./components/userSubmissions/UserSubmissions";
 
 function App() {
-  const [login, setLogin] = useState(true);
+  const [login, setLogin] = useState(false);
 
   return (
     <AuthContext.Provider value={{ login, setLogin }}>

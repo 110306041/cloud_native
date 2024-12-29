@@ -5,6 +5,7 @@ import { BeatLoader } from "react-spinners";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { BACK_SERVER_URL } from "../../config/config";
+import CourseExam from "./exam/CourseExam";
 import CourseHw from "./hw/CourseHw";
 
 export default function Course() {
@@ -66,8 +67,7 @@ export default function Course() {
             {courseInfo?.semester} {courseInfo?.name}
           </span>
           <CourseHw hws={hws} courseInfo={courseInfo}></CourseHw>
-          {/* TODO: render CourseExam */}
-          <CourseHw></CourseHw>
+          <CourseExam exams={exams} courseInfo={courseInfo}></CourseExam>
         </>
       )}
     </>

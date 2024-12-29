@@ -34,68 +34,32 @@ export default function Courses() {
   const [searchQuery, setSearchQuery] = useState("");
   const navigate = useNavigate();
 
-  // useLayoutEffect(() => {
-  //   axios
-  //     .get(`${BACK_SERVER_URL}/api/student/courses`, {
-  //       headers: {
-  //         Authorization: `Bearer ${localStorage.getItem("access-token")}`,
-  //       },
-  //     })
-  //     .then((res) => {
-  //       let courses = res.data.courses;
-
-  //       setAllCourses(courses);
-  //       setRows(courses);
-  //       setLoader(false);
-  //     })
-  //     .catch((err) => {
-  //       const error = err.response ? err.response.data.message : err.message;
-  //       toast.error(error, {
-  //         position: "top-right",
-  //         autoClose: 5000,
-  //         hideProgressBar: false,
-  //         closeOnClick: true,
-  //         pauseOnHover: true,
-  //         draggable: true,
-  //         progress: undefined,
-  //       });
-  //     });
-  // }, []);
   useLayoutEffect(() => {
-    // 假資料
-    const mockCourses = [
-      {
-        id: "1",
-        semester: "Fall 2024",
-        name: "Introduction to Programming",
-        completed_assignments: 3,
-        total_assignments: 5,
-        active_exams: 2,
-      },
-      {
-        id: "2",
-        semester: "Spring 2024",
-        name: "Data Structures",
-        completed_assignments: 4,
-        total_assignments: 4,
-        active_exams: 1,
-      },
-      {
-        id: "3",
-        semester: "Fall 2023",
-        name: "Database Systems",
-        completed_assignments: 2,
-        total_assignments: 3,
-        active_exams: 0,
-      },
-    ];
+    axios
+      .get(`${BACK_SERVER_URL}/api/student/courses`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("access-token")}`,
+        },
+      })
+      .then((res) => {
+        let courses = res.data.courses;
 
-    // 模擬 API 延遲
-    setTimeout(() => {
-      setAllCourses(mockCourses);
-      setRows(mockCourses);
-      setLoader(false);
-    }, 1000); // 模擬 1 秒延遲
+        setAllCourses(courses);
+        setRows(courses);
+        setLoader(false);
+      })
+      .catch((err) => {
+        const error = err.response ? err.response.data.message : err.message;
+        toast.error(error, {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
+      });
   }, []);
 
   useEffect(() => {
@@ -207,7 +171,7 @@ export default function Courses() {
                                 </span>
                               </TableCell>
                             );
-                          } else if (column.id === "exam") {
+                          } else if (column.id === "hw") {
                             return (
                               <TableCell key={column.id} align={column.align}>
                                 <span
