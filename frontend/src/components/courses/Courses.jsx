@@ -171,7 +171,7 @@ export default function Courses() {
                                 </span>
                               </TableCell>
                             );
-                          } else if (column.id === "exam") {
+                          } else if (column.id === "hw") {
                             return (
                               <TableCell key={column.id} align={column.align}>
                                 <span
