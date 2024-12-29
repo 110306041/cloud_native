@@ -73,7 +73,7 @@ export default function CourseHw({ exams = [], courseInfo }) {
           onRequestSearch={() => setSearchQuery(searchQuery)}
           className="courses-searchbar"
         /> */}
-        <span style={{ color: "white" }}>HW</span>
+        <span style={{ color: "white" }}>Exam</span>
         <Paper sx={{ width: "100%", height: "300px" }}>
           <TableContainer sx={{ maxHeight: 400 }}>
             <Table stickyHeader aria-label="sticky table">
