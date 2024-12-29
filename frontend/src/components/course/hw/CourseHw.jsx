@@ -1,11 +1,7 @@
-import axios from "axios";
-import React, { useEffect, useLayoutEffect, useState } from "react";
-import { BeatLoader } from "react-spinners";
-// import { ToastContainer, toast } from "react-toastify";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { BACK_SERVER_URL } from "../../../config/config";
 
-// import "react-toastify/dist/ReactToastify.css";
+import "react-toastify/dist/ReactToastify.css";
 import "./courseHw.css";
 
 import Chip from "@mui/material/Chip";
@@ -17,16 +13,16 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TablePagination from "@mui/material/TablePagination";
 import TableRow from "@mui/material/TableRow";
+import { getDateTime } from "../../../utils";
 // import SearchBar from "material-ui-search-bar";
 
-import { getDifficulty } from "../../../utils";
 
 const columns = [
   { id: "id", label: "#", minWidth: 10 },
   { id: "name", label: "Homework Name", minWidth: 100 },
-  { id: "questions", label: "Question amount", minWidth: 50 },
+  { id: "question_count", label: "Question amount", minWidth: 50 },
   { id: "status", label: "Status", minWidth: 50 },
-  { id: "startDate", label: "Start Date", minWidth: 50 },
+  // { id: "startDate", label: "Start Date", minWidth: 50 },
   { id: "dueDate", label: "Due Date", minWidth: 50 },
   { id: "score", label: "Score", minWidth: 100 },
 ];
@@ -36,37 +32,8 @@ export default function CourseHw({ hws = [], courseInfo }) {
   const [rowsPerPage, setRowsPerPage] = useState(12);
   const [allHws, setAllHws] = useState(hws);
   const [rows, setRows] = useState([]);
-  const [loader, setLoader] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const navigate = useNavigate();
-
-  useLayoutEffect(() => {
-    axios
-      .get(`${BACK_SERVER_URL}/api/problem`)
-      .then((res) => {
-        let problems = res.data;
-
-        problems.forEach((problem, i) => {
-          problem["difficulty"] = getDifficulty(problem);
-        });
-
-        setAllHws(problems);
-        setRows(problems);
-        setLoader(false);
-      })
-      .catch((err) => {
-        const error = err.response ? err.response.data.message : err.message;
-        // toast.error(error, {
-        //   position: "top-right",
-        //   autoClose: 5000,
-        //   hideProgressBar: false,
-        //   closeOnClick: true,
-        //   pauseOnHover: true,
-        //   draggable: true,
-        //   progress: undefined,
-        // });
-      });
-  }, []);
 
   useEffect(() => {
     const getPageData = () => {
@@ -110,12 +77,8 @@ export default function CourseHw({ hws = [], courseInfo }) {
           onRequestSearch={() => setSearchQuery(searchQuery)}
           className="courses-searchbar"
         /> */}
-        <div className="courses-spinner">
-          <BeatLoader color={"#343a40"} size={30} loading={loader} />
-        </div>
         <span style={{color: 'white'}}>HW</span>
         <Paper sx={{ width: "100%", height: "300px" }}>
-          {/* <Paper sx={{ width: "100%" }}> */}
           <TableContainer sx={{ maxHeight: 400 }}>
             <Table stickyHeader aria-label="sticky table">
               <TableHead>
@@ -144,9 +107,10 @@ export default function CourseHw({ hws = [], courseInfo }) {
                         onClick={() =>
                           handleRowClick(allHws[page * rowsPerPage + index].id, {
                             courseInfo: courseInfo,
+                            problemType: "assignments",
                             problemsetName: row.name,
                             startDate: row.startDate,
-                            dueDate: row.dueDate,
+                            dueDate: row.due_date,
                           })
                         }
                         style={{ cursor: "pointer" }}
@@ -156,7 +120,7 @@ export default function CourseHw({ hws = [], courseInfo }) {
                             column.id === "id"
                               ? page * rowsPerPage + index + 1
                               : row[column.id];
-                          if (column.id === "hw") {
+                          if (column.id === "dueDate") {
                             return (
                               <TableCell key={column.id} align={column.align}>
                                 <span
@@ -166,7 +130,7 @@ export default function CourseHw({ hws = [], courseInfo }) {
                                     color: "#1a237e",
                                   }}
                                 >
-                                  {row.doneHw} / {row.totalHw}
+                                  {getDateTime(row.due_date)}
                                 </span>
                               </TableCell>
                             );
@@ -182,9 +146,7 @@ export default function CourseHw({ hws = [], courseInfo }) {
                             );
                           } else if (column.id === "status") {
                             let badgeColor = "blue";
-
                             if (value === "overdue") badgeColor = "#F44336";
-                            // else if (value === "Hard") badgeColor = "#F44336";
 
                             return (
                               <TableCell key={column.id} align={column.align}>
