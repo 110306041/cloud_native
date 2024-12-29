@@ -6,50 +6,58 @@ const { UserCourse, Course, Assignment, Submission, Exam, User, Question } = db;
 export const getAssignmentsAndExams = async (req, res) => {
   try {
     const { courseID } = req.params;
-    const studentID = req.user.id; 
+    const studentID = req.user.id;
+
     // Fetch assignments
     const assignments = await Assignment.findAll({
       where: { CourseID: courseID },
-      attributes: ["ID", "Name", "DueDate"],
-      include: [
-        {
-          model: Question,
-          attributes: [],
-        },
-      ],
-      group: ["Assignment.ID"],
-      raw: true,
       attributes: [
         "ID",
         "Name",
         "DueDate",
-        [
-          Sequelize.fn("COUNT", Sequelize.col("Questions.ID")),
-          "question_count",
-        ],
+        "StartDate",
+        [Sequelize.fn("COUNT", Sequelize.col("Questions.ID")), "question_count"],
       ],
+      include: [
+        {
+          model: Question,
+          attributes: [], // Only needed for COUNT
+        },
+      ],
+      group: ["Assignment.ID", "Assignment.Name", "Assignment.DueDate", "Assignment.StartDate"], // Include all selected columns
     });
 
     // Map assignments to include the score
     const assignmentsWithScore = await Promise.all(
       assignments.map(async (assignment) => {
-        const score = await Submission.sum("Score", {
-          where: {
-            // AssignmentID: assignment.id,
-            QuestionID: {
-              [Op.in]: Sequelize.literal(`
-                                  (SELECT "Question"."ID" FROM "Question" WHERE "Question"."AssignmentID" = '${assignment.ID}')
-                              `),
-            },
-            UserID: studentID,
-          },
-        });
+        const scoreResult = await Submission.sequelize.query(
+          `
+            SELECT SUM("maxScore") AS score
+            FROM (
+              SELECT MAX("Score") AS "maxScore"
+              FROM public."Submission"
+              GROUP BY "QuestionID", "UserID"
+              HAVING "UserID" = '${studentID}'
+                AND "QuestionID" IN (
+                  SELECT "ID"
+                  FROM "Question"
+                  WHERE "AssignmentID" = '${assignment.ID}'
+                )
+            ) AS max_scores
+          `,
+          {
+            type: Sequelize.QueryTypes.SELECT,
+          }
+        );
+    
+        const score = scoreResult[0]?.score || 0;
 
         return {
           id: assignment.ID,
           name: assignment.Name,
           due_date: assignment.DueDate,
-          question_count: assignment.question_count || 0,
+          start_date: assignment.StartDate,
+          question_count: assignment.get("question_count") || 0, // Use .get() with raw: false
           score: score || 0,
         };
       })
@@ -65,21 +73,47 @@ export const getAssignmentsAndExams = async (req, res) => {
           attributes: ["ID", "Name"],
         },
       ],
-      raw: true,
+      raw: false, // Disable raw for better handling of attributes
     });
 
     // Map exams to include is_active field
-    const examsWithActiveStatus = exams.map((exam) => ({
-      id: exam.ID,
-      name: exam.Name,
-      start_date: exam.StartDate,
-      due_date: exam.DueDate,
-      course: {
-        id: exam["Course.ID"],
-        name: exam["Course.Name"],
-      },
-      is_active: new Date() >= exam.StartDate && new Date() <= exam.DueDate,
-    }));
+    const examsWithActiveStatus = await Promise.all(
+      exams.map(async (exam) => {
+        const scoreResult = await Submission.sequelize.query(
+          `
+            SELECT SUM("maxScore") AS score
+            FROM (
+              SELECT MAX("Score") AS "maxScore"
+              FROM public."Submission"
+              GROUP BY "QuestionID", "UserID"
+              HAVING "UserID" = '${studentID}'
+                AND "QuestionID" IN (
+                  SELECT "ID"
+                  FROM "Question"
+                  WHERE "ExamID" = '${exam.ID}'
+                )
+            ) AS max_scores
+          `,
+          {
+            type: Sequelize.QueryTypes.SELECT,
+          }
+        );
+    
+        const score = scoreResult[0]?.score || 0;
+        return {
+          id: exam.ID,
+          name: exam.Name,
+          start_date: exam.StartDate,
+          due_date: exam.DueDate,
+          course: {
+            id: exam.Course?.ID || null, // Use optional chaining for nested fields
+            name: exam.Course?.Name || null,
+          },
+          is_active: new Date() >= exam.StartDate && new Date() <= exam.DueDate,
+          score: score || 0,
+        };
+      })
+    );
 
     // Send response
     res.status(200).json({

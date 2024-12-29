@@ -13,7 +13,7 @@ export default (sequelize, DataTypes) => {
         allowNull: false,
       },
       Name: { type: DataTypes.STRING(100), allowNull: false },
-      Semester: { type: DataTypes.INTEGER, allowNull: false },
+      Semester: { type: DataTypes.STRING(100), allowNull: false },
       StudentCount: { type: DataTypes.INTEGER, defaultValue: 0 },
       StudentLimit: { type: DataTypes.INTEGER, allowNull: false },
     },

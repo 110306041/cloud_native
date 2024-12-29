@@ -14,6 +14,7 @@ export const getCoursesByStudent = async (req, res) => {
         model: Course,
         attributes: ["ID", "Name", "Semester"],
       },
+      order: [[{ model: Course }, "Semester", "DESC"]],
     });
 
     const courses = await Promise.all(
@@ -34,39 +35,58 @@ export const getCoursesByStudent = async (req, res) => {
         const totalAssignments = await Assignment.count({
           where: {
             CourseID: courseId,
-            DueDate: { [Op.gte]: new Date() },
+            // DueDate: { [Op.gte]: new Date() },
           },
         });
 
         // Calculate completed assignments
-        const completedAssignmentGroups = await Assignment.count({
-          where: { CourseID: courseId },
-          include: [
-            {
-              model: Question,
-              include: [
-                {
-                  model: Submission,
-                  where: { UserID: studentId },
-                  attributes: [],
-                },
-              ],
-              attributes: [],
-            },
-          ],
-          group: ["Assignment.ID"],
-          having: Sequelize.literal(
-            `COUNT(DISTINCT "Questions"."ID") = (
-                SELECT COUNT(*) 
+        // const completedAssignmentGroups = await Assignment.count({
+        //   where: { CourseID: courseId },
+        //   include: [
+        //     {
+        //       model: Question,
+        //       include: [
+        //         {
+        //           model: Submission,
+        //           where: { UserID: studentId },
+        //           attributes: [],
+        //         },
+        //       ],
+        //       attributes: [],
+        //     },
+        //   ],
+        //   group: ["Assignment.ID"],
+        //   having: Sequelize.literal(
+        //     `COUNT(DISTINCT "Questions"."ID") = (
+        //         SELECT COUNT(*) 
+        //         FROM "Question" 
+        //         WHERE "Question"."AssignmentID" = "Assignment"."ID"
+        //       )`
+        //   ),
+        //   logging: console.log,
+        // });
+        // const completedAssignments = Array.isArray(completedAssignmentGroups)
+        //   ? completedAssignmentGroups.length
+        //   : 0;
+        const completedAssignments = await Submission.count({
+          distinct: true,
+          col: 'QuestionID',
+          where: {
+            UserID: studentId,
+            QuestionID: {
+              [Op.in]: Sequelize.literal(`
+              (SELECT "ID" 
                 FROM "Question" 
-                WHERE "Question"."AssignmentID" = "Assignment"."ID"
-              )`
-          ),
-          logging: console.log,
+                WHERE "AssignmentID" IN (
+                  SELECT "ID" 
+                  FROM "Assignment" 
+                  WHERE "CourseID" = '${courseId}'
+                )
+              )
+              `),
+            },
+          },
         });
-        const completedAssignments = Array.isArray(completedAssignmentGroups)
-          ? completedAssignmentGroups.length
-          : 0;
         // Calculate active exams
         const activeExams = await Exam.count({
           where: {

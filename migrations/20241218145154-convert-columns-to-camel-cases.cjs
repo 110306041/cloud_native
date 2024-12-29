@@ -4,7 +4,7 @@
 module.exports = {
   async up (queryInterface, Sequelize) {
     // Rename columns in User table
-    await queryInterface.renameColumn('User', 'IDD', 'ID');
+    await queryInterface.renameColumn('User', 'ID', 'IDD');
    
   },
 
