@@ -20,7 +20,6 @@ import TableRow from "@mui/material/TableRow";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { getDateTime } from "../../utils";
 
-
 const columns = [
   { id: "id", label: "#", minWidth: 10 },
   { id: "name", label: "Problem Name", minWidth: 200 },
@@ -42,11 +41,12 @@ export default function ProblemSet() {
 
   useLayoutEffect(() => {
     axios
-      .get(`${BACK_SERVER_URL}/api/student/${problemsetInfo.problemType}/questions/${id}`,
+      .get(
+        `${BACK_SERVER_URL}/api/student/${problemsetInfo.problemType}/questions/${id}`,
         {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem("access-token")}`
-          }
+            Authorization: `Bearer ${localStorage.getItem("access-token")}`,
+          },
         }
       )
       .then((res) => {
@@ -130,8 +130,10 @@ export default function ProblemSet() {
         </div>
         <div className="problemset-info">{problemsetInfo.problemsetName}</div>
         <div className="problemset-info">
+          {problemsetInfo.startDate
+            ? `Start Date: ${getDateTime(problemsetInfo.startDate)}`
+            : `Start Date: ${problemsetInfo.startDate}`}
           {/* Start Date: {getDateTime(problemsetInfo.startDate)} */}
-          Start Date: {problemsetInfo.startDate}
         </div>
         <div className="problemset-info">
           Due Date: {getDateTime(problemsetInfo.dueDate)}
@@ -164,7 +166,9 @@ export default function ProblemSet() {
                         key={index}
                         onClick={() =>
                           navigate(
-                            `/problem/${allProblems[page * rowsPerPage + index].id}`
+                            `/problem/${
+                              allProblems[page * rowsPerPage + index].id
+                            }`
                           )
                         }
                         style={{ cursor: "pointer" }}

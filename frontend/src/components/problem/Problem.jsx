@@ -205,8 +205,8 @@ const Problem = (props) => {
           <div>{problem.description}</div>
           <br />
           <h3>Samples</h3>
-          {problem.sampleTestcases &&
-            problem.sampleTestcases.map((testcase, index) => {
+          {problem.sample_test_cases &&
+            problem.sample_test_cases.map((testcase, index) => {
               return (
                 <>
                   <div style={{ fontWeight: "bold" }}>Sample {index + 1}</div>
@@ -216,7 +216,7 @@ const Problem = (props) => {
                   </div>
                   <div>
                     <span style={{ fontWeight: 600 }}>Output: </span>
-                    <span>{testcase.output}</span>
+                    <span>{testcase.expected_output}</span>
                   </div>
                   <div>
                     <span style={{ fontWeight: 600 }}>Explanation: </span>

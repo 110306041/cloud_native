@@ -11,7 +11,7 @@ export default function NavBar(props) {
   const [anchorEl, setAnchorEl] = useState(null);
   const [selectedIndex, setSelectedIndex] = useState(0);
 
-  const options = ["", "View Profile", "Logout"];
+  const options = ["", "Logout"];
 
   const appContext = useContext(AuthContext);
   const { login, setLogin } = appContext;
@@ -27,7 +27,7 @@ export default function NavBar(props) {
     else {
       localStorage.removeItem("login");
       localStorage.removeItem("access-token");
-      localStorage.removeItem("username");
+      localStorage.removeItem("role");
       setLogin(false);
       window.location = "/";
     }
