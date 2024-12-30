@@ -34,7 +34,7 @@
   align-items: center; /* 垂直置中 */
   justify-content: center; /* 水平置中 */
   height: auto; /* 不需要特定高度 */
-  margin-left: 25px; /* 保留內間距 */
+  margin-left: 5px; /* 保留內間距 */
   border: 2px solid #f8f8f8;
   border-radius: 8px;
   padding: 5px 10px;
