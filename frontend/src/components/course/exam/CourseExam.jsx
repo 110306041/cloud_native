@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import "react-toastify/dist/ReactToastify.css";
 import "./courseExam.css";
 
@@ -30,6 +30,7 @@ export default function CourseHw({ exams = [], courseInfo }) {
   const [rows, setRows] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const navigate = useNavigate();
+  const { id } = useParams();
 
   useEffect(() => {
     columns =
@@ -66,6 +67,12 @@ export default function CourseHw({ exams = [], courseInfo }) {
     });
   };
 
+  const handleButtonClick = (id) => {
+    navigate(`/addExam`, {
+      state: { id },
+    });
+  };
+
   return (
     <div>
       <h3 style={{ padding: "20px 0" }}>Exam</h3>
@@ -82,9 +89,7 @@ export default function CourseHw({ exams = [], courseInfo }) {
                 backgroundColor: "#29335C",
               },
             }}
-            onClick={() => {
-              navigate(`/addExam`);
-            }}
+            onClick={() => handleButtonClick(id)}
           >
             Add Exam
           </Button>
