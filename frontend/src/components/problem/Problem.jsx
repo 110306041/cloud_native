@@ -28,6 +28,7 @@ const Problem = (props) => {
   const [runLoading, setRunLoading] = useState(false);
   const [submitLoading, setSubmitLoading] = useState(false);
   const [badgeColor, setBadgeColor] = useState("#D9D9D9"); // 預設灰色
+  const [teacherProblemDetails, setTeacherProblemDetails] = useState({});
   const { id } = useParams();
 
   const languageExtention = {
@@ -38,16 +39,36 @@ const Problem = (props) => {
   };
 
   useEffect(() => {
+    if (!id) {
+      setProblemDoesNotExists(true);
+      setLoading(false);
+      return;
+    }
+
+    const role = localStorage.getItem("role") || "guest";
+    let apiUrl =
+      role === "student"
+        ? `${BACK_SERVER_URL}/api/student/questions/${id}`
+        : `${BACK_SERVER_URL}/api/teacher/questions/${id}`;
+
     axios
-      .get(`${BACK_SERVER_URL}/api/student/questions/${id}`, {
+      .get(apiUrl, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("access-token")}`,
         },
       })
       .then((res) => {
-        if (!res.data || res.data.length === 0) setProblemDoesNotExists(true);
-        else {
+        if (!res.data || Object.keys(res.data).length === 0) {
+          setProblemDoesNotExists(true);
+        } else {
           setProblem(res.data);
+
+          // For teacher-specific API response
+          if (role === "teacher") {
+            setTeacherProblemDetails(res.data);
+          }
+
+          // Set badge color based on difficulty
           const normalizedValue = res.data.difficulty?.toLowerCase();
           switch (normalizedValue) {
             case "easy":
@@ -64,13 +85,14 @@ const Problem = (props) => {
           }
         }
         setLoading(false);
-        if (problem.difficulty === "easy") setBadgeColor("#FF980d");
-        else if (problem.difficulty === "hard") setBadgeColor("#F44336");
       })
       .catch((err) => {
         setLoading(false);
         setProblemDoesNotExists(true);
-        const error = err.response ? err.response.data.message : err.message;
+        const error =
+          err.response && err.response.data && err.response.data.message
+            ? err.response.data.message
+            : "An unexpected error occurred. Please try again later.";
         toast.error(error, {
           position: "top-right",
           autoClose: 5000,
@@ -81,10 +103,7 @@ const Problem = (props) => {
           progress: undefined,
         });
       });
-
-    return () => {};
   }, [id]);
-
 
   const handleLanguageSelect = (e) => {
     e.preventDefault();
@@ -281,96 +300,127 @@ const Problem = (props) => {
         </div>
 
         <div className="problem-page-right">
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "1rem",
-              padding: "20px 0",
-            }}
-          >
-            <h2 style={{ margin: 0 }}>Code</h2>
-            <h2 style={{ margin: 0, color: "#8ACB88" }}>{"</>"}</h2>
-          </div>
-          <div className="problem-container">
-            <div className="code-editor">
-              <CodeEditor
-                language={language}
-                handleLanguageSelect={handleLanguageSelect}
-                darkMode={darkMode}
-                handleModeChange={handleModeChange}
-                onCodeChange={onCodeChange}
-                submit={submit}
-                runLoading={runLoading}
-                submitLoading={submitLoading}
-              />
-            </div>
-          </div>
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "0.5rem",
-              padding: "20px 0",
-            }}
-          >
-            <h2 style={{ margin: 0 }}>Result</h2>
-            <h2 style={{ display: "flex", alignItems: "center", margin: 0 }}>
-              {result.success ? (
-                <CheckCircleTwoToneIcon
-                  sx={{
-                    fontSize: "30px",
-                    borderRadius: "50%",
-                    display: "inline-block",
-                    padding: "0px",
-                    boxSizing: "border-box",
-                    "& path:first-of-type": {
-                      color: "#f8f8f8",
-                    },
-                    "& path:last-child": {
-                      color: "#36B408",
-                    },
-                  }}
-                />
-              ) : (
-                <CancelTwoToneIcon
-                  sx={{
-                    fontSize: "30px",
-                    borderRadius: "50%",
-                    display: "inline-block",
-                    padding: "0px",
-                    boxSizing: "border-box",
-                    "& path:first-of-type": {
-                      color: "#f8f8f8",
-                    },
-                    "& path:last-child": {
-                      color: "#FF0000",
-                    },
-                  }}
-                />
-              )}
-            </h2>
-          </div>
-          <div className="problem-container">
-            <div className="result-table">
-              <div className="result-line">
-                <span className="result-label">Output:</span>
-                <span className="result-value">{result.output}</span>
+          {localStorage.getItem("role") === "teacher" &&
+          teacherProblemDetails ? (
+            <div>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "1rem",
+                  padding: "20px 0",
+                }}
+              >
+                <h2 style={{ margin: 0 }}> Student Performance Overview</h2>
               </div>
-              <div className="result-line">
-                <span className="result-label">Cpu Usage:</span>
-                <span className="result-value">{result.cpuUsage}</span>
-              </div>
-              <div className="result-line">
-                <span className="result-label">Memory Usage:</span>
-                <span className="result-value">{result.memoryUsage}</span>
-              </div>
-              <div className="result-line">
-                <span className="result-label">Execution Time:</span>
-                <span className="result-value">{result.executionTime}</span>
+              <div className="problem-container">
+                <div className="section-title">
+                  Number of Students Completed
+                </div>
+
+                <div>{teacherProblemDetails.finish_num}</div>
+                <div className="section-title">Number of Correct Answers</div>
+
+                <div>{teacherProblemDetails.AC_num}</div>
               </div>
             </div>
-          </div>
+          ) : (
+            <div>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "1rem",
+                  padding: "20px 0",
+                }}
+              >
+                <h2 style={{ margin: 0 }}>Code</h2>
+                <h2 style={{ margin: 0, color: "#8ACB88" }}>{"</>"}</h2>
+              </div>
+              <div className="problem-container">
+                <div className="code-editor">
+                  <CodeEditor
+                    language={language}
+                    handleLanguageSelect={handleLanguageSelect}
+                    darkMode={darkMode}
+                    handleModeChange={handleModeChange}
+                    onCodeChange={onCodeChange}
+                    submit={submit}
+                    runLoading={runLoading}
+                    submitLoading={submitLoading}
+                  />
+                </div>
+              </div>
+
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "0.5rem",
+                  padding: "20px 0",
+                }}
+              >
+                <h2 style={{ margin: 0 }}>Result</h2>
+                <h2
+                  style={{ display: "flex", alignItems: "center", margin: 0 }}
+                >
+                  {result.success ? (
+                    <CheckCircleTwoToneIcon
+                      sx={{
+                        fontSize: "30px",
+                        borderRadius: "50%",
+                        display: "inline-block",
+                        padding: "0px",
+                        boxSizing: "border-box",
+                        "& path:first-of-type": {
+                          color: "#f8f8f8",
+                        },
+                        "& path:last-child": {
+                          color: "#36B408",
+                        },
+                      }}
+                    />
+                  ) : (
+                    <CancelTwoToneIcon
+                      sx={{
+                        fontSize: "30px",
+                        borderRadius: "50%",
+                        display: "inline-block",
+                        padding: "0px",
+                        boxSizing: "border-box",
+                        "& path:first-of-type": {
+                          color: "#f8f8f8",
+                        },
+                        "& path:last-child": {
+                          color: "#FF0000",
+                        },
+                      }}
+                    />
+                  )}
+                </h2>
+              </div>
+              <div className="problem-container">
+                <div className="result-table">
+                  <div className="result-line">
+                    <span className="result-label">Output:</span>
+                    <span className="result-value">{result.output}</span>
+                  </div>
+                  <div className="result-line">
+                    <span className="result-label">Cpu Usage:</span>
+                    <span className="result-value">{result.cpuUsage}</span>
+                  </div>
+                  <div className="result-line">
+                    <span className="result-label">Memory Usage:</span>
+                    <span className="result-value">{result.memoryUsage}</span>
+                  </div>
+                  <div className="result-line">
+                    <span className="result-label">Execution Time:</span>
+                    <span className="result-value">{result.executionTime}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>
