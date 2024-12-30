@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
 import "./App.css";
 import { AuthContext } from "./authContext";
+import AddCourse from "./components/add/addCourse/AddCourse";
 import Course from "./components/course/Course";
 import Courses from "./components/courses/Courses";
 import NavBar from "./components/navbar/Navbar";
@@ -30,6 +31,7 @@ function App() {
             <Route path="/submissions" element={<UserSubmissions />} />
             <Route path="/signin" element={<SignIn />} />
             <Route path="/signup" element={<SignUp />} />
+            <Route path="/addCourse" element={<AddCourse />} />
           </Routes>
         </Router>
       </div>
