@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { BeatLoader } from "react-spinners";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -31,6 +31,7 @@ export default function CourseHw({ hws = [], courseInfo }) {
   const [searchQuery, setSearchQuery] = useState("");
   const [loader, setLoader] = useState(false);
   const navigate = useNavigate();
+  const { id } = useParams();
 
   useEffect(() => {
     columns =
@@ -66,6 +67,12 @@ export default function CourseHw({ hws = [], courseInfo }) {
     });
   };
 
+  const handleButtonClick = (id) => {
+    navigate(`/addHw`, {
+      state: { id },
+    });
+  };
+
   return (
     <div>
       {loader ? (
@@ -88,9 +95,7 @@ export default function CourseHw({ hws = [], courseInfo }) {
                 backgroundColor: "#29335C",
               },
             }}
-            onClick={() => {
-              navigate(`/addHw`);
-            }}
+            onClick={() => handleButtonClick(id)}
           >
             Add Assignment
           </Button>

@@ -5,33 +5,38 @@ import CircularProgress from "@mui/material/CircularProgress";
 import axios from "axios";
 import React, { useState } from "react";
 import { Form } from "react-bootstrap";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { BACK_SERVER_URL } from "../../../config/config";
 
-const AddCourse = () => {
-  const [courseName, setCourseName] = useState("");
-  const [courseSemester, setCourseSemester] = useState("");
-  const [studentLimit, setStudentLimit] = useState(0);
+const AddHw = () => {
+  const [assignmentName, setAssignmentName] = useState("");
+  const [dueDate, setDueDate] = useState("");
+  const [description, setDescription] = useState("");
   const [loadingSpinner, setLoadingSpinner] = useState(false);
   const navigate = useNavigate();
+
+  const location = useLocation();
+  const courseId = location.state?.id;
 
   const onFormSubmit = (e) => {
     e.preventDefault();
     setLoadingSpinner(true);
-    
+
+    const datetime = new Date(dueDate).toISOString()
+
     const data = {
-      "course_name": courseName,
-      "semester": courseSemester,
-      "student_limit": studentLimit,
-    }
+      assignment_name: assignmentName,
+      due_date: datetime,
+      description: description,
+    };
 
     axios
-      .post(`${BACK_SERVER_URL}/api/teacher/courses`, data, {
+      .post(`${BACK_SERVER_URL}/api/teacher/assignments/${courseId}`, data, {
         headers: {
-            Authorization: `Bear ${localStorage.getItem("access-token")}`
-        }
+          Authorization: `Bear ${localStorage.getItem("access-token")}`,
+        },
       })
       .then(() => {
         setLoadingSpinner(false);
@@ -44,11 +49,11 @@ const AddCourse = () => {
           draggable: true,
           progress: undefined,
         });
-        navigate(`/courses`)
+        navigate(`/course/${courseId}`);
       })
       .catch((err) => {
         setLoadingSpinner(false);
-        console.log(err)
+        console.log(err);
         const error = err.response ? err.response.data.message : err.message;
         toast.error(error, {
           position: "top-right",
@@ -67,52 +72,40 @@ const AddCourse = () => {
       <ToastContainer />
       <Form onSubmit={onFormSubmit} autoComplete="off">
         <Form.Group>
-          <Form.Label>Course Name</Form.Label>
+          <Form.Label>Assignment Name</Form.Label>
           <Form.Control
             type="text"
-            name="courseName"
-            value={courseName}
-            placeholder="Course Name"
+            name="assignmentName"
+            value={assignmentName}
+            placeholder="Assignment Name"
             onChange={(e) => {
-              setCourseName(e.target.value);
+              setAssignmentName(e.target.value);
             }}
             required
           />
         </Form.Group>
         <Form.Group>
-          <Form.Label>Semester</Form.Label>
+          <Form.Label>Due Date</Form.Label>
           <Form.Control
-            type="text"
-            name="courseSemester"
-            value={courseSemester}
+            type="datetime-local"
+            name="dueDate"
+            value={dueDate}
             placeholder="ex: 113-1"
             onChange={(e) => {
-              setCourseSemester(e.target.value);
+              setDueDate(e.target.value);
             }}
             required
           />
         </Form.Group>
         <Form.Group>
-          <Form.Label>Student Limit</Form.Label>
+          <Form.Label>Description</Form.Label>
           <Form.Control
             type="text"
-            name="studentLimit"
-            value={studentLimit}
-            placeholder="student limit amount"
+            name="description"
+            value={description}
+            placeholder="Assignmnet Description Here"
             onChange={(e) => {
-              if (/^\d*$/.test(e.target.value)) {
-                setStudentLimit(e.target.value.toString());
-              } else {
-                toast.error("Student limit number can only be natural", {
-                  position: "top-right",
-                  autoClose: 5000,
-                  hideProgressBar: false,
-                  closeOnClick: true,
-                  pauseOnHover: true,
-                  draggable: true,
-                  progress: undefined,
-                });
-              }
+              setDescription(e.target.value);
             }}
             required
           />
@@ -124,7 +117,7 @@ const AddCourse = () => {
             type="cancel"
             style={{ width: "150px", margin: "10px 0px" }}
             onClick={() => {
-              navigate(`/courses`);
+              navigate(`/courses/${courseId}`);
             }}
           >
             Cancel
@@ -133,7 +126,7 @@ const AddCourse = () => {
             variant="contained"
             color="secondary"
             type="submit"
-            disabled={courseName === "" || courseSemester === ""}
+            disabled={assignmentName === "" || dueDate === ""}
             style={{ width: "150px", margin: "10px 0px" }}
           >
             {loadingSpinner ? (
@@ -150,4 +143,4 @@ const AddCourse = () => {
   );
 };
 
-export default AddCourse;
+export default AddHw;
