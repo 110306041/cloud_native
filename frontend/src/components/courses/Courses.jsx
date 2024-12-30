@@ -100,7 +100,7 @@ export default function Courses() {
       <ToastContainer />
       <div className="courses-right">
         <div className="courses-spinner">
-          <BeatLoader color={"#343a40"} size={30} loading={loader} />
+          <BeatLoader color={"#7D99D3"} size={20} loading={loader} />
         </div>
         <div
           style={{
@@ -110,7 +110,7 @@ export default function Courses() {
             padding: "20px 0",
           }}
         >
-          <h2>Course</h2>
+          <h2>Courses</h2>
           {localStorage.getItem("role") === "student" ? null : (
             <Button
               type="submit"
@@ -146,7 +146,6 @@ export default function Courses() {
               maxHeight: 550, // 限制高度
               overflowY: "scroll", // 保持滾動行為
               scrollbarGutter: "stable", // 確保滾動條佔位
-           
             }}
           >
             <Table stickyHeader aria-label="sticky table">

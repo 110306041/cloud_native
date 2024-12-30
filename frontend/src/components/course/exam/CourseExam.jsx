@@ -80,10 +80,10 @@ export default function CourseHw({ exams = [], courseInfo }) {
           display: "flex", // 使用 Flexbox 佈局
           justifyContent: "space-between", // 元素兩端對齊
           alignItems: "center", // 垂直方向居中
-          padding: "20px 0",
+          padding: "10px 0",
         }}
       >
-        <h2 style={{ padding: "20px 0", color: "#445E93" }}>Exam</h2>
+        <h2 style={{ padding: "20px 0", color: "#222222" }}>Exam</h2>
         {localStorage.getItem("role") === "student" ? null : (
           <Button
             type="submit"

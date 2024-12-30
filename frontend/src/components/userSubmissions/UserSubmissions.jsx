@@ -207,7 +207,7 @@ export default function UserSubmissions() {
       <ToastContainer />
       <div className="courses-right">
         <div className="courses-spinner">
-          <BeatLoader color={"#343a40"} size={30} loading={loader} />
+          <BeatLoader color={"#7D99D3"} size={20} loading={loader} />
         </div>
         <h2 style={{ padding: "20px 0" }}>Submissions</h2>
 

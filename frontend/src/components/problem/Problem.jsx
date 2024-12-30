@@ -213,7 +213,7 @@ const Problem = (props) => {
     </>
   ) : loading ? (
     <div className="problem-loading-spinner">
-      <BeatLoader color={"#343a40"} size={30} loading={loading} />
+      <BeatLoader color={"#7D99D3"} size={20} loading={loading} />
     </div>
   ) : (
     <div>
@@ -276,9 +276,8 @@ const Problem = (props) => {
             <span
               style={{
                 fontWeight: "normal", // 正常字體粗細
-                fontFamily: "monospace", // 等寬字體
+                fontFamily: "Fira Code", // 等寬字體
                 fontSize: "16px", // 可選：調整字體大小
-                marginLeft: "8px", // 增加與前置標籤的間距
               }}
             >
               {problem.time_limit} second
@@ -289,9 +288,8 @@ const Problem = (props) => {
             <span
               style={{
                 fontWeight: "normal", // 正常字體粗細
-                fontFamily: "monospace", // 等寬字體
+                fontFamily: "Fira Code", // 等寬字體
                 fontSize: "16px", // 可選：調整字體大小
-                marginLeft: "8px", // 增加與前置標籤的間距
               }}
             >
               {problem.memory_limit} MB

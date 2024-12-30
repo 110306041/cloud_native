@@ -62,7 +62,7 @@
 }
 
 .monospace {
-  font-family: monospace;
+  font-family: "Fira Code",monospace;
   white-space: pre;
 }
 
@@ -96,6 +96,13 @@
 }
 
 .result-value {
-  font-family: monospace;
+  font-family: "Fira Code",monospace;
   white-space: pre;
+}
+.problem-loading-spinner {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%); /* 偏移自身寬高的一半 */
+  z-index: 2;
 }

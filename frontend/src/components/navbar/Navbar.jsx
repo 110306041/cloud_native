@@ -4,6 +4,7 @@ import MenuItem from "@mui/material/MenuItem";
 import React, { useContext, useState } from "react";
 import { Link } from "react-router-dom";
 import { AuthContext } from "../../authContext";
+import { NavLink } from "react-router-dom";
 
 import "./navbar.css";
 
@@ -11,11 +12,15 @@ export default function NavBar(props) {
   const [anchorEl, setAnchorEl] = useState(null);
   const [selectedIndex, setSelectedIndex] = useState(0);
 
-  const options = ["", "Logout"];
+  const options = ["Logout"]; // 移除空選項
 
   const appContext = useContext(AuthContext);
   const { login, setLogin } = appContext;
-
+  const isCourseRelated = (path) => {
+    return ["/courses", "/course", "/problemset", "/problem"].some((route) =>
+      path.startsWith(route)
+    );
+  };
   const handleClickListItem = (event) => {
     setAnchorEl(event.currentTarget);
   };
@@ -42,24 +47,34 @@ export default function NavBar(props) {
     <div className="navbar">
       <div className="navbarWrapper">
         <div className="navLeft">
-          {/* <Link to="/" className="logo">
+          <Link to="/" className="logo">
             NCCU MIS OJ
-          </Link> */}
-          <div className="logo">NCCU MIS OJ</div>
+          </Link>
           <div className="navbarList">
-            {login ? ( //TODO: decide which tab should show through tab
+            {login && (
               <>
-                <Link to="/courses" className="navbarItem">
+                <NavLink
+                  to="/courses"
+                  className={({ isActive }) =>
+                    isActive || isCourseRelated(window.location.pathname)
+                      ? "navbarItem active"
+                      : "navbarItem"
+                  }
+                >
                   Courses
-                </Link>
-                <Link to="/addproblem" className="navbarItem">
-                  Problems
-                </Link>
-                <Link to="/submissions" className="navbarItem">
-                  Submissions
-                </Link>
+                </NavLink>
+                {localStorage.getItem("role") === "student" && (
+                  <NavLink
+                    to="/submissions"
+                    className={({ isActive }) =>
+                      isActive ? "navbarItem active" : "navbarItem"
+                    }
+                  >
+                    Submissions
+                  </NavLink>
+                )}
               </>
-            ) : null}
+            )}
           </div>
         </div>
         <div className="navRight">
@@ -125,12 +140,31 @@ export default function NavBar(props) {
                 anchorEl={anchorEl}
                 open={Boolean(anchorEl)}
                 onClose={handleClose}
+                sx={{
+                  "& .MuiPaper-root": {
+                    backgroundColor: "#333",
+                    color: "#f8f8f8",
+                    minWidth: "90px",
+                    marginTop: "12px",
+                  },
+                  "& .MuiMenuItem-root": {
+                    fontSize: "16px",
+                    justifyContent: "center", // 文字置中
+                    "&:hover": {
+                      backgroundColor: "#444",
+                    },
+                    "&.Mui-selected": {
+                      backgroundColor: "#555",
+                      "&:hover": {
+                        backgroundColor: "#666",
+                      },
+                    },
+                  },
+                }}
               >
                 {options.map((option, index) => (
                   <MenuItem
                     key={option}
-                    disabled={index === 0}
-                    selected={index === selectedIndex}
                     onClick={(event) => handleMenuItemClick(event, index)}
                   >
                     {option}
