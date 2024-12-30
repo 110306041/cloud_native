@@ -3,8 +3,10 @@ import axios from "axios";
 import React, { useLayoutEffect, useState } from "react";
 import { BeatLoader } from "react-spinners";
 import { BACK_SERVER_URL } from "../../config/config";
+import "../courses/courses.css";
+import { ToastContainer, toast } from "react-toastify";
 
-// import "react-toastify/dist/ReactToastify.css";
+import "react-toastify/dist/ReactToastify.css";
 // import "./userSubmission.css";
 
 import Chip from "@mui/material/Chip";
@@ -24,11 +26,11 @@ import { getDateTime } from "../../utils";
 import Submission from "./submission/Submission";
 
 const columns = [
-  { id: "id", align: "center", label: "#", minWidth: 10 },
-  { id: "date", align: "center", label: "When", minWidth: 50 },
-  { id: "problemName", align: "center", label: "Problem Name", minWidth: 100 },
-  { id: "lang", align: "center", label: "Language", minWidth: 50 },
-  { id: "verdict", align: "center", label: "Verdict", minWidth: 50 },
+  { id: "id", align: "center", label: "#", minWidth: 30, maxWidth: 50 },
+  { id: "date", align: "center", label: "When", minWidth: 70 },
+  { id: "problemName", align: "center", label: "Problem Name", minWidth: 80 },
+  { id: "lang", align: "center", label: "Language", minWidth: 60 },
+  { id: "verdict", align: "center", label: "Verdict", minWidth: 70 },
 ];
 
 // const useStyles = makeStyles((theme) => ({
@@ -61,7 +63,7 @@ function getModalStyle() {
 }
 
 export default function UserSubmissions() {
-//   const classes = useStyles();
+  //   const classes = useStyles();
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(25);
   const [rows, setRows] = useState([]);
@@ -69,7 +71,6 @@ export default function UserSubmissions() {
   const [modalStyle] = useState(getModalStyle);
   const [modalState, setModalState] = useState({ submission: {}, open: false });
   const [hasSubmissions, setHasSubmissions] = useState(true);
-
   const verdictMap = {
     AC: "Accepted",
     WA: "Wrong Answer",
@@ -78,6 +79,24 @@ export default function UserSubmissions() {
     TLE: "Time Limit Exceeded",
     MLE: "Memory Limit Exceeded",
   };
+  const getVerdictColor = (verdict) => {
+    switch (verdict) {
+      case "AC":
+        return "#80CD7D"; // 綠色
+      case "WA":
+        return "#FA7272"; // 紅色
+      case "CE":
+        return "#FACE77"; // 黃色
+      case "RTE":
+        return "#B4ADEA"; // 紫色
+      case "TLE":
+      case "MLE":
+        return "#5AB2FF"; // 藍色
+      default:
+        return "#CCAE97"; // 棕色
+    }
+  };
+
   const langMap = {
     c: "C",
     cpp: "C++",
@@ -91,12 +110,14 @@ export default function UserSubmissions() {
       var base64 = base64Url.replace("-", "+").replace("_", "/");
       return JSON.parse(window.atob(base64));
     };
-    
+
     const accessToken = localStorage.getItem("access-token");
     const userId = parseJwt(accessToken).sub;
 
     axios
-      .get(`${BACK_SERVER_URL}/api/submission/user/${userId}`, { headers: {"Authorization" : `Bearer ${accessToken}`} })
+      .get(`${BACK_SERVER_URL}/api/submission/user/${userId}`, {
+        headers: { Authorization: `Bearer ${accessToken}` },
+      })
       .then((res) => {
         if (!res.data || res.data.length === 0) setHasSubmissions(false);
         else setRows(res.data);
@@ -142,13 +163,17 @@ export default function UserSubmissions() {
 
   const body = (
     // <div style={modalStyle} className={classes.paper}>
-    <div style={modalStyle} className={{position: "absolute",
+    <div
+      style={modalStyle}
+      className={{
+        position: "absolute",
         width: 1000,
         // backgroundColor: theme.palette.background.paper,
         border: "2px solid #000",
         // boxShadow: theme.shadows[5],
         // padding: theme.spacing(2, 4, 3),
-        }}>
+      }}
+    >
       <h3 className="usersubmission-modal-title" id="simple-modal-title">
         {modalState.submission.problemName}
       </h3>
@@ -176,136 +201,152 @@ export default function UserSubmissions() {
   );
 
   return hasSubmissions === false ? (
-    <>
-      {/* <NoContent /> */}
-    </>
+    <>{/* <NoContent /> */}</>
   ) : (
-    <div className="usersubmission-container">
-      {/* <ToastContainer /> */}
-      <div className="usersubmission-spinner">
-        <BeatLoader color={"#343a40"} size={30} loading={loader} />
-      </div>
-      {/* <Paper className={classes.root}> */}
-      <Paper className={{width: "100%",
-      height: "calc(100vh - 100px)"}}>
-        {/* <TableContainer className={classes.container}> */}
-        <TableContainer className={{maxHeight: "75vh"}}>
-          <Table stickyHeader aria-label="sticky table">
-            <TableHead>
-              <TableRow>
-                {columns.map((column) => (
-                  <TableCell
-                    key={column.id}
-                    align={column.align}
-                    style={{ minWidth: column.minWidth }}
-                  >
-                    {column.label}
-                  </TableCell>
-                ))}
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {rows
-                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                .map((row, index) => {
-                  return (
-                    <TableRow
-                      hover
-                      role="checkbox"
-                      tabIndex={-1}
-                      key={row.code}
+    <div className="courses-container">
+      <ToastContainer />
+      <div className="courses-right">
+        <div className="courses-spinner">
+          <BeatLoader color={"#343a40"} size={30} loading={loader} />
+        </div>
+        <h2 style={{ padding: "20px 0" }}>Submissions</h2>
+
+        {/* <Paper className={classes.root}> */}
+        <Paper
+          sx={{
+            width: "100%",
+            minHeight: "600px",
+            borderRadius: "16px",
+            overflow: "hidden",
+            marginBottom: "20px",
+          }}
+        >
+          {" "}
+          {/* <TableContainer className={classes.container}> */}
+          <TableContainer className={{ maxHeight: "75vh" }}>
+            <Table stickyHeader aria-label="sticky table">
+              <TableHead>
+                <TableRow>
+                  {columns.map((column) => (
+                    <TableCell
+                      key={column.id}
+                      align={column.align}
+                      style={{
+                        minWidth: column.minWidth,
+                        maxWidth: column.maxWidth || "auto",
+                        fontWeight: "bold",
+                        fontSize: "16px",
+                        backgroundColor: "#FFF9D0", // 新增黃色背景
+                      }}
                     >
-                      {columns.map((column) => {
-                        const value =
-                          column.id === "id" ? index + 1 : row[column.id];
-                        if (column.id === "date") {
-                          return (
-                            <TableCell key={column.id} align={column.align}>
-                              <span
-                                style={{
-                                  fontWeight: "bold",
-                                  fontSize: "15px",
-                                  textDecoration: "none",
-                                  color: "#1a237e",
-                                }}
-                              >
-                                {getDateTime(value)}
-                              </span>
-                            </TableCell>
-                          );
-                        } else if (column.id === "problemName") {
-                          return (
-                            <TableCell key={column.id} align={column.align}>
-                              <a
-                                href="#"
-                                onClick={() => handleClick(index)}
-                                style={{
-                                  fontWeight: "bold",
-                                  fontSize: "15px",
-                                  textDecoration: "none",
-                                  color: "#1a237e",
-                                  cursor: "pointer",
-                                }}
-                              >
-                                {value}
-                              </a>
-                              <Modal
-                                open={modalState.open}
-                                onClose={handleClose}
-                                aria-labelledby="simple-modal-title"
-                                aria-describedby="simple-modal-description"
-                              >
-                                {body}
-                              </Modal>
-                            </TableCell>
-                          );
-                        } else if (column.id === "verdict") {
-                          return (
-                            <TableCell key={column.id} align={column.align}>
-                              <Chip
-                                label={verdictMap[value]}
-                                style={{
-                                  fontWeight: "bold",
-                                  color: "white",
-                                  maxWidth: "200px",
-                                  backgroundColor:
-                                    value === "AC" ? "#5cb85c" : "#F44336",
-                                }}
-                              />
-                            </TableCell>
-                          );
-                        } else {
-                          return (
-                            <TableCell key={column.id} align={column.align}>
-                              <span
-                                style={{
-                                  fontWeight: "bold",
-                                  fontSize: "15px",
-                                  color: "#1a237e",
-                                }}
-                              >
-                                {column.id === "lang" ? langMap[value] : value}
-                              </span>
-                            </TableCell>
-                          );
-                        }
-                      })}
-                    </TableRow>
-                  );
-                })}
-            </TableBody>
-          </Table>
-        </TableContainer>
-        <TablePagination
-          rowsPerPageOptions={[10, 25, 100]}
-          component="div"
-          count={rows.length}
-          rowsPerPage={rowsPerPage}
-          page={page}
-          onPageChange={handleChangePage}
-          onRowsPerPageChange={handleChangeRowsPerPage}
-        />
-      </Paper>
+                      {column.label}
+                    </TableCell>
+                  ))}
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {rows
+                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                  .map((row, index) => {
+                    return (
+                      <TableRow
+                        hover
+                        role="checkbox"
+                        tabIndex={-1}
+                        key={row.code}
+                      >
+                        {columns.map((column) => {
+                          const value =
+                            column.id === "id" ? index + 1 : row[column.id];
+                          if (column.id === "date") {
+                            return (
+                              <TableCell key={column.id} align={column.align}>
+                                <span
+                                  style={{
+                                    fontWeight: "regular",
+                                    fontSize: "16px",
+                                    color: "#222222",
+                                  }}
+                                >
+                                  {getDateTime(value)}
+                                </span>
+                              </TableCell>
+                            );
+                          } else if (column.id === "problemName") {
+                            return (
+                              <TableCell key={column.id} align={column.align}>
+                                <a
+                                  href="#"
+                                  onClick={() => handleClick(index)}
+                                  style={{
+                                    fontWeight: "bold",
+                                    fontSize: "16px",
+                                    textDecoration: "none",
+
+                                    color: "#445E93 ",
+                                  }}
+                                >
+                                  {value}
+                                </a>
+                                <Modal
+                                  open={modalState.open}
+                                  onClose={handleClose}
+                                  aria-labelledby="simple-modal-title"
+                                  aria-describedby="simple-modal-description"
+                                >
+                                  {body}
+                                </Modal>
+                              </TableCell>
+                            );
+                          } else if (column.id === "verdict") {
+                            return (
+                              <TableCell key={column.id} align={column.align}>
+                                <Chip
+                                  label={verdictMap[value]}
+                                  style={{
+                                    fontWeight: "bold",
+                                    color: "white",
+                                    maxWidth: "200px",
+                                    backgroundColor: getVerdictColor(value),
+                                  }}
+                                />
+                              </TableCell>
+                            );
+                          } else {
+                            return (
+                              <TableCell key={column.id} align={column.align}>
+                                <span
+                                  style={{
+                                    fontWeight: "regular",
+                                    fontSize: "16px",
+                                    color: "#222222",
+                                  }}
+                                >
+                                  {column.id === "lang"
+                                    ? langMap[value]
+                                    : value}
+                                </span>
+                              </TableCell>
+                            );
+                          }
+                        })}
+                      </TableRow>
+                    );
+                  })}
+              </TableBody>
+            </Table>
+          </TableContainer>
+          <TablePagination
+            rowsPerPageOptions={[10, 25, 100]}
+            component="div"
+            count={rows.length}
+            rowsPerPage={rowsPerPage}
+            page={page}
+            onPageChange={handleChangePage}
+            onRowsPerPageChange={handleChangeRowsPerPage}
+          />
+        </Paper>
+      </div>
     </div>
   );
 }

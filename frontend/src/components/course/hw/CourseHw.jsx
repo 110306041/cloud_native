@@ -28,6 +28,7 @@ export default function CourseHw({ hws = [], courseInfo }) {
   const [rowsPerPage, setRowsPerPage] = useState(12);
   const [allHws, setAllHws] = useState(hws);
   const [rows, setRows] = useState([]);
+
   const [searchQuery, setSearchQuery] = useState("");
   const [loader, setLoader] = useState(false);
   const navigate = useNavigate();
@@ -103,6 +104,7 @@ export default function CourseHw({ hws = [], courseInfo }) {
           <Paper
             sx={{
               width: "100%",
+
               borderRadius: "16px",
               overflow: "hidden",
               marginBottom: "5px",
