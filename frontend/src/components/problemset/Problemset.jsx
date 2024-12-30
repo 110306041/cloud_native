@@ -134,9 +134,9 @@ export default function ProblemSet() {
     });
   };
 
-  const handleButtonClick = (id) => {
+  const handleButtonClick = (id, problemtype) => {
     navigate(`/addProblem`, {
-      state: { id },
+      state: { id, problemtype },
     });
   };
 
@@ -178,7 +178,7 @@ export default function ProblemSet() {
                   backgroundColor: "#29335C",
                 },
               }}
-              onClick={() => handleButtonClick(id)}
+              onClick={() => handleButtonClick(id, problemsetInfo.problemType)}
             >
               Add Problem
             </Button>
