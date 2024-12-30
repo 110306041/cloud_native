@@ -19,7 +19,7 @@ import TablePagination from "@mui/material/TablePagination";
 import TableRow from "@mui/material/TableRow";
 import { courses } from "../../utils";
 // import SearchBar from "material-ui-search-bar";
-const columns = courses
+const columns = courses;
 
 export default function Courses() {
   const [page, setPage] = useState(0);
@@ -103,30 +103,32 @@ export default function Courses() {
           <BeatLoader color={"#343a40"} size={30} loading={loader} />
         </div>
         <h2 style={{ padding: "20px 0" }}>Course</h2>
-        <Button
-          type="submit"
-          color="primary"
-          variant="contained"
-          className="add-course-btn"
-          sx={{
-            backgroundColor: "#445E93",
-            fontWeight: "bold",
-            "&:hover": {
-              backgroundColor: "#29335C",
-            },
-          }}
-          onClick={() => {
-            navigate(`/addCourse`)
-          }}
-        >
-          Add Course
-        </Button>
+        {localStorage.getItem("role") === "student" ? null : (
+          <Button
+            type="submit"
+            color="primary"
+            variant="contained"
+            className="add-course-btn"
+            sx={{
+              backgroundColor: "#445E93",
+              fontWeight: "bold",
+              "&:hover": {
+                backgroundColor: "#29335C",
+              },
+            }}
+            onClick={() => {
+              navigate(`/addCourse`);
+            }}
+          >
+            Add Course
+          </Button>
+        )}
         <Paper
           sx={{
             width: "100%",
-            height: "550px",
             borderRadius: "16px",
             overflow: "hidden",
+            marginBottom: "40px"
           }}
         >
           <TableContainer sx={{ maxHeight: 550 }}>

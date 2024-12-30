@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import "react-toastify/dist/ReactToastify.css";
 import "./courseExam.css";
 
+import { Button } from "@mui/material";
 import Paper from "@mui/material/Paper";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
@@ -11,11 +12,16 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TablePagination from "@mui/material/TablePagination";
 import TableRow from "@mui/material/TableRow";
-import { courseExamStudentColumn, courseExamTeacherColumn, getDateTime } from "../../../utils";
+import {
+  courseExamStudentColumn,
+  courseExamTeacherColumn,
+  getDateTime,
+} from "../../../utils";
 
-const columns = localStorage.getItem("role") === "student"
-  ? courseExamStudentColumn
-  : courseExamTeacherColumn
+let columns =
+  localStorage.getItem("role") === "student"
+    ? courseExamStudentColumn
+    : courseExamTeacherColumn;
 
 export default function CourseHw({ exams = [], courseInfo }) {
   const [page, setPage] = useState(0);
@@ -26,6 +32,11 @@ export default function CourseHw({ exams = [], courseInfo }) {
   const navigate = useNavigate();
 
   useEffect(() => {
+    columns =
+      localStorage.getItem("role") === "student"
+        ? courseExamStudentColumn
+        : courseExamTeacherColumn;
+
     const getPageData = () => {
       let filtered = allExams;
       if (searchQuery) {
@@ -58,10 +69,29 @@ export default function CourseHw({ exams = [], courseInfo }) {
   return (
     <div>
       <h3 style={{ padding: "20px 0" }}>Exam</h3>
+      {localStorage.getItem("role") === "student" ? null : (
+          <Button
+            type="submit"
+            color="primary"
+            variant="contained"
+            className="add-course-btn"
+            sx={{
+              backgroundColor: "#445E93",
+              fontWeight: "bold",
+              "&:hover": {
+                backgroundColor: "#29335C",
+              },
+            }}
+            onClick={() => {
+              navigate(`/addExam`);
+            }}
+          >
+            Add Exam
+          </Button>
+        )}
       <Paper
         sx={{
           width: "100%",
-          height: "550px",
           borderRadius: "16px",
           overflow: "hidden",
           marginBottom: "40px",

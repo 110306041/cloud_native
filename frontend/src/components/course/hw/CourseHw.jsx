@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { BeatLoader } from "react-spinners";
 import "react-toastify/dist/ReactToastify.css";
 
+import { Button } from "@mui/material";
 import Chip from "@mui/material/Chip";
 import Paper from "@mui/material/Paper";
 import Table from "@mui/material/Table";
@@ -12,11 +13,15 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TablePagination from "@mui/material/TablePagination";
 import TableRow from "@mui/material/TableRow";
-import { courseHwStudentColumn, courseHwTeacherColumn, getDateTime } from "../../../utils";
+import {
+  courseHwStudentColumn,
+  courseHwTeacherColumn,
+  getDateTime,
+} from "../../../utils";
 
-const columns = localStorage.getItem("role") === "student"
-  ? courseHwStudentColumn
-  : courseHwTeacherColumn;
+let columns = localStorage.getItem("role") === "student"
+    ? courseHwStudentColumn
+    : courseHwTeacherColumn;
 
 export default function CourseHw({ hws = [], courseInfo }) {
   const [page, setPage] = useState(0);
@@ -28,6 +33,10 @@ export default function CourseHw({ hws = [], courseInfo }) {
   const navigate = useNavigate();
 
   useEffect(() => {
+    columns =
+      localStorage.getItem("role") === "student"
+        ? courseHwStudentColumn
+        : courseHwTeacherColumn;
     const getPageData = () => {
       let filtered = allHws;
       if (searchQuery) {
@@ -66,12 +75,32 @@ export default function CourseHw({ hws = [], courseInfo }) {
       ) : (
         <div>
           <h3 style={{ padding: "20px 0" }}>Assignments</h3>
+          {localStorage.getItem("role") === "student" ? null : (
+          <Button
+            type="submit"
+            color="primary"
+            variant="contained"
+            className="add-course-btn"
+            sx={{
+              backgroundColor: "#445E93",
+              fontWeight: "bold",
+              "&:hover": {
+                backgroundColor: "#29335C",
+              },
+            }}
+            onClick={() => {
+              navigate(`/addHw`);
+            }}
+          >
+            Add Assignment
+          </Button>
+        )}
           <Paper
             sx={{
               width: "100%",
-              height: "550px",
               borderRadius: "16px",
               overflow: "hidden",
+              marginBottom: "5px",
             }}
           >
             <TableContainer sx={{ maxHeight: 550 }}>
