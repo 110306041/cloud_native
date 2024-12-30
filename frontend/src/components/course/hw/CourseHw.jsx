@@ -56,7 +56,7 @@ export default function CourseHw({ hws = [], courseInfo }) {
       id: 1,
       name: "Assignment 1",
       question_count: 10,
-      status: "completed", 
+      status: "completed",
       due_date: "2024-01-15T23:59:59",
       score: 85,
     },
@@ -64,7 +64,7 @@ export default function CourseHw({ hws = [], courseInfo }) {
       id: 2,
       name: "Assignment 2",
       question_count: 8,
-      status: "in progress", 
+      status: "in progress",
       due_date: "2024-01-20T23:59:59",
       score: 70,
     },
@@ -126,7 +126,7 @@ export default function CourseHw({ hws = [], courseInfo }) {
           <Paper
             sx={{
               width: "100%",
-              height: "400px",
+              height: "450px",
               borderRadius: "16px",
               overflow: "hidden",
               marginBottom: "20px",
