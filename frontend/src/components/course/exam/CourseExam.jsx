@@ -83,10 +83,11 @@ export default function CourseHw({ exams = [], courseInfo }) {
       <Paper
         sx={{
           width: "100%",
-          height: "550px",
+          height: "450px",
           borderRadius: "16px",
           overflow: "hidden",
           marginBottom: "40px",
+
         }}
       >
         <TableContainer sx={{ maxHeight: 550 }}>

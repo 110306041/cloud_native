@@ -18,10 +18,10 @@ import Chip from "@mui/material/Chip";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { getDateTime } from "../../utils";
 const columns = [
-  { id: "id", label: "#", minWidth: 10 },
-  { id: "name", label: "Problem Name", minWidth: 200 },
-  { id: "difficulty", label: "Difficulty", minWidth: 50 },
-  { id: "score", label: "Score", minWidth: 100 },
+  { id: "id", label: "#", minWidth: 20, align: "center" },
+  { id: "name", label: "Problem Name", minWidth: 100 },
+  { id: "difficulty", label: "Difficulty", minWidth: 50, align: "center" },
+  { id: "score", label: "Score", minWidth: 100, align: "center" },
 ];
 
 const styles = {
@@ -151,11 +151,11 @@ export default function ProblemSet() {
           }}
         >
           <TableContainer>
-          {loader && (
-    <div className="loader-container">
-      <BeatLoader color={"#343a40"} size={30} loading={loader} />
-    </div>
-  )}
+            {loader && (
+              <div className="loader-container">
+                <BeatLoader color={"#343a40"} size={30} loading={loader} />
+              </div>
+            )}
             <Table stickyHeader aria-label="sticky table">
               <TableHead>
                 <TableRow>
@@ -172,15 +172,11 @@ export default function ProblemSet() {
                       }}
                     >
                       {column.label}
-                      
                     </TableCell>
-                    
                   ))}
-                  
                 </TableRow>
               </TableHead>
               <TableBody>
-
                 {rows
                   .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                   .map((row, index) => {
@@ -190,6 +186,13 @@ export default function ProblemSet() {
                         role="checkbox"
                         tabIndex={-1}
                         key={index}
+                        onClick={() =>
+                          navigate(
+                            `/problem/${
+                              allProblems[page * rowsPerPage + index].id
+                            }`
+                          )
+                        }
                         style={{ cursor: "pointer" }}
                       >
                         {columns.map((column) => {
@@ -214,18 +217,23 @@ export default function ProblemSet() {
                             );
                           } else if (column.id === "difficulty") {
                             let badgeColor;
-                            switch (value) {
-                              case "Easy":
+                            const normalizedValue = value?.toLowerCase();
+                            switch (normalizedValue) {
+                              case "easy":
                                 badgeColor = "#8ACB88";
                                 break;
-                              case "Hard":
+                              case "hard":
                                 badgeColor = "#FA7272";
                                 break;
-                              case "Medium":
+                              case "medium":
                                 badgeColor = "#5AB2FF";
                                 break;
                               default:
                                 badgeColor = "#D9D9D9";
+                                console.log(
+                                  "Default case triggered for value:",
+                                  value
+                                );
                             }
 
                             return (

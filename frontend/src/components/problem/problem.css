@@ -1,57 +1,101 @@
-.problem-loading-spinner {
-  display: block;
-  position: fixed;
-  z-index: 1000;
-  top: 50%;
-  right: 50%;
-}
-
 .problem-page-left {
-  width: 40%;
-  padding: 5px 30px 40px 30px;
-  margin: 10px;
-  background-color: rgba(238, 241, 241, 0.829);
-  border-radius: 10px;
+  width: 50%;
+  padding: 20px 32px;
+  background-color: #e5e7eb;
+  border-radius: 12px 0 0 12px; /* 只保留左側圓角 */
   overflow-y: auto;
+  position: relative;
 }
-
 .problem-page-right {
-  width: 60%;
-  margin: 10px 10px 10px 0px;
-}
-
-.problem-page-right-container {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-}
-
-.code-editor {
-  flex: 7;
-  overflow: hidden;
+  width: 50%;
+  padding: 20px 32px;
+  background-color: #e5e7eb;
+  border-radius: 0 12px 12px 0; /* 只保留右側圓角 */
   overflow-y: auto;
-  border-radius: 10px;
+  border-left: 4px dashed rgba(177, 176, 176, 0.5); /* 使用 border-left 來創建虛線 */
+  position: relative;
+}
+/* 將兩個容器中間的間距移除 */
+.problem-page-left,
+.problem-page-right {
+  margin: 0;
+}
+/* Main problem title styling */
+.problem-title {
+  font-size: 32px;
+  font-weight: bold;
+  margin: 24px 0;
 }
 
+.problem-container {
+  background-color: #f8f8f8;
+  padding: 25px;
+  border-radius: 16px;
+  margin-bottom: 20px;
+}
+
+.problem-name {
+  font-size: 24px;
+  font-weight: bold;
+  margin: 24px 0;
+}
+
+/* Standardized section title styling */
+.section-title {
+  font-size: 20px;
+  font-weight: bold;
+  margin: 24px 0 16px 0; /* Consistent spacing above and below */
+  padding: 0;
+  line-height: 1.4;
+}
+
+/* First section title special case */
+.problem-container .section-title:first-child {
+  margin-top: 0;
+}
+
+.sample-case {
+  background-color: #f3f4f6;
+  padding: 16px;
+  border-radius: 8px;
+  margin: 16px 0; /* Consistent with other spacing */
+}
+
+.monospace {
+  font-family: monospace;
+  white-space: pre;
+}
+
+.sample-block {
+  border-left: 3px solid #b1b0b0;
+  padding-left: 16px;
+  margin: 16px 0; /* Consistent with other spacing */
+  font-size: 16px;
+}
+
+.sample-line {
+  margin: 12px 0;
+}
+
+.sample-label {
+  font-weight: 600;
+  margin-right: 8px;
+}
 .result-table {
-  flex: 3;
-  overflow-y: auto;
-  margin: 10px 0px 0px 0px;
-  padding: 0px 20px 20px 20px;
-  background-color: rgba(238, 241, 241, 0.829);
-  border-radius: 10px;
+  margin: 12px 0;
+  font-size: 16px;
 }
 
-.result-accepted-icon{
-    margin-left: 10px;
-    margin-bottom: -3px;
-    transform: scale(1.2);
-    color: rgba(10, 184, 10, 0.747);
+.result-line {
+  margin: 8px 0;
 }
 
-.result-error-icon{
-    margin-left: 10px;
-    margin-bottom: -3px;
-    transform: scale(1.2);
-    color: rgba(233, 25, 25, 0.849);
+.result-label {
+  font-weight: 600;
+  margin-right: 8px;
+}
+
+.result-value {
+  font-family: monospace;
+  white-space: pre;
 }

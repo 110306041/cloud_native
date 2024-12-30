@@ -49,13 +49,12 @@ export default function Course() {
 
   return (
     <div className="courses-container">
-
       <ToastContainer />
       {loader ? (
         <BeatLoader color={"#343a40"} size={30} loading={loader} />
       ) : (
         <div className="courses-right">
-        <h2 style={{ padding: "20px 0" }}>
+          <h2 style={{ padding: "20px 0" }}>
             {" "}
             {courseInfo?.semester} {courseInfo?.name}
           </h2>

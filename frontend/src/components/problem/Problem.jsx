@@ -1,5 +1,5 @@
-import CheckCircleIcon from "@mui/icons-material/CheckCircle";
-import CancelIncon from "@mui/icons-material/HighlightOff";
+import CheckCircleTwoToneIcon from "@mui/icons-material/CheckCircleTwoTone";
+import CancelTwoToneIcon from "@mui/icons-material/CancelTwoTone";
 import Chip from "@mui/material/Chip";
 import axios from "axios";
 import React, { useEffect, useRef, useState } from "react";
@@ -27,7 +27,7 @@ const Problem = (props) => {
   const [result, setResult] = useState(resultFake); //{}
   const [runLoading, setRunLoading] = useState(false);
   const [submitLoading, setSubmitLoading] = useState(false);
-  const [badgeColor, setBadgeColor] = useState("#5caf5c");
+  const [badgeColor, setBadgeColor] = useState("#D9D9D9"); // 預設灰色
   const { id } = useParams();
 
   const languageExtention = {
@@ -39,17 +39,29 @@ const Problem = (props) => {
 
   useEffect(() => {
     axios
-      .get(`${BACK_SERVER_URL}/api/student/questions/${id}`,
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('access-token')}`
-          }
-        }
-      )
+      .get(`${BACK_SERVER_URL}/api/student/questions/${id}`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("access-token")}`,
+        },
+      })
       .then((res) => {
         if (!res.data || res.data.length === 0) setProblemDoesNotExists(true);
         else {
           setProblem(res.data);
+          const normalizedValue = res.data.difficulty?.toLowerCase();
+          switch (normalizedValue) {
+            case "easy":
+              setBadgeColor("#8ACB88");
+              break;
+            case "hard":
+              setBadgeColor("#FA7272");
+              break;
+            case "medium":
+              setBadgeColor("#5AB2FF");
+              break;
+            default:
+              setBadgeColor("#D9D9D9");
+          }
         }
         setLoading(false);
         if (problem.difficulty === "easy") setBadgeColor("#FF980d");
@@ -70,8 +82,9 @@ const Problem = (props) => {
         });
       });
 
-    return () => { };
+    return () => {};
   }, [id]);
+
 
   const handleLanguageSelect = (e) => {
     e.preventDefault();
@@ -132,7 +145,7 @@ const Problem = (props) => {
               },
               { headers: { Authorization: `Bearer ${accessToken}` } }
             )
-            .then(() => { })
+            .then(() => {})
             .catch((err) => {
               const error = err.response
                 ? err.response.data.message
@@ -188,49 +201,98 @@ const Problem = (props) => {
       <ToastContainer />
       <div style={{ display: "flex", height: "92.5vh" }}>
         <div className="problem-page-left">
-          <h2>{problem.name}</h2>
-          <Chip
-            label={problem.difficulty}
+          <div
             style={{
-              fontWeight: "bold",
-              color: "white",
               display: "flex",
-              backgroundColor: badgeColor,
-              width: "25%",
+              alignItems: "center",
+              gap: "1rem",
+              padding: "20px 0",
             }}
-          />
-          <div>Time Limit: {problem.time_limit}</div>
-          <div>Memory Limit: {problem.memory_limit}</div>
-          <h3>Description</h3>
-          <div>{problem.description}</div>
-          <br />
-          <h3>Samples</h3>
-          {problem.sample_test_cases &&
-            problem.sample_test_cases.map((testcase, index) => {
-              return (
-                <>
-                  <div style={{ fontWeight: "bold" }}>Sample {index + 1}</div>
-                  <div>
-                    <span style={{ fontWeight: 600 }}>Input: </span>
-                    <span>{testcase.input}</span>
-                  </div>
-                  <div>
-                    <span style={{ fontWeight: 600 }}>Output: </span>
-                    <span>{testcase.expected_output}</span>
-                  </div>
-                  <div>
-                    <span style={{ fontWeight: 600 }}>Explanation: </span>
-                    <span>{testcase.explanation}</span>
-                  </div>
-                  <br />
-                </>
-              );
-            })}
-          <h3>Constraints</h3>
-          <div>{problem.constraints}</div>
+          >
+            <h2 style={{ margin: 0 }}>{problem.name}</h2>
+            <Chip
+              label={problem.difficulty}
+              style={{
+                fontWeight: "bold",
+                color: "white",
+                backgroundColor: badgeColor,
+                textTransform: "capitalize",
+                height: "30px",
+              }}
+            />
+          </div>
+          <div className="problem-container">
+            <div className="section-title">Description</div>
+            <div>{problem.description}</div>
+            <br />
+            {problem.sample_test_cases &&
+              problem.sample_test_cases.map((testcase, index) => {
+                return (
+                  <>
+                    <div className="section-title">Sample {index + 1}</div>
+                    <div className="sample-block">
+                      <div className="sample-line">
+                        <span className="sample-label">Input:</span>
+                        <span className="monospace">{testcase.input}</span>
+                      </div>
+                      <div className="sample-line">
+                        <span className="sample-label">Output:</span>
+                        <span className="monospace">
+                          {testcase.expected_output}
+                        </span>
+                      </div>
+                      <div className="sample-line">
+                        <span className="sample-label">Explanation:</span>
+                        <span>{testcase.explanation}</span>
+                      </div>
+                    </div>
+                  </>
+                );
+              })}
+            <div className="section-title">Constraints</div>
+            <li>{problem.constraints}</li>
+            <div className="sample-line">
+              <span className="section-title">Time Limit </span>
+            </div>
+            <span
+              style={{
+                fontWeight: "normal", // 正常字體粗細
+                fontFamily: "monospace", // 等寬字體
+                fontSize: "16px", // 可選：調整字體大小
+                marginLeft: "8px", // 增加與前置標籤的間距
+              }}
+            >
+              {problem.time_limit} second
+            </span>
+            <div className="sample-line">
+              <span className="section-title">Memory Limit </span>
+            </div>{" "}
+            <span
+              style={{
+                fontWeight: "normal", // 正常字體粗細
+                fontFamily: "monospace", // 等寬字體
+                fontSize: "16px", // 可選：調整字體大小
+                marginLeft: "8px", // 增加與前置標籤的間距
+              }}
+            >
+              {problem.memory_limit} MB
+            </span>
+          </div>
         </div>
+
         <div className="problem-page-right">
-          <div className="problem-page-right-container">
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "1rem",
+              padding: "20px 0",
+            }}
+          >
+            <h2 style={{ margin: 0 }}>Code</h2>
+            <h2 style={{ margin: 0, color: "#8ACB88" }}>{"</>"}</h2>
+          </div>
+          <div className="problem-container">
             <div className="code-editor">
               <CodeEditor
                 language={language}
@@ -243,30 +305,69 @@ const Problem = (props) => {
                 submitLoading={submitLoading}
               />
             </div>
+          </div>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "0.5rem",
+              padding: "20px 0",
+            }}
+          >
+            <h2 style={{ margin: 0 }}>Result</h2>
+            <h2 style={{ display: "flex", alignItems: "center", margin: 0 }}>
+              {result.success ? (
+                <CheckCircleTwoToneIcon
+                  sx={{
+                    fontSize: "30px",
+                    borderRadius: "50%",
+                    display: "inline-block",
+                    padding: "0px",
+                    boxSizing: "border-box",
+                    "& path:first-of-type": {
+                      color: "#f8f8f8",
+                    },
+                    "& path:last-child": {
+                      color: "#36B408",
+                    },
+                  }}
+                />
+              ) : (
+                <CancelTwoToneIcon
+                  sx={{
+                    fontSize: "30px",
+                    borderRadius: "50%",
+                    display: "inline-block",
+                    padding: "0px",
+                    boxSizing: "border-box",
+                    "& path:first-of-type": {
+                      color: "#f8f8f8",
+                    },
+                    "& path:last-child": {
+                      color: "#FF0000",
+                    },
+                  }}
+                />
+              )}
+            </h2>
+          </div>
+          <div className="problem-container">
             <div className="result-table">
-              <h2>
-                Result
-                {result.success ? (
-                  <CheckCircleIcon className="result-accepted-icon" />
-                ) : (
-                  <CancelIncon className="result-error-icon" />
-                )}
-              </h2>
-              <div>
-                <span style={{ fontWeight: 600 }}>Output: </span>
-                <span>{result.output}</span>
+              <div className="result-line">
+                <span className="result-label">Output:</span>
+                <span className="result-value">{result.output}</span>
               </div>
-              <div>
-                <span style={{ fontWeight: 600 }}>Cpu Usage: </span>
-                <span>{result.cpuUsage}</span>
+              <div className="result-line">
+                <span className="result-label">Cpu Usage:</span>
+                <span className="result-value">{result.cpuUsage}</span>
               </div>
-              <div>
-                <span style={{ fontWeight: 600 }}>Memory Usage: </span>
-                <span>{result.memoryUsage}</span>
+              <div className="result-line">
+                <span className="result-label">Memory Usage:</span>
+                <span className="result-value">{result.memoryUsage}</span>
               </div>
-              <div>
-                <span style={{ fontWeight: 600 }}>Execution Time: </span>
-                <span>{result.executionTime}</span>
+              <div className="result-line">
+                <span className="result-label">Execution Time:</span>
+                <span className="result-value">{result.executionTime}</span>
               </div>
             </div>
           </div>

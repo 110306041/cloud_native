@@ -56,7 +56,7 @@ export default function CourseHw({ hws = [], courseInfo }) {
       id: 1,
       name: "Assignment 1",
       question_count: 10,
-      status: "completed", // 測試狀態
+      status: "completed", 
       due_date: "2024-01-15T23:59:59",
       score: 85,
     },
@@ -64,7 +64,7 @@ export default function CourseHw({ hws = [], courseInfo }) {
       id: 2,
       name: "Assignment 2",
       question_count: 8,
-      status: "in progress", // 測試狀態
+      status: "in progress", 
       due_date: "2024-01-20T23:59:59",
       score: 70,
     },
@@ -72,7 +72,7 @@ export default function CourseHw({ hws = [], courseInfo }) {
       id: 3,
       name: "Assignment 3",
       question_count: 12,
-      status: "overdue", // 測試狀態
+      status: "overdue",
       due_date: "2024-01-10T23:59:59",
       score: 50,
     },
@@ -126,9 +126,10 @@ export default function CourseHw({ hws = [], courseInfo }) {
           <Paper
             sx={{
               width: "100%",
-              height: "550px",
+              height: "400px",
               borderRadius: "16px",
               overflow: "hidden",
+              marginBottom: "20px",
             }}
           >
             <TableContainer sx={{ maxHeight: 550 }}>
