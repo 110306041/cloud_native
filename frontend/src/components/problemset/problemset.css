@@ -25,3 +25,10 @@
   position: relative;
   min-height: 200px; /* 確保在沒有數據時也有足夠的空間顯示 loader */
 }
+.courses-spinner {
+  display: block;
+  position: fixed;
+  z-index: 2;
+  top: 50%;
+  right: 50%;
+}

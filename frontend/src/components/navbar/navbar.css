@@ -1,9 +1,13 @@
+/* Base styles */
 * {
   margin: 0;
   padding: 0;
 }
+
 .navbar {
-  font-family: Arial, sans-serif;
+  font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", "Oxygen",
+    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
+    sans-serif;
   width: 100%;
   height: 70px;
   background-color: rgb(34, 34, 34);
@@ -15,13 +19,13 @@
 }
 
 .navbarWrapper {
-  height: 70px; /* 與 Navbar 高度保持一致 */
+  height: 70px;
   width: 100%;
   padding: 0px 20px;
   display: flex;
-  justify-content: space-between; /* 左右元素分開 */
-  align-items: center; /* 垂直置中 */
-  box-sizing: border-box; /* 確保 padding 不影響寬度 */
+  justify-content: space-between;
+  align-items: center;
+  box-sizing: border-box;
 }
 
 .logo {
@@ -30,42 +34,66 @@
   color: #f8f8f8;
   cursor: pointer;
   text-decoration: none;
-  display: flex; /* 使用 flexbox */
-  align-items: center; /* 垂直置中 */
-  justify-content: center; /* 水平置中 */
-  height: auto; /* 不需要特定高度 */
-  margin-left: 5px; /* 保留內間距 */
-  border: 2px solid #f8f8f8;
-  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: auto;
+  margin-left: 5px;
   padding: 5px 10px;
-  font-family: -apple-system, Arial, sans-serif; /* 優先使用 Roboto 字體 */
+  font-family: "Fira Code", -apple-system, Arial, sans-serif;
 }
 
 .navLeft {
   display: flex;
-  align-items: center; /* 垂直置中 */
-  height: 100%; /* 與 Navbar 高度保持一致 */
+  align-items: center;
+  height: 100%;
 }
 
 .navbarList {
   display: flex;
   margin-left: 30px;
+  height: 100%;
 }
 
 .navbarItem {
-  /* font-weight: bold; */
   font-size: 20px;
   color: rgb(248, 248, 248);
   cursor: pointer;
   margin-left: 30px;
   text-decoration: none;
-  cursor: pointer;
+  height: 100%;
+  display: flex;
   align-items: center;
+  position: relative;
 }
 
-.navbarItem.active,
+/* Hover and active styles */
 .navbarItem:hover {
-  color: rgb(245, 245, 245);
+  color: #fff9d0;
+  transition: color 0.3s ease;
+}
+
+/* For ReactRouter's active class */
+.navbarItem.active,
+.navbarItem[aria-current="page"] {
+  color: #fff9d0;
+}
+
+.navbarItem::after {
+  content: "";
+  position: absolute;
+  width: 0;
+  height: 5px;
+  bottom: 0;
+  left: -15px; /* 往左超出一點 */
+  background-color: #fff9d0;
+  transition: width 0.3s ease;
+}
+
+.navbarItem:hover::after,
+.navbarItem.active::after,
+.navbarItem[aria-current="page"]::after {
+  width: calc(100% + 30px); /* 超過自己寬度 30px（左右各 15px） */
 }
 
 .navRight {
@@ -96,8 +124,8 @@
 }
 
 .navbarAvatar {
-  width: 50px;
-  height: 50px;
+  width: 45px;
+  height: 45px;
   border-radius: 50%;
   cursor: pointer;
 }

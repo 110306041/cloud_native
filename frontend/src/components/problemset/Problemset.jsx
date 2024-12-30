@@ -29,11 +29,11 @@ const styles = {
     marginBottom: "1rem",
     fontSize: "1.5rem",
     fontWeight: "bold",
+    color: "#445E93",
   },
   problemsetInfo: {
     display: "flex",
     flexDirection: "column",
-    marginTop: "1rem",
     marginBottom: "1rem",
   },
   infoLabel: {
@@ -119,12 +119,20 @@ export default function ProblemSet() {
   return (
     <div className="courses-container">
       <ToastContainer />
+
       <div className="courses-right">
-        <h2 style={styles.assignmentTitle}>
+        {loader && (
+          <div className="loader-container">
+            <BeatLoader color={"#7D99D3"} size={20} loading={loader} />
+          </div>
+        )}
+        <h1 style={styles.assignmentTitle}>
           {problemsetInfo.courseInfo.semester} {problemsetInfo.courseInfo.name}
+        </h1>
+
+        <h2 style={{ padding: "20px 0", color: "#222222" }}>
+          {problemsetInfo.problemsetName}
         </h2>
-        <h2 style={styles.assignmentTitle}></h2>
-        <h2 style={{ color: "#445E93" }}>{problemsetInfo.problemsetName}</h2>
 
         <div style={styles.problemsetInfo}>
           <div style={styles.infoLabel}>
@@ -152,11 +160,6 @@ export default function ProblemSet() {
           }}
         >
           <TableContainer>
-            {loader && (
-              <div className="loader-container">
-                <BeatLoader color={"#343a40"} size={30} loading={loader} />
-              </div>
-            )}
             <Table stickyHeader aria-label="sticky table">
               <TableHead>
                 <TableRow>

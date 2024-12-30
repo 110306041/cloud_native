@@ -53,19 +53,28 @@ export default function Course() {
   }, [id]);
 
   return (
-    <div className="courses-container">
-      <ToastContainer />
+    <div>
       {loader ? (
-        <BeatLoader color={"#343a40"} size={30} loading={loader} />
+        <div className="courses-spinner">
+          <BeatLoader color={"#7D99D3"} size={20} loading={loader} />
+        </div>
       ) : (
-        <div className="courses-right">
-          <h2>
-            {" "}
-            {courseInfo?.semester} {courseInfo?.name}
-          </h2>
+        <div className="courses-container">
+          <ToastContainer />
+          {loader ? (
+            <div className="courses-spinner">
+              <BeatLoader color={"#7D99D3"} size={20} loading={loader} />
+            </div>
+          ) : (
+            <div className="courses-right">
+              <h2 style={{ color: "#445E93" }}>
+                {courseInfo?.semester} {courseInfo?.name}
+              </h2>
 
-          <CourseHw hws={hws} courseInfo={courseInfo}></CourseHw>
-          <CourseExam exams={exams} courseInfo={courseInfo}></CourseExam>
+              <CourseHw hws={hws} courseInfo={courseInfo}></CourseHw>
+              <CourseExam exams={exams} courseInfo={courseInfo}></CourseExam>
+            </div>
+          )}
         </div>
       )}
     </div>
