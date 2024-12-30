@@ -15,14 +15,15 @@ import { BeatLoader } from "react-spinners";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { BACK_SERVER_URL } from "../../config/config";
-import { getDateTime } from "../../utils";
+import {
+  getDateTime,
+  problemsetStudentColumn,
+  problemsetTeacherColumn,
+} from "../../utils";
 import "./problemset.css";
-const columns = [
-  { id: "id", label: "#", minWidth: 20, align: "center" },
-  { id: "name", label: "Problem Name", minWidth: 100 },
-  { id: "difficulty", label: "Difficulty", minWidth: 50, align: "center" },
-  { id: "score", label: "Score", minWidth: 100, align: "center" },
-];
+let columns = localStorage.getItem("role") === "student"
+  ? problemsetStudentColumn
+  : problemsetTeacherColumn;
 
 const styles = {
   assignmentTitle: {
@@ -54,9 +55,17 @@ export default function ProblemSet() {
   const navigate = useNavigate();
 
   useLayoutEffect(() => {
+    columns = localStorage.getItem("role") === "student"
+      ? problemsetStudentColumn
+      : problemsetTeacherColumn;
+    
+    const apiUrl = localStorage.getItem("role") === "student"
+      ? `${BACK_SERVER_URL}/api/student/${problemsetInfo.problemType}/questions/${id}`
+      : `${BACK_SERVER_URL}/api/teacher/${problemsetInfo.problemType}/questions/${id}`;
+
     axios
       .get(
-        `${BACK_SERVER_URL}/api/student/${problemsetInfo.problemType}/questions/${id}`,
+        `${BACK_SERVER_URL}/api/student/${problemsetInfo.problemType}/questions/${id}`, //TODO: change to apiUrl
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("access-token")}`,
@@ -144,7 +153,6 @@ export default function ProblemSet() {
         <Paper
           sx={{
             width: "100%",
-            height: "800px",
             borderRadius: "16px",
             overflow: "hidden",
             marginBottom: "40px",
