@@ -9,10 +9,11 @@ export const getCoursesByStudent = async (req, res) => {
     const studentId = user.id;
     // Fetch user courses
     const userCourses = await UserCourse.findAll({
-      where: { UserID: studentId },
+      where: { UserID: studentId, DeletedAt: null },
       include: {
         model: Course,
         attributes: ["ID", "Name", "Semester"],
+        where: { DeletedAt: null }
       },
       order: [[{ model: Course }, "Semester", "DESC"]],
     });
@@ -35,6 +36,7 @@ export const getCoursesByStudent = async (req, res) => {
         const totalAssignments = await Assignment.count({
           where: {
             CourseID: courseId,
+            DeletedAt: null,
             // DueDate: { [Op.gte]: new Date() },
           },
         });
@@ -58,8 +60,8 @@ export const getCoursesByStudent = async (req, res) => {
         //   group: ["Assignment.ID"],
         //   having: Sequelize.literal(
         //     `COUNT(DISTINCT "Questions"."ID") = (
-        //         SELECT COUNT(*) 
-        //         FROM "Question" 
+        //         SELECT COUNT(*)
+        //         FROM "Question"
         //         WHERE "Question"."AssignmentID" = "Assignment"."ID"
         //       )`
         //   ),
@@ -70,17 +72,17 @@ export const getCoursesByStudent = async (req, res) => {
         //   : 0;
         const completedAssignments = await Submission.count({
           distinct: true,
-          col: 'QuestionID',
+          col: "QuestionID",
           where: {
             UserID: studentId,
             QuestionID: {
               [Op.in]: Sequelize.literal(`
               (SELECT "ID" 
                 FROM "Question" 
-                WHERE "AssignmentID" IN (
+                WHERE "DeletedAt" = null AND "AssignmentID" IN (
                   SELECT "ID" 
                   FROM "Assignment" 
-                  WHERE "CourseID" = '${courseId}'
+                  WHERE "DeletedAt" = null AND "CourseID" = '${courseId}'
                 )
               )
               `),
@@ -91,6 +93,7 @@ export const getCoursesByStudent = async (req, res) => {
         const activeExams = await Exam.count({
           where: {
             CourseID: courseId,
+            DeletedAt: null,
             StartDate: { [Op.lte]: new Date() }, // Ensure the exam has started
             DueDate: { [Op.gte]: new Date() }, // Ensure the exam is still ongoing
           },

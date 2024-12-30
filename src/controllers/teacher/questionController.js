@@ -4,17 +4,37 @@
 // import Submission from "../../../models/Submission.js";
 // import Exam from "../../../models/Exam.js";
 // import { Op } from "sequelize";
-import db from "../../../models/index.js";  
+import { Op, Sequelize } from "sequelize";
 
-const { UserCourse, Course, Assignment, Submission, Exam, Question, TestCase } = db;
+import db from "../../../models/index.js";
+
+const {
+  UserCourse,
+  User,
+  Course,
+  Assignment,
+  Submission,
+  Exam,
+  Question,
+  TestCase,
+  sequelize,
+} = db;
 
 export const getAssignmentQuestions = async (req, res) => {
   try {
     const { assignmentID } = req.params;
+    const isDeleted = await Assignment.findOne({
+      where: { ID: assignmentID, DeletedAt: { [Op.ne]: null } },
+    });
+    if (isDeleted) {
+      return res
+        .status(500)
+        .json({ error: "The Assignment has been deleted." });
+    }
 
     // Fetch questions for the specified assignment
     const questions = await Question.findAll({
-      where: { AssignmentID: assignmentID },
+      where: { AssignmentID: assignmentID, DeletedAt: null },
       attributes: ["ID", "Name", "Description", "Difficulty"],
       raw: true,
     });
@@ -49,10 +69,16 @@ export const getAssignmentQuestions = async (req, res) => {
 export const getExamQuestions = async (req, res) => {
   try {
     const { examID } = req.params;
+    const isDeleted = await Exam.findOne({
+      where: { ID: examID, DeletedAt: { [Op.ne]: null } },
+    });
+    if (isDeleted) {
+      return res.status(500).json({ error: "The exam has been deleted." });
+    }
 
     // Fetch questions for the specified exam
     const questions = await Question.findAll({
-      where: { ExamID: examID },
+      where: { ExamID: examID, DeletedAt: null },
       attributes: ["ID", "Name", "Description", "Difficulty"],
       raw: true,
     });
@@ -87,7 +113,12 @@ export const getExamQuestions = async (req, res) => {
 export const getQuestionDetails = async (req, res) => {
   try {
     const { questionID } = req.params;
-
+    const isDeleted = await Question.findOne({
+      where: { ID: questionID, DeletedAt: { [Op.ne]: null } },
+    });
+    if (isDeleted) {
+      return res.status(500).json({ error: "The Question has been deleted." });
+    }
     // Fetch question details
     const question = await Question.findOne({
       where: { ID: questionID },
@@ -109,7 +140,7 @@ export const getQuestionDetails = async (req, res) => {
 
     // Fetch sample test cases for the question
     const sampleTestCases = await TestCase.findAll({
-      where: { QuestionID: questionID },
+      where: { QuestionID: questionID, DeletedAt: null },
       attributes: ["Input", "Output"],
       raw: true,
     });
@@ -128,7 +159,7 @@ export const getQuestionDetails = async (req, res) => {
     const ACNum = await Submission.count({
       where: {
         QuestionID: questionID,
-        Score: 100, 
+        Score: 100,
       },
       distinct: true,
       col: "UserID",
@@ -155,6 +186,7 @@ export const getQuestionDetails = async (req, res) => {
 };
 
 export const createQuestion = async (req, res) => {
+  const transaction = await sequelize.transaction();
   try {
     const {
       exam_id,
@@ -166,10 +198,18 @@ export const createQuestion = async (req, res) => {
       due_date,
       description,
       test_cases,
-      question_name
+      question_name,
     } = req.body;
 
     const teacherID = req.user.id; // Assuming authentication middleware provides the teacher ID
+    const isTeacher = await User.findOne({
+      where: { ID: teacherID, Type: "teacher" },
+    });
+    if (!isTeacher) {
+      return res
+        .status(403)
+        .json({ error: "Only teacher are able to add question" });
+    }
 
     // Ensure the question is linked to either an exam or an assignment, not both
     if (!exam_id && !assignment_id) {
@@ -185,10 +225,10 @@ export const createQuestion = async (req, res) => {
 
     // Validate the teacher's relationship with the course for the exam or assignment
     let courseID;
-    // let parentDueDate; 
+    // let parentDueDate;
     if (exam_id) {
       const exam = await Exam.findOne({
-        where: { ID: exam_id },
+        where: { ID: exam_id, DeletedAt: null },
         include: {
           model: Course,
           include: {
@@ -210,7 +250,7 @@ export const createQuestion = async (req, res) => {
 
     if (assignment_id) {
       const assignment = await Assignment.findOne({
-        where: { ID: assignment_id },
+        where: { ID: assignment_id, DeletedAt: null },
         include: {
           model: Course,
           include: {
@@ -233,6 +273,7 @@ export const createQuestion = async (req, res) => {
       where: {
         [exam_id ? "ExamID" : "AssignmentID"]: exam_id || assignment_id,
         Name: question_name,
+        DeletedAt: null,
       },
     });
 
@@ -244,31 +285,34 @@ export const createQuestion = async (req, res) => {
       });
     }
     // Create a new question
-    const newQuestion = await Question.create({
-      //   ID: uuidv4(),
-      ExamID: exam_id || null,
-      AssignmentID: assignment_id || null,
-      Name:question_name,
-      Difficulty: difficulty,
-      TimeLimit: time_limit,
-      MemoryLimit: memory_limit,
-      SubmissionLimit: submission_limit,
-      DueDate: new Date(due_date),
-      Description: description,
-    });
+    const newQuestion = await Question.create(
+      {
+        //   ID: uuidv4(),
+        ExamID: exam_id || null,
+        AssignmentID: assignment_id || null,
+        Name: question_name,
+        Difficulty: difficulty,
+        TimeLimit: time_limit,
+        MemoryLimit: memory_limit,
+        SubmissionLimit: submission_limit,
+        DueDate: new Date(due_date),
+        Description: description,
+      },
+      { transaction: transaction }
+    );
 
     // Create associated test cases
     if (test_cases && Array.isArray(test_cases)) {
       const testCaseData = test_cases.map((tc, index) => ({
-        // ID: uuidv4(),
         QuestionID: newQuestion.ID,
         Input: tc.input,
         Output: tc.expected_output,
-        Sequence: index + 1
+        Sequence: index + 1,
       }));
 
-      await TestCase.bulkCreate(testCaseData);
+      await TestCase.bulkCreate(testCaseData, { transaction: transaction });
     }
+    await transaction.commit();
 
     // Return the created question
     res.status(201).end();
@@ -287,7 +331,81 @@ export const createQuestion = async (req, res) => {
     //   },
     // });
   } catch (error) {
+    await transaction.rollback();
     console.error("Error creating question:", error);
     res.status(500).json({ error: "Failed to create question." });
+  }
+};
+
+export const deleteQuestion = async (req, res) => {
+  const transaction = await Question.sequelize.transaction(); // Start a transaction
+
+  try {
+    const { questionID } = req.params;
+    // Soft delete the Question
+    const questionResult = await Question.update(
+      { DeletedAt: Sequelize.fn("NOW") },
+      { where: { ID: questionID, DeletedAt: null }, transaction: transaction }
+    );
+
+    if (questionResult[0] === 0) {
+      await transaction.rollback();
+      return res
+        .status(500)
+        .json({ error: "error occur when deleting course." });
+    }
+
+    // Soft delete related Test Cases
+    await TestCase.update(
+      { DeletedAt: Sequelize.fn("NOW")},
+      {
+        where: { QuestionID: questionID, DeletedAt: null },
+        transaction: transaction,
+      }
+    );
+
+    await transaction.commit();
+    console.log('success');
+    res.status(200).end();
+  } catch (error) {
+    await transaction.rollback();
+    console.error("Error deleting question:", error);
+    return res.status(500).json({ error: "error occur when deleting course." });
+  }
+};
+
+
+export const updateQuestion = async (req, res) => {
+  try {
+    const {questionID} = req.params; 
+    const updatedData = req.body; 
+
+    // Fields to exclude from update
+    const excludedFields = ['ID', 'CreatedAt', 'DeletedAt', 'UpdatedAt', 'AssignmentId', 'ExamID'];
+
+    // Filter out excluded fields
+    const filteredData = {};
+    Object.keys(updatedData).forEach((key) => {
+      if (!excludedFields.includes(key)) {
+        filteredData[key] = updatedData[key];
+      }
+    });
+
+    // Add manual UpdatedAt since timestamps are disabled in the model
+    filteredData.UpdatedAt = new Date();
+
+    // Perform the update
+    const [affectedRows] = await Question.update(filteredData, {
+      where: { ID: questionID, DeletedAt: null }, // Only update non-deleted courses
+    });
+
+    if (affectedRows === 0) {
+      return res.status(404).json({message: 'question not found or already deleted.' });
+    }
+
+    return res.status(200).json({message: 'question updated successfully.' });
+  } catch (error) {
+    console.error('Error updating assignment:', error);
+    return res.status(500).json({ message: 'An error occurred while updating the question.' });
   }
 };
