@@ -19,7 +19,8 @@ import {
   getDateTime,
 } from "../../../utils";
 
-let columns = localStorage.getItem("role") === "student"
+let columns =
+  localStorage.getItem("role") === "student"
     ? courseHwStudentColumn
     : courseHwTeacherColumn;
 
@@ -82,25 +83,35 @@ export default function CourseHw({ hws = [], courseInfo }) {
         </div>
       ) : (
         <div>
-          <h3 style={{ padding: "20px 0" }}>Assignments</h3>
-          {localStorage.getItem("role") === "student" ? null : (
-          <Button
-            type="submit"
-            color="primary"
-            variant="contained"
-            className="add-course-btn"
-            sx={{
-              backgroundColor: "#445E93",
-              fontWeight: "bold",
-              "&:hover": {
-                backgroundColor: "#29335C",
-              },
+          <div
+            style={{
+              display: "flex", // 使用 Flexbox 佈局
+              justifyContent: "space-between", // 元素兩端對齊
+              alignItems: "center", // 垂直方向居中
+              padding: "20px 0",
             }}
-            onClick={() => handleButtonClick(id)}
           >
-            Add Assignment
-          </Button>
-        )}
+            <h2 style={{ padding: "20px 0", color: "#445E93" }}>Assignments</h2>
+
+            {localStorage.getItem("role") === "student" ? null : (
+              <Button
+                type="submit"
+                color="primary"
+                variant="contained"
+                className="add-course-btn"
+                sx={{
+                  backgroundColor: "#445E93",
+                  fontWeight: "bold",
+                  "&:hover": {
+                    backgroundColor: "#29335C",
+                  },
+                }}
+                onClick={() => handleButtonClick(id)}
+              >
+                Add Assignment
+              </Button>
+            )}
+          </div>
           <Paper
             sx={{
               width: "100%",

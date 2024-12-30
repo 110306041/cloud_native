@@ -123,7 +123,8 @@ export default function ProblemSet() {
         <h2 style={styles.assignmentTitle}>
           {problemsetInfo.courseInfo.semester} {problemsetInfo.courseInfo.name}
         </h2>
-        <h2 style={styles.assignmentTitle}>{problemsetInfo.problemsetName}</h2>
+        <h2 style={styles.assignmentTitle}></h2>
+        <h2 style={{ color: "#445E93" }}>{problemsetInfo.problemsetName}</h2>
 
         <div style={styles.problemsetInfo}>
           <div style={styles.infoLabel}>
@@ -187,7 +188,11 @@ export default function ProblemSet() {
                         tabIndex={-1}
                         key={index}
                         onClick={() => {
-                          navigate(`/problem/${allProblems[page * rowsPerPage + index].id}`)
+                          navigate(
+                            `/problem/${
+                              allProblems[page * rowsPerPage + index].id
+                            }`
+                          );
                         }}
                         style={{ cursor: "pointer" }}
                       >

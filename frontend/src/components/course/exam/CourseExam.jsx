@@ -75,8 +75,16 @@ export default function CourseHw({ exams = [], courseInfo }) {
 
   return (
     <div>
-      <h3 style={{ padding: "20px 0" }}>Exam</h3>
-      {localStorage.getItem("role") === "student" ? null : (
+      <div
+        style={{
+          display: "flex", // 使用 Flexbox 佈局
+          justifyContent: "space-between", // 元素兩端對齊
+          alignItems: "center", // 垂直方向居中
+          padding: "20px 0",
+        }}
+      >
+        <h2 style={{ padding: "20px 0", color: "#445E93" }}>Exam</h2>
+        {localStorage.getItem("role") === "student" ? null : (
           <Button
             type="submit"
             color="primary"
@@ -94,6 +102,7 @@ export default function CourseHw({ exams = [], courseInfo }) {
             Add Exam
           </Button>
         )}
+      </div>
       <Paper
         sx={{
           width: "100%",
@@ -102,7 +111,13 @@ export default function CourseHw({ exams = [], courseInfo }) {
           marginBottom: "40px",
         }}
       >
-        <TableContainer sx={{ maxHeight: 550 }}>
+        <TableContainer
+          sx={{
+            maxHeight: 550, // 限制高度
+            overflowY: "scroll", // 保持滾動行為
+            scrollbarGutter: "stable", // 確保滾動條佔位
+          }}
+        >
           <Table stickyHeader aria-label="sticky table">
             <TableHead>
               <TableRow>

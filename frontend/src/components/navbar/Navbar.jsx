@@ -74,11 +74,21 @@ export default function NavBar(props) {
                   onClick={handleClickListItem}
                   style={{ padding: 0 }}
                 >
-                  <img
-                    src="/images/avatar.jpg"
-                    alt="avatar"
-                    className="navbarAvatar"
-                  />
+                  <div>
+                    {localStorage.getItem("role") === "student" ? (
+                      <img
+                        src="/images/avatar.jpg" // 學生角色的圖片
+                        alt="Student Avatar"
+                        className="navbarAvatar"
+                      />
+                    ) : localStorage.getItem("role") === "teacher" ? (
+                      <img
+                        src="/images/tAvatar.jpg" // 教師角色的圖片
+                        alt="Teacher Avatar"
+                        className="navbarAvatar"
+                      />
+                    ) : null}
+                  </div>
                 </Button>
                 <div
                   style={{
