@@ -213,6 +213,29 @@ Response: (400 Bad Request)
 }
 ```
 
+#### GET /student/submissioins
+
+得到該 student 的 submission list
+
+Response: (200 OK)
+```json
+{
+    "submissions": [
+        {
+            "ID": "UUID",
+			"Score": int,
+			"TimeSpend": int,
+			"MemoryUsage": int,
+			"CreatedAt": "datetime",
+			"Code": "string",
+			"Language": "string",
+			"UserID": "UUID",
+			"QuestionID": "UUID"
+        }
+    ]
+}
+```
+
 
 ### 老師視角
 
