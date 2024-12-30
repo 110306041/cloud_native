@@ -52,115 +52,33 @@ export const getDateTime = (value) => {
   return date + " " + time;
 };
 
-// fake data
-export const problemsetFake = [
+export const mockHws = [
   {
     id: 1,
-    name: 'test',
-    score: 80,
-    difficulty: 'Hard'
-  },
-  {
-    id: 1,
-    name: 'test',
-    score: 80,
-    difficulty: 'Hard'
-  },
-  {
-    id: 1,
-    name: 'test',
-    score: 80,
-    difficulty: 'Hard'
-  },
-  {
-    id: 1,
-    name: 'test',
-    score: 80,
-    difficulty: 'Hard'
-  },
-  {
-    id: 1,
-    name: 'test',
-    score: 80,
-    difficulty: 'Hard'
-  },
-  {
-    id: 1,
-    name: 'test',
-    score: 80,
-    difficulty: 'Hard'
-  },
-  {
-    id: 1,
-    name: 'test',
-    score: 80,
-    difficulty: 'Hard'
-  },
-  {
-    id: 1,
-    name: 'test',
-    score: 80,
-    difficulty: 'Hard'
-  },
-  {
-    id: 1,
-    name: 'test',
-    score: 80,
-    difficulty: 'Hard'
-  },
-  {
-    id: 1,
-    name: 'test',
-    score: 80,
-    difficulty: 'Hard'
-  },
-  {
-    id: 1,
-    name: 'test',
-    score: 80,
-    difficulty: 'Hard'
-  },
-]
-
-export const coursesFake = [
-  {
-    id: 1,
-    semester: '113-1',
-    name: 'test',
-    totalHw: 5,
-    doneHw: 5, //TODO: receive total amount of hw  & finished num
-    exam: 1,
+    name: "Assignment 1",
+    question_count: 10,
+    status: "completed", // 測試狀態
+    due_date: "2024-01-15T23:59:59",
+    score: 85,
+    description: "a;eifja;weifja;weoifja;wefija;woeifaj;weoifja;woeifja;weoifa;woeifja;oewifja;woeifja;oewifja;woeifj"
   },
   {
     id: 2,
-    semester: '113-1',
-    name: 'test2',
-    totalHw: 5,
-    doneHw: 5,
-    exam: 1,
-  },
-]
-
-export const courseHwFake = [
-  {
-    id: 1,
-    name: 'test',
-    questions: 2,
-    status: 'overdue',
-    startDate: '2024/12/20',
-    dueDate: '2024/12/26',
-    score: 80,
+    name: "Assignment 2",
+    question_count: 8,
+    status: "in progress", // 測試狀態
+    due_date: "2024-01-20T23:59:59",
+    score: 70,
   },
   {
-    id: 2,
-    name: 'test',
-    questions: 2,
-    status: 'In progress',
-    startDate: '2024/12/20',
-    dueDate: '2024/12/26',
-    score: 80,
-  }
-]
+    id: 3,
+    name: "Assignment 3",
+    question_count: 12,
+    status: "overdue", // 測試狀態
+    due_date: "2024-01-10T23:59:59",
+    score: 50,
+  },
+];
 
 export const problemFake = {
   id: 1,
@@ -192,3 +110,47 @@ export const resultFake = {
   memoryUsage: 80,
   executionTime: 0.7,
 }
+
+// table column
+// courses
+export const courses = [
+  { id: "id", label: "#", minWidth: 30, maxWidth: 50, align: "center" },
+  { id: "semester", label: "Semester", minWidth: 120, maxWidth: 150, align: "left" },
+  { id: "name", label: "Course Name", minWidth: 250, align: "left" },
+  { id: "hw", label: "Homework", minWidth: 100, maxWidth: 120, align: "center" },
+  { id: "exam", label: "Exam", minWidth: 100, maxWidth: 120, align: "center" },
+]
+
+// courseHw
+export const courseHwStudentColumn = [
+  { id: "id", label: "#", minWidth: 50, maxWidth: 70, align: "center" },
+  { id: "name", label: "Assignment Name", minWidth: 150, align: "left" },
+  { id: "question_count", label: "Question amount", minWidth: 100, maxWidth: 120, align: "center" },
+  { id: "status", label: "Status", minWidth: 100, maxWidth: 120, align: "center" },
+  { id: "dueDate", label: "Due Date", minWidth: 120, maxWidth: 150, align: "center" },
+  { id: "score", label: "Score", minWidth: 100, maxWidth: 120, align: "center" },
+]
+
+export const courseHwTeacherColumn = [
+  { id: "id", label: "#", minWidth: 50, maxWidth: 70, align: "center" },
+  { id: "name", label: "Assignment Name", minWidth: 150, align: "left" },
+  { id: "description", label: "Description", minWidth: 150, maxWidth: 200, align: "left" },
+  { id: "question_count", label: "Question amount", minWidth: 100, maxWidth: 120, align: "center" },
+  { id: "dueDate", label: "Due Date", minWidth: 120, maxWidth: 150, align: "center" },
+]
+
+// courseExam
+export const courseExamStudentColumn = [
+  { id: "id", label: "#", minWidth: 50, maxWidth: 70, align: "center" },
+  { id: "name", label: "Exam Name", minWidth: 150, align: "left" },
+  { id: "startDate", label: "Start Date", minWidth: 120, maxWidth: 150, align: "center" },
+  { id: "dueDate", label: "Due Date", minWidth: 120, maxWidth: 150, align: "center" },
+  { id: "score", label: "Score", minWidth: 100, maxWidth: 120, align: "center" },
+]
+
+export const courseExamTeacherColumn = [
+  { id: "id", label: "#", minWidth: 50, maxWidth: 70, align: "center" },
+  { id: "name", label: "Exam Name", minWidth: 150, align: "left" },
+  { id: "startDate", label: "Start Date", minWidth: 120, maxWidth: 150, align: "center" },
+  { id: "dueDate", label: "Due Date", minWidth: 120, maxWidth: 150, align: "center" },
+]

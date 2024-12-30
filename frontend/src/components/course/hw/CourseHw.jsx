@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { BeatLoader } from "react-spinners";
 import "react-toastify/dist/ReactToastify.css";
 
+import { Button } from "@mui/material";
 import Chip from "@mui/material/Chip";
 import Paper from "@mui/material/Paper";
 import Table from "@mui/material/Table";
@@ -12,79 +13,32 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TablePagination from "@mui/material/TablePagination";
 import TableRow from "@mui/material/TableRow";
-import { getDateTime } from "../../../utils";
+import {
+  courseHwStudentColumn,
+  courseHwTeacherColumn,
+  getDateTime,
+} from "../../../utils";
 
-const columns = [
-  { id: "id", label: "#", minWidth: 50, maxWidth: 70, align: "center" },
-  { id: "name", label: "Homework Name", minWidth: 150, align: "left" },
-  {
-    id: "question_count",
-    label: "Question amount",
-    minWidth: 100,
-    maxWidth: 120,
-    align: "center",
-  },
-  {
-    id: "status",
-    label: "Status",
-    minWidth: 100,
-    maxWidth: 120,
-    align: "center",
-  },
-  {
-    id: "dueDate",
-    label: "Due Date",
-    minWidth: 120,
-    maxWidth: 150,
-    align: "center",
-  },
-  {
-    id: "score",
-    label: "Score",
-    minWidth: 100,
-    maxWidth: 120,
-    align: "center",
-  },
-];
+let columns = localStorage.getItem("role") === "student"
+    ? courseHwStudentColumn
+    : courseHwTeacherColumn;
 
 export default function CourseHw({ hws = [], courseInfo }) {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(12);
+  const [allHws, setAllHws] = useState(hws);
+  const [rows, setRows] = useState([]);
 
-  const mockHws = [
-    {
-      id: 1,
-      name: "Assignment 1",
-      question_count: 10,
-      status: "completed",
-      due_date: "2024-01-15T23:59:59",
-      score: 85,
-    },
-    {
-      id: 2,
-      name: "Assignment 2",
-      question_count: 8,
-      status: "in progress",
-      due_date: "2024-01-20T23:59:59",
-      score: 70,
-    },
-    {
-      id: 3,
-      name: "Assignment 3",
-      question_count: 12,
-      status: "overdue",
-      due_date: "2024-01-10T23:59:59",
-      score: 50,
-    },
-  ];
-
-  const [allHws, setAllHws] = useState(mockHws);
-  const [rows, setRows] = useState(mockHws);
   const [searchQuery, setSearchQuery] = useState("");
   const [loader, setLoader] = useState(false);
   const navigate = useNavigate();
+  const { id } = useParams();
 
   useEffect(() => {
+    columns =
+      localStorage.getItem("role") === "student"
+        ? courseHwStudentColumn
+        : courseHwTeacherColumn;
     const getPageData = () => {
       let filtered = allHws;
       if (searchQuery) {
@@ -114,6 +68,12 @@ export default function CourseHw({ hws = [], courseInfo }) {
     });
   };
 
+  const handleButtonClick = (id) => {
+    navigate(`/addHw`, {
+      state: { id },
+    });
+  };
+
   return (
     <div>
       {loader ? (
@@ -123,13 +83,31 @@ export default function CourseHw({ hws = [], courseInfo }) {
       ) : (
         <div>
           <h3 style={{ padding: "20px 0" }}>Assignments</h3>
+          {localStorage.getItem("role") === "student" ? null : (
+          <Button
+            type="submit"
+            color="primary"
+            variant="contained"
+            className="add-course-btn"
+            sx={{
+              backgroundColor: "#445E93",
+              fontWeight: "bold",
+              "&:hover": {
+                backgroundColor: "#29335C",
+              },
+            }}
+            onClick={() => handleButtonClick(id)}
+          >
+            Add Assignment
+          </Button>
+        )}
           <Paper
             sx={{
               width: "100%",
-              height: "450px",
+
               borderRadius: "16px",
               overflow: "hidden",
-              marginBottom: "20px",
+              marginBottom: "5px",
             }}
           >
             <TableContainer sx={{ maxHeight: 550 }}>
@@ -247,6 +225,10 @@ export default function CourseHw({ hws = [], courseInfo }) {
                                       fontWeight: "regular",
                                       fontSize: "16px",
                                       color: "#222222",
+                                      textOverflow: "ellipsis",
+                                      maxWidth: column.maxWidth,
+                                      display: "inline-block",
+                                      overflow: "hidden",
                                     }}
                                   >
                                     {value}
@@ -262,7 +244,7 @@ export default function CourseHw({ hws = [], courseInfo }) {
               </Table>
             </TableContainer>
             <TablePagination
-              rowsPerPageOptions={[10, 25, 100]}
+              rowsPerPageOptions={[5, 10, 25]}
               component="div"
               count={rows.length}
               rowsPerPage={rowsPerPage}

@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import "react-toastify/dist/ReactToastify.css";
 import "./courseExam.css";
 
+import { Button } from "@mui/material";
 import Paper from "@mui/material/Paper";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
@@ -11,33 +12,16 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TablePagination from "@mui/material/TablePagination";
 import TableRow from "@mui/material/TableRow";
-import { getDateTime } from "../../../utils";
+import {
+  courseExamStudentColumn,
+  courseExamTeacherColumn,
+  getDateTime,
+} from "../../../utils";
 
-const columns = [
-  { id: "id", label: "#", minWidth: 50, maxWidth: 70, align: "center" },
-  { id: "name", label: "Homework Name", minWidth: 150, align: "left" },
-  {
-    id: "startDate",
-    label: "Start Date",
-    minWidth: 120,
-    maxWidth: 150,
-    align: "center",
-  },
-  {
-    id: "dueDate",
-    label: "Due Date",
-    minWidth: 120,
-    maxWidth: 150,
-    align: "center",
-  },
-  {
-    id: "score",
-    label: "Score",
-    minWidth: 100,
-    maxWidth: 120,
-    align: "center",
-  },
-];
+let columns =
+  localStorage.getItem("role") === "student"
+    ? courseExamStudentColumn
+    : courseExamTeacherColumn;
 
 export default function CourseHw({ exams = [], courseInfo }) {
   const [page, setPage] = useState(0);
@@ -46,8 +30,14 @@ export default function CourseHw({ exams = [], courseInfo }) {
   const [rows, setRows] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const navigate = useNavigate();
+  const { id } = useParams();
 
   useEffect(() => {
+    columns =
+      localStorage.getItem("role") === "student"
+        ? courseExamStudentColumn
+        : courseExamTeacherColumn;
+
     const getPageData = () => {
       let filtered = allExams;
       if (searchQuery) {
@@ -77,17 +67,39 @@ export default function CourseHw({ exams = [], courseInfo }) {
     });
   };
 
+  const handleButtonClick = (id) => {
+    navigate(`/addExam`, {
+      state: { id },
+    });
+  };
+
   return (
     <div>
       <h3 style={{ padding: "20px 0" }}>Exam</h3>
+      {localStorage.getItem("role") === "student" ? null : (
+          <Button
+            type="submit"
+            color="primary"
+            variant="contained"
+            className="add-course-btn"
+            sx={{
+              backgroundColor: "#445E93",
+              fontWeight: "bold",
+              "&:hover": {
+                backgroundColor: "#29335C",
+              },
+            }}
+            onClick={() => handleButtonClick(id)}
+          >
+            Add Exam
+          </Button>
+        )}
       <Paper
         sx={{
           width: "100%",
-          height: "450px",
           borderRadius: "16px",
           overflow: "hidden",
           marginBottom: "40px",
-
         }}
       >
         <TableContainer sx={{ maxHeight: 550 }}>
@@ -198,7 +210,7 @@ export default function CourseHw({ exams = [], courseInfo }) {
           </Table>
         </TableContainer>
         <TablePagination
-          rowsPerPageOptions={[10, 25, 100]}
+          rowsPerPageOptions={[5, 10, 25]}
           component="div"
           count={rows.length}
           rowsPerPage={rowsPerPage}

@@ -1,12 +1,7 @@
 import axios from "axios";
 
-import React, { useEffect, useLayoutEffect, useState } from "react";
-import { BeatLoader } from "react-spinners";
-import { ToastContainer, toast } from "react-toastify";
-import { BACK_SERVER_URL } from "../../config/config";
+import Chip from "@mui/material/Chip";
 import Paper from "@mui/material/Paper";
-import "react-toastify/dist/ReactToastify.css";
-import "./problemset.css";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
@@ -14,9 +9,14 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TablePagination from "@mui/material/TablePagination";
 import TableRow from "@mui/material/TableRow";
-import Chip from "@mui/material/Chip";
+import React, { useEffect, useLayoutEffect, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { BeatLoader } from "react-spinners";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { BACK_SERVER_URL } from "../../config/config";
 import { getDateTime } from "../../utils";
+import "./problemset.css";
 const columns = [
   { id: "id", label: "#", minWidth: 20, align: "center" },
   { id: "name", label: "Problem Name", minWidth: 100 },
@@ -186,13 +186,9 @@ export default function ProblemSet() {
                         role="checkbox"
                         tabIndex={-1}
                         key={index}
-                        onClick={() =>
-                          navigate(
-                            `/problem/${
-                              allProblems[page * rowsPerPage + index].id
-                            }`
-                          )
-                        }
+                        onClick={() => {
+                          navigate(`/problem/${allProblems[page * rowsPerPage + index].id}`)
+                        }}
                         style={{ cursor: "pointer" }}
                       >
                         {columns.map((column) => {
@@ -272,7 +268,7 @@ export default function ProblemSet() {
             </Table>
           </TableContainer>
           <TablePagination
-            rowsPerPageOptions={[10, 25, 100]}
+            rowsPerPageOptions={[5, 10, 25]}
             component="div"
             count={rows.length}
             rowsPerPage={rowsPerPage}

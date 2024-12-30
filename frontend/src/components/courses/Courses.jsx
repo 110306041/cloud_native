@@ -8,6 +8,7 @@ import { BACK_SERVER_URL } from "../../config/config";
 import "react-toastify/dist/ReactToastify.css";
 import "./courses.css";
 
+import { Button } from "@mui/material";
 import Paper from "@mui/material/Paper";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
@@ -16,14 +17,9 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TablePagination from "@mui/material/TablePagination";
 import TableRow from "@mui/material/TableRow";
+import { courses } from "../../utils";
 // import SearchBar from "material-ui-search-bar";
-const columns = [
-  { id: "id", label: "#", minWidth: 30, maxWidth: 50, align: "center" },
-  { id: "semester", label: "Semester", minWidth: 120, maxWidth: 150, align: "left" },
-  { id: "name", label: "Course Name", minWidth: 250, align: "left" },
-  { id: "hw", label: "Homework", minWidth: 100, maxWidth: 120, align: "center" },
-  { id: "exam", label: "Exam", minWidth: 100, maxWidth: 120, align: "center" },
-];
+const columns = courses;
 
 export default function Courses() {
   const [page, setPage] = useState(0);
@@ -35,8 +31,13 @@ export default function Courses() {
   const navigate = useNavigate();
 
   useLayoutEffect(() => {
+    let apiUrl =
+      localStorage.getItem("role") === "student"
+        ? `${BACK_SERVER_URL}/api/student/courses`
+        : `${BACK_SERVER_URL}/api/teacher/courses`;
+
     axios
-      .get(`${BACK_SERVER_URL}/api/student/courses`, {
+      .get(apiUrl, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("access-token")}`,
         },
@@ -102,12 +103,32 @@ export default function Courses() {
           <BeatLoader color={"#343a40"} size={30} loading={loader} />
         </div>
         <h2 style={{ padding: "20px 0" }}>Course</h2>
+        {localStorage.getItem("role") === "student" ? null : (
+          <Button
+            type="submit"
+            color="primary"
+            variant="contained"
+            className="add-course-btn"
+            sx={{
+              backgroundColor: "#445E93",
+              fontWeight: "bold",
+              "&:hover": {
+                backgroundColor: "#29335C",
+              },
+            }}
+            onClick={() => {
+              navigate(`/addCourse`);
+            }}
+          >
+            Add Course
+          </Button>
+        )}
         <Paper
           sx={{
             width: "100%",
-            height: "550px",
             borderRadius: "16px",
             overflow: "hidden",
+            marginBottom: "40px"
           }}
         >
           <TableContainer sx={{ maxHeight: 550 }}>
@@ -157,6 +178,10 @@ export default function Courses() {
                               ? page * rowsPerPage + index + 1
                               : row[column.id];
                           if (column.id === "hw") {
+                            let assignmentsDisplay =
+                              localStorage.getItem("role") === "student"
+                                ? `${row.completed_assignments} / ${row.total_assignments}`
+                                : row.total_assignments;
                             return (
                               <TableCell key={column.id} align={column.align}>
                                 <span
@@ -166,23 +191,7 @@ export default function Courses() {
                                     color: "#222222",
                                   }}
                                 >
-                                  {row.completed_assignments} /{" "}
-                                  {row.total_assignments}
-                                </span>
-                              </TableCell>
-                            );
-                          } else if (column.id === "hw") {
-                            return (
-                              <TableCell key={column.id} align={column.align}>
-                                <span
-                                  style={{
-                                    fontWeight: "regular",
-                                    fontSize: "16px",
-                                    color: "#222222",
-                                  }}
-                                >
-                                  {row.completed_assignments} /{" "}
-                                  {row.total_assignments}
+                                  {assignmentsDisplay}
                                 </span>
                               </TableCell>
                             );
@@ -224,7 +233,7 @@ export default function Courses() {
             </Table>
           </TableContainer>
           <TablePagination
-            rowsPerPageOptions={[10, 25, 100]}
+            rowsPerPageOptions={[5, 10, 25]}
             component="div"
             count={rows.length}
             rowsPerPage={rowsPerPage}

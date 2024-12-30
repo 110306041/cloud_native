@@ -3,6 +3,9 @@ import React, { useState } from "react";
 import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
 import "./App.css";
 import { AuthContext } from "./authContext";
+import AddCourse from "./components/add/addCourse/AddCourse";
+import AddExam from "./components/add/addExam/AddExam";
+import AddHw from "./components/add/addHw/AddHw";
 import Course from "./components/course/Course";
 import Courses from "./components/courses/Courses";
 import NavBar from "./components/navbar/Navbar";
@@ -21,7 +24,7 @@ function App() {
         <Router>
           <NavBar />
           <Routes basename="/">
-            <Route path="/" element={<Courses />} />
+            <Route path="/" element={<SignIn />} />
             <Route path="/courses" element={<Courses />} />
             <Route path="course/:id" element={<Course />} />
             <Route path="/problemset" element={<ProblemSet />} />
@@ -30,6 +33,9 @@ function App() {
             <Route path="/submissions" element={<UserSubmissions />} />
             <Route path="/signin" element={<SignIn />} />
             <Route path="/signup" element={<SignUp />} />
+            <Route path="/addCourse" element={<AddCourse />} />
+            <Route path="/addHw" element={<AddHw />} />
+            <Route path="/addExam" element={<AddExam />} />
           </Routes>
         </Router>
       </div>

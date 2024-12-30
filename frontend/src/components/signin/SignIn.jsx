@@ -59,7 +59,7 @@ const SignIn = () => {
       });
   };
 
-  if (login) return <Navigate to="/" />;
+  if (login) return <Navigate to="/courses" />;
 
   return (
     <Grid align="center" className="signin-container">
