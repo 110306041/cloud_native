@@ -18,10 +18,10 @@ import { BACK_SERVER_URL } from "../../config/config";
 import { getDateTime } from "../../utils";
 import "./problemset.css";
 const columns = [
-  { id: "id", label: "#", minWidth: 10 },
-  { id: "name", label: "Problem Name", minWidth: 200 },
-  { id: "difficulty", label: "Difficulty", minWidth: 50 },
-  { id: "score", label: "Score", minWidth: 100 },
+  { id: "id", label: "#", minWidth: 20, align: "center" },
+  { id: "name", label: "Problem Name", minWidth: 100 },
+  { id: "difficulty", label: "Difficulty", minWidth: 50, align: "center" },
+  { id: "score", label: "Score", minWidth: 100, align: "center" },
 ];
 
 const styles = {
@@ -151,11 +151,11 @@ export default function ProblemSet() {
           }}
         >
           <TableContainer>
-          {loader && (
-    <div className="loader-container">
-      <BeatLoader color={"#343a40"} size={30} loading={loader} />
-    </div>
-  )}
+            {loader && (
+              <div className="loader-container">
+                <BeatLoader color={"#343a40"} size={30} loading={loader} />
+              </div>
+            )}
             <Table stickyHeader aria-label="sticky table">
               <TableHead>
                 <TableRow>
@@ -172,15 +172,11 @@ export default function ProblemSet() {
                       }}
                     >
                       {column.label}
-                      
                     </TableCell>
-                    
                   ))}
-                  
                 </TableRow>
               </TableHead>
               <TableBody>
-
                 {rows
                   .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                   .map((row, index) => {
@@ -217,7 +213,8 @@ export default function ProblemSet() {
                             );
                           } else if (column.id === "difficulty") {
                             let badgeColor;
-                            switch (value) {
+                            const normalizedValue = value?.toLowerCase();
+                            switch (normalizedValue) {
                               case "easy":
                                 badgeColor = "#8ACB88";
                                 break;
@@ -229,6 +226,10 @@ export default function ProblemSet() {
                                 break;
                               default:
                                 badgeColor = "#D9D9D9";
+                                console.log(
+                                  "Default case triggered for value:",
+                                  value
+                                );
                             }
 
                             return (

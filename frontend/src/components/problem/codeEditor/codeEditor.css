@@ -1,41 +1,98 @@
 .code-editor-container {
-    /* padding: 30px 60px; */
-    /* margin: 0px 100px; */
-    /* height: 100%; */
-    padding: 20px;
-    background-color: rgba(238, 241, 241, 0.829);
-    -webkit-box-shadow: 0px 0px 15px -10px rgba(0, 0, 0, 0.75);
-    box-shadow: 0px 0px 15px -10px rgba(0, 0, 0, 0.75);
-  }
-  
-  .code-editor-details-container {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin: 20px 0px;
-    padding: 10px;
-    background-color: white;
-    border-radius: 10px;
-    -webkit-box-shadow: 0px 0px 15px -10px rgba(0, 0, 0, 0.75);
-    box-shadow: 0px 0px 15px -10px rgba(0, 0, 0, 0.75);
-  }
-  
-  .code-editor-language-wrapper {
-    width: 100px;
-  }
-  
-  .code-editor-btn{
-    display: flex;
-  }
-  
-  .code-editor-runcode-btn{
-    width: 150px;
-  }
-  
-  .code-editor-submit-btn{
-    width: 0px;
-  }
+  padding: 20px;
+  background-color: #f8f8f8;
+  -webkit-box-shadow: 0px 0px 15px -10px rgba(0, 0, 0, 0.75);
+  box-shadow: 0px 0px 15px -10px rgba(0, 0, 0, 0.75);
+  border-radius: 8px;
+}
 
-  .code-editor-wrapper {
-    height: calc(100% - 100px); /* 減去上方控制區的高度 */
-  }
+.code-editor-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0; /* 移除左右 padding，只保留上下 padding */
+  margin-bottom: 25px;
+}
+
+.code-editor-language-wrapper {
+  height: 20px;
+  display: flex;
+  align-items: center;
+}
+
+.code-editor-theme {
+  height: 30px;
+  display: flex;
+  align-items: center;
+  gap: 0px;
+}
+
+.code-editor-theme .MuiChip-root {
+  height: 32px;
+  background: transparent;
+  font-size: 16px;
+  font-weight: 300;
+}
+.code-editor-wrapper {
+  height: calc(100% - 100px);
+  margin-bottom: 20px;
+}
+
+
+
+.code-editor-btn {
+  display: flex;
+  justify-content: center; /* 水平置中 */
+  gap: 20px;
+}
+
+/* Common button styles */
+.code-editor-btn .MuiButton-root {
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  text-transform: none;
+  padding: 8px 16px;
+  height: 40px;
+  background-color: #445e93;
+}
+
+.code-editor-btn .MuiButton-root:hover {
+  background-color: #374c77;
+}
+
+/* Icon alignment */
+.code-editor-btn .MuiSvgIcon-root,
+.code-editor-btn .svg-inline--fa {
+  vertical-align: middle;
+}
+
+/* Loading spinner container */
+.code-editor-btn .MuiCircularProgress-root {
+  margin: 0 auto;
+}
+
+/* 行號容器 */
+.ace_gutter {
+  display: flex;
+  flex-direction: column;
+  justify-content: center; /* 垂直居中 */
+  background-color: #f4f4f4;
+  color: #6b7280;
+  font-size: 14px; /* 行號字體大小 */
+}
+
+/* 行號單元格 */
+.ace_gutter-cell {
+  display: flex;
+  align-items: center; /* 垂直居中 */
+  justify-content: center; /* 水平居中 */
+  line-height: 18px !important; /* 確保與編輯器行高一致 */
+  height: 18px !important; /* 確保每個行號單元格高度一致 */
+  font-size: 14px;
+}
+
+/* 調整整體行高，確保行號和內容一致 */
+.ace_line {
+  line-height: 18px !important; /* 與 .ace_gutter-cell 保持一致 */
+}
