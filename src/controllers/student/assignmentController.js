@@ -7,24 +7,39 @@ export const getAssignmentsAndExams = async (req, res) => {
   try {
     const { courseID } = req.params;
     const studentID = req.user.id;
+    const isDeleted = await Course.findOne({
+      where: { ID: courseID, DeletedAt: { [Op.ne]: null } },
+    });
+    if (isDeleted) {
+      return res.status(500).json({ error: "The course has been deleted." });
+    }
 
     // Fetch assignments
     const assignments = await Assignment.findAll({
-      where: { CourseID: courseID },
+      where: { CourseID: courseID, DeletedAt: null },
       attributes: [
         "ID",
         "Name",
         "DueDate",
         "StartDate",
-        [Sequelize.fn("COUNT", Sequelize.col("Questions.ID")), "question_count"],
+        [
+          Sequelize.fn("COUNT", Sequelize.col("Questions.ID")),
+          "question_count",
+        ],
       ],
       include: [
         {
           model: Question,
-          attributes: [], // Only needed for COUNT
+          attributes: [], 
+          where: { DeletedAt: null },
         },
       ],
-      group: ["Assignment.ID", "Assignment.Name", "Assignment.DueDate", "Assignment.StartDate"], // Include all selected columns
+      group: [
+        "Assignment.ID",
+        "Assignment.Name",
+        "Assignment.DueDate",
+        "Assignment.StartDate",
+      ], // Include all selected columns
     });
 
     // Map assignments to include the score
@@ -41,7 +56,7 @@ export const getAssignmentsAndExams = async (req, res) => {
                 AND "QuestionID" IN (
                   SELECT "ID"
                   FROM "Question"
-                  WHERE "AssignmentID" = '${assignment.ID}'
+                  WHERE "DeletedAt" = null AND "AssignmentID" = '${assignment.ID}'
                 )
             ) AS max_scores
           `,
@@ -49,7 +64,7 @@ export const getAssignmentsAndExams = async (req, res) => {
             type: Sequelize.QueryTypes.SELECT,
           }
         );
-    
+
         const score = scoreResult[0]?.score || 0;
 
         return {
@@ -65,12 +80,13 @@ export const getAssignmentsAndExams = async (req, res) => {
 
     // Fetch exams
     const exams = await Exam.findAll({
-      where: { CourseID: courseID },
+      where: { CourseID: courseID, DeletedAt: null },
       attributes: ["ID", "Name", "StartDate", "DueDate"],
       include: [
         {
           model: Course,
           attributes: ["ID", "Name"],
+          where: { DeletedAt: null },
         },
       ],
       raw: false, // Disable raw for better handling of attributes
@@ -90,7 +106,7 @@ export const getAssignmentsAndExams = async (req, res) => {
                 AND "QuestionID" IN (
                   SELECT "ID"
                   FROM "Question"
-                  WHERE "ExamID" = '${exam.ID}'
+                  WHERE "DeletedAt" = null AND "ExamID" = '${exam.ID}'
                 )
             ) AS max_scores
           `,
@@ -98,7 +114,7 @@ export const getAssignmentsAndExams = async (req, res) => {
             type: Sequelize.QueryTypes.SELECT,
           }
         );
-    
+
         const score = scoreResult[0]?.score || 0;
         return {
           id: exam.ID,

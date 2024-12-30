@@ -1,5 +1,7 @@
 // import { DataTypes } from "sequelize";
 // import sequelize from "../syncDB.js";
+import { Sequelize } from "sequelize";
+
 export default (sequelize, DataTypes) => {
   const Question = sequelize.define(
     "Question",
@@ -30,6 +32,9 @@ export default (sequelize, DataTypes) => {
         references: { model: "Exam", key: "ID" },
         onDelete: "CASCADE",
       },
+      CreatedAt: {type:DataTypes.DATE, defaultValue:Sequelize.NOW},
+      UpdatedAt: {type:DataTypes.DATE, defaultValue:Sequelize.NOW},
+      DeletedAt: {type:DataTypes.DATE, allowNull: true}
     },
     {
       tableName: "Question",

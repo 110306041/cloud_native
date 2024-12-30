@@ -1,17 +1,34 @@
 import db from "../../../models/index.js";
 import { Op, Sequelize } from "sequelize";
 
-const { UserCourse, Course, Assignment, Submission, Exam, User, Question, TestCase } = db;
+const {
+  UserCourse,
+  Course,
+  Assignment,
+  Submission,
+  Exam,
+  User,
+  Question,
+  TestCase,
+} = db;
 
 export const getAssignmentQuestions = async (req, res) => {
   try {
     const { assignmentsID } = req.params;
-    console.log(req.params);
-    console.log(assignmentsID);
+    // console.log(req.params);
+    // console.log(assignmentsID);
+    const isDeleted = await Assignment.findOne({
+      where: { ID: assignmentsID, DeletedAt: { [Op.ne]: null } },
+    });
+    if (isDeleted) {
+      return res
+        .status(500)
+        .json({ error: "The Assignment has been deleted." });
+    }
 
     // Fetch questions for the specified assignment
     const questions = await Question.findAll({
-      where: { AssignmentID: assignmentsID },
+      where: { AssignmentID: assignmentsID, DeletedAt: null },
       attributes: ["ID", "Name", "Description", "Difficulty"],
       raw: true,
     });
@@ -46,10 +63,16 @@ export const getAssignmentQuestions = async (req, res) => {
 export const getExamQuestions = async (req, res) => {
   try {
     const { examID } = req.params;
+    const isDeleted = await Exam.findOne({
+      where: { ID: examID, DeletedAt: { [Op.ne]: null } },
+    });
+    if (isDeleted) {
+      return res.status(500).json({ error: "The Exam has been deleted." });
+    }
 
     // Fetch questions for the specified exam
     const questions = await Question.findAll({
-      where: { ExamID: examID },
+      where: { ExamID: examID, DeletedAt: null },
       attributes: ["ID", "Name", "Description", "Difficulty"],
       raw: true,
     });
@@ -84,6 +107,12 @@ export const getExamQuestions = async (req, res) => {
 export const getQuestionDetails = async (req, res) => {
   try {
     const { questionID } = req.params;
+    const isDeleted = await Question.findOne({
+      where: { ID: questionID, DeletedAt: { [Op.ne]: null } },
+    });
+    if (isDeleted) {
+      return res.status(500).json({ error: "The Question has been deleted." });
+    }
 
     // Fetch question details
     const question = await Question.findOne({
@@ -105,9 +134,23 @@ export const getQuestionDetails = async (req, res) => {
     }
 
     // Fetch sample test cases for the question
+    // const sampleTestCases = await TestCase.findAll({
+    //   where: { QuestionID: questionID, DeletedAt: null },
+    //   attributes: ["Input", "Output", "Sequence"],
+    //   raw: true,
+    // });
     const sampleTestCases = await TestCase.findAll({
-      where: { QuestionID: questionID },
-      attributes: ["Input", "Output", "Sequence"],
+      where: { QuestionID: questionID, DeletedAt: null },
+      attributes: [
+        "Input",
+        "Output",
+        [
+          Sequelize.literal(`
+            ROW_NUMBER() OVER (PARTITION BY "QuestionID" ORDER BY "Sequence" ASC)
+          `),
+          "Sequence",
+        ],
+      ],
       raw: true,
     });
     const formattedTestCases = sampleTestCases.map((testCase) => ({

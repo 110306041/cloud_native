@@ -364,3 +364,97 @@ Request:
 ```
 
 Response: (201 OK)
+
+#### Update teacher/questions/questionID
+
+老師更改 questions 中的內容 (update 的 request body 的 field name 需與資料庫一致）
+
+Request:
+```json
+{
+    "Difficulty": "string",
+    "TimeLimit": int,
+    "MemoryLimit":int,
+    "SubmissionLimit": int,
+    "Description": "string",
+    "Name":"string"
+   
+}
+```
+
+Response: (200 OK)
+
+#### Update teacher/exams/examID
+
+老師更改 exams 中的內容 (update 的 request body 的 field name 需與資料庫一致）
+
+Request:
+```json
+{
+    "Name": "string",
+    "StartDate": "datetime",
+    "DueDate": "datetime",
+    "Description": "string"
+}
+```
+
+Response: (200 OK)
+
+#### Update teacher/assignments/assignmentID
+
+老師更改 assignment 中的內容 (update 的 request body 的 field name 需與資料庫一致）
+
+Request:
+```json
+{
+    "Name": "string",
+    "StartDate": "datetime",
+    "DueDate": "datetime",
+    "Description": "string"
+}
+```
+
+Response: (200 OK)
+
+#### Update teacher/courses/courseID
+
+老師更改 course 中的內容 (update 的 request body 的 field name 需與資料庫一致）
+
+Request:
+```json
+{
+    "Name": "string",
+    "Semester": "string",
+    "StudentLimit": int
+}
+```
+
+Response: (200 OK)
+
+#### Delete teacher/questions/questionID
+
+老師刪除 question 中的內容 
+
+
+Response: (200 OK)
+
+#### Delete teacher/exams/examID
+
+老師刪除 exam 中的內容 
+
+
+Response: (200 OK)
+
+#### Delete teacher/assignments/assignmentID
+
+老師刪除 assignment 中的內容 
+
+
+Response: (200 OK)
+
+#### Delete teacher/courses/courseID
+
+老師刪除 course 中的內容 
+
+
+Response: (200 OK)
