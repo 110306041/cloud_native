@@ -20,8 +20,13 @@ export default function Course() {
   const [loader, setLoader] = useState(true);
 
   useEffect(() => {
+    let apiUrl =
+      localStorage.getItem("role") === "student"
+        ? `${BACK_SERVER_URL}/api/student/assignmentsAndExams/${id}`
+        : `${BACK_SERVER_URL}/api/teacher/assignmentsAndExams/${id}`;
+
     axios
-      .get(`${BACK_SERVER_URL}/api/student/assignmentsAndExams/${id}`, {
+      .get(apiUrl, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("access-token")}`,
         },

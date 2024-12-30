@@ -11,33 +11,11 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TablePagination from "@mui/material/TablePagination";
 import TableRow from "@mui/material/TableRow";
-import { getDateTime } from "../../../utils";
+import { courseExamStudentColumn, courseExamTeacherColumn, getDateTime } from "../../../utils";
 
-const columns = [
-  { id: "id", label: "#", minWidth: 50, maxWidth: 70, align: "center" },
-  { id: "name", label: "Homework Name", minWidth: 150, align: "left" },
-  {
-    id: "startDate",
-    label: "Start Date",
-    minWidth: 120,
-    maxWidth: 150,
-    align: "center",
-  },
-  {
-    id: "dueDate",
-    label: "Due Date",
-    minWidth: 120,
-    maxWidth: 150,
-    align: "center",
-  },
-  {
-    id: "score",
-    label: "Score",
-    minWidth: 100,
-    maxWidth: 120,
-    align: "center",
-  },
-];
+const columns = localStorage.getItem("role") === "student"
+  ? courseExamStudentColumn
+  : courseExamTeacherColumn
 
 export default function CourseHw({ exams = [], courseInfo }) {
   const [page, setPage] = useState(0);
@@ -197,7 +175,7 @@ export default function CourseHw({ exams = [], courseInfo }) {
           </Table>
         </TableContainer>
         <TablePagination
-          rowsPerPageOptions={[10, 25, 100]}
+          rowsPerPageOptions={[5, 10, 25]}
           component="div"
           count={rows.length}
           rowsPerPage={rowsPerPage}
