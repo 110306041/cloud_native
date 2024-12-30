@@ -2,9 +2,9 @@
 import axios from "axios";
 import React, { useLayoutEffect, useState } from "react";
 import { BeatLoader } from "react-spinners";
+import { ToastContainer } from "react-toastify";
 import { BACK_SERVER_URL } from "../../config/config";
 import "../courses/courses.css";
-import { ToastContainer, toast } from "react-toastify";
 
 import "react-toastify/dist/ReactToastify.css";
 // import "./userSubmission.css";
@@ -27,10 +27,13 @@ import Submission from "./submission/Submission";
 
 const columns = [
   { id: "id", align: "center", label: "#", minWidth: 30, maxWidth: 50 },
-  { id: "date", align: "center", label: "When", minWidth: 70 },
   { id: "problemName", align: "center", label: "Problem Name", minWidth: 80 },
-  { id: "lang", align: "center", label: "Language", minWidth: 60 },
-  { id: "verdict", align: "center", label: "Verdict", minWidth: 70 },
+  { id: "CreatedAt", align: "center", label: "When", minWidth: 70 },
+  { id: "Language", align: "center", label: "Language", minWidth: 60 },
+  { id: "TimeSpend", align: "center", label: "Time Spend", minWidth: 60 },
+  { id: "MemoryUsage", align: "center", label: "Memory Usage", minWidth: 60 },
+  { id: "Score", align: "center", label: "Score", minWidth: 70 },
+  // { id: "verdict", align: "center", label: "Verdict", minWidth: 70 },
 ];
 
 // const useStyles = makeStyles((theme) => ({
@@ -70,7 +73,8 @@ export default function UserSubmissions() {
   const [loader, setLoader] = useState(true);
   const [modalStyle] = useState(getModalStyle);
   const [modalState, setModalState] = useState({ submission: {}, open: false });
-  const [hasSubmissions, setHasSubmissions] = useState(true);
+  // const [hasSubmissions, setHasSubmissions] = useState(true);
+  const [submissions, setSubmissions] = useState([])
   const verdictMap = {
     AC: "Accepted",
     WA: "Wrong Answer",
@@ -105,22 +109,25 @@ export default function UserSubmissions() {
   };
 
   useLayoutEffect(() => {
-    const parseJwt = (token) => {
-      var base64Url = token.split(".")[1];
-      var base64 = base64Url.replace("-", "+").replace("_", "/");
-      return JSON.parse(window.atob(base64));
-    };
+    // const parseJwt = (token) => {
+    //   var base64Url = token.split(".")[1];
+    //   var base64 = base64Url.replace("-", "+").replace("_", "/");
+    //   return JSON.parse(window.atob(base64));
+    // };
 
-    const accessToken = localStorage.getItem("access-token");
-    const userId = parseJwt(accessToken).sub;
+    // const accessToken = localStorage.getItem("access-token");
+    // const userId = parseJwt(accessToken).sub;
 
     axios
-      .get(`${BACK_SERVER_URL}/api/submission/user/${userId}`, {
-        headers: { Authorization: `Bearer ${accessToken}` },
+      .get(`${BACK_SERVER_URL}/api/student/submissions`, {
+        headers: { Authorization: `Bearer ${localStorage.getItem("access-token")}` },
       })
       .then((res) => {
-        if (!res.data || res.data.length === 0) setHasSubmissions(false);
-        else setRows(res.data);
+        let submissions = res.data.submissions;
+        setSubmissions(submissions)
+        setRows(submissions)
+        // if (!res.data || res.data.length === 0) setHasSubmissions(false);
+        // else setRows(res.data);
         setLoader(false);
       })
       .catch((err) => {
@@ -200,7 +207,7 @@ export default function UserSubmissions() {
     </div>
   );
 
-  return hasSubmissions === false ? (
+  return submissions === false ? (
     <>{/* <NoContent /> */}</>
   ) : (
     <div className="courses-container">
