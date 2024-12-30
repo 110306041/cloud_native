@@ -266,6 +266,10 @@ export default function ProblemSet() {
                                     fontWeight: "regular",
                                     fontSize: "16px",
                                     color: "#222222",
+                                    textOverflow: "ellipsis",
+                                    maxWidth: column.maxWidth,
+                                    display: "inline-block",
+                                    overflow: "hidden",
                                   }}
                                 >
                                   {value}
