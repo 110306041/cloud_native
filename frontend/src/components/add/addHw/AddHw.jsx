@@ -1,22 +1,22 @@
-import React, { useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
-import axios from "axios";
-import { BACK_SERVER_URL } from "../../../config/config";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 import { faPaperPlane } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  Button,
-  TextField,
-  Paper,
-  Typography,
-  CircularProgress,
-  Box,
-  Container,
-  ThemeProvider,
-  createTheme,
+    Box,
+    Button,
+    CircularProgress,
+    Container,
+    Paper,
+    TextField,
+    ThemeProvider,
+    Typography,
+    createTheme,
 } from "@mui/material";
+import axios from "axios";
+import React, { useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { BACK_SERVER_URL } from "../../../config/config";
 
 // 創建自定義主題
 const theme = createTheme({
@@ -121,7 +121,7 @@ const AddHw = () => {
           alignItems: "center",
           justifyContent: "center",
           bgcolor: "#f5f5f5",
-          marginTop: "-80px",
+          marginTop: "-10px",
         }}
       >
         <Container maxWidth="sm">
@@ -193,7 +193,7 @@ const AddHw = () => {
                 <Button
                   variant="outlined"
                   fullWidth
-                  onClick={() => navigate(`/courses/${courseId}`)}
+                  onClick={() => navigate(`/course/${courseId}`)}
                   sx={{
                     borderColor: "#445E93",
                     color: "#445E93",

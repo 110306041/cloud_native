@@ -1,21 +1,21 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import axios from "axios";
-import { BACK_SERVER_URL } from "../../../config/config";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { Send } from "@mui/icons-material";
 import {
-  Button,
-  TextField,
-  Paper,
-  Typography,
-  CircularProgress,
   Box,
+  Button,
+  CircularProgress,
   Container,
+  Paper,
+  TextField,
   ThemeProvider,
+  Typography,
   createTheme,
 } from "@mui/material";
-import { Send } from "@mui/icons-material";
+import axios from "axios";
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { BACK_SERVER_URL } from "../../../config/config";
 
 const theme = createTheme({
   palette: {
@@ -27,14 +27,14 @@ const theme = createTheme({
     MuiPaper: {
       styleOverrides: {
         root: {
-          borderRadius: 16, 
+          borderRadius: 16,
         },
       },
     },
     MuiButton: {
       styleOverrides: {
         root: {
-          borderRadius: 8, 
+          borderRadius: 8,
         },
       },
     },
@@ -42,7 +42,7 @@ const theme = createTheme({
       styleOverrides: {
         root: {
           "& .MuiOutlinedInput-root": {
-            borderRadius: 8, 
+            borderRadius: 8,
           },
         },
       },
@@ -110,7 +110,7 @@ const AddCourse = () => {
           alignItems: "center",
           justifyContent: "center",
           bgcolor: "#f5f5f5",
-          marginTop: "-80px", // 調整負的 margin 來上移
+          marginTop: "-10px", // 調整負的 margin 來上移
         }}
       >
         <Container maxWidth="sm">
