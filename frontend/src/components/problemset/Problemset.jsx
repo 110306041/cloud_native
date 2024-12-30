@@ -1,5 +1,6 @@
 import axios from "axios";
 
+import { Button } from "@mui/material";
 import Chip from "@mui/material/Chip";
 import Paper from "@mui/material/Paper";
 import Table from "@mui/material/Table";
@@ -21,15 +22,21 @@ import {
   problemsetTeacherColumn,
 } from "../../utils";
 import "./problemset.css";
-let columns = localStorage.getItem("role") === "student"
-  ? problemsetStudentColumn
-  : problemsetTeacherColumn;
+let columns =
+  localStorage.getItem("role") === "student"
+    ? problemsetStudentColumn
+    : problemsetTeacherColumn;
 
 const styles = {
   assignmentTitle: {
     marginBottom: "1rem",
     fontSize: "1.5rem",
     fontWeight: "bold",
+  },
+  infoAndButton: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
   },
   problemsetInfo: {
     display: "flex",
@@ -55,13 +62,15 @@ export default function ProblemSet() {
   const navigate = useNavigate();
 
   useLayoutEffect(() => {
-    columns = localStorage.getItem("role") === "student"
-      ? problemsetStudentColumn
-      : problemsetTeacherColumn;
-    
-    const apiUrl = localStorage.getItem("role") === "student"
-      ? `${BACK_SERVER_URL}/api/student/${problemsetInfo.problemType}/questions/${id}`
-      : `${BACK_SERVER_URL}/api/teacher/${problemsetInfo.problemType}/questions/${id}`;
+    columns =
+      localStorage.getItem("role") === "student"
+        ? problemsetStudentColumn
+        : problemsetTeacherColumn;
+
+    const apiUrl =
+      localStorage.getItem("role") === "student"
+        ? `${BACK_SERVER_URL}/api/student/${problemsetInfo.problemType}/questions/${id}`
+        : `${BACK_SERVER_URL}/api/teacher/${problemsetInfo.problemType}/questions/${id}`;
 
     axios
       .get(
@@ -125,6 +134,12 @@ export default function ProblemSet() {
     });
   };
 
+  const handleButtonClick = (id) => {
+    navigate(`/addProblem`, {
+      state: { id },
+    });
+  };
+
   return (
     <div className="courses-container">
       <ToastContainer />
@@ -135,19 +150,39 @@ export default function ProblemSet() {
         <h2 style={styles.assignmentTitle}></h2>
         <h2 style={{ color: "#445E93" }}>{problemsetInfo.problemsetName}</h2>
 
-        <div style={styles.problemsetInfo}>
-          <div style={styles.infoLabel}>
-            <span>
-              Start Date:{" "}
-              {problemsetInfo.startDate
-                ? getDateTime(problemsetInfo.startDate)
-                : problemsetInfo.startDate}
+        <div style={styles.infoAndButton}>
+          <div style={styles.problemsetInfo}>
+            <div style={styles.infoLabel}>
+              <span>
+                Start Date:{" "}
+                {problemsetInfo.startDate
+                  ? getDateTime(problemsetInfo.startDate)
+                  : problemsetInfo.startDate}
+              </span>
+            </div>
+
+            <span style={styles.infoLabel}>
+              Due Date: {getDateTime(problemsetInfo.dueDate)}
             </span>
           </div>
-
-          <span style={styles.infoLabel}>
-            Due Date: {getDateTime(problemsetInfo.dueDate)}
-          </span>
+          {localStorage.getItem("role") === "student" ? null : (
+            <Button
+              type="submit"
+              color="primary"
+              variant="contained"
+              className="add-course-btn"
+              sx={{
+                backgroundColor: "#445E93",
+                fontWeight: "bold",
+                "&:hover": {
+                  backgroundColor: "#29335C",
+                },
+              }}
+              onClick={() => handleButtonClick(id)}
+            >
+              Add Problem
+            </Button>
+          )}
         </div>
 
         <Paper
