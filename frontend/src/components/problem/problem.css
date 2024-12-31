@@ -2,29 +2,24 @@
   width: 50%;
   padding: 20px 32px;
   background-color: #e5e7eb;
-  border-radius: 12px 0 0 12px; /* 只保留左側圓角 */
+  border-radius: 12px 0 0 12px;
   overflow-y: auto;
   position: relative;
 }
+
 .problem-page-right {
   width: 50%;
   padding: 20px 32px;
   background-color: #e5e7eb;
-  border-radius: 0 12px 12px 0; /* 只保留右側圓角 */
+  border-radius: 0 12px 12px 0;
   overflow-y: auto;
-  border-left: 4px dashed rgba(177, 176, 176, 0.5); /* 使用 border-left 來創建虛線 */
+  border-left: 4px dashed rgba(177, 176, 176, 0.5);
   position: relative;
 }
-/* 將兩個容器中間的間距移除 */
+
 .problem-page-left,
 .problem-page-right {
   margin: 0;
-}
-/* Main problem title styling */
-.problem-title {
-  font-size: 32px;
-  font-weight: bold;
-  margin: 24px 0;
 }
 
 .problem-container {
@@ -34,42 +29,22 @@
   margin-bottom: 20px;
 }
 
-.problem-name {
-  font-size: 24px;
-  font-weight: bold;
-  margin: 24px 0;
-}
-
-/* Standardized section title styling */
 .section-title {
   font-size: 20px;
   font-weight: bold;
-  margin: 24px 0 16px 0; /* Consistent spacing above and below */
+  margin: 24px 0 16px 0;
   padding: 0;
   line-height: 1.4;
 }
 
-/* First section title special case */
 .problem-container .section-title:first-child {
   margin-top: 0;
-}
-
-.sample-case {
-  background-color: #f3f4f6;
-  padding: 16px;
-  border-radius: 8px;
-  margin: 16px 0; /* Consistent with other spacing */
-}
-
-.monospace {
-  font-family: "Fira Code",monospace;
-  white-space: pre;
 }
 
 .sample-block {
   border-left: 3px solid #b1b0b0;
   padding-left: 16px;
-  margin: 16px 0; /* Consistent with other spacing */
+  margin: 16px 0;
   font-size: 16px;
 }
 
@@ -81,28 +56,32 @@
   font-weight: 600;
   margin-right: 8px;
 }
-.result-table {
-  margin: 12px 0;
+
+.monospace {
+  font-family: "Fira Code", monospace;
+  white-space: pre;
+}
+
+/* Result section styling */
+.result {
   font-size: 16px;
 }
 
-.result-line {
-  margin: 8px 0;
+.result h4 {
+  font-size: 20px;
+  font-weight: bold;
+  margin: 0 0 16px 0;
+  color: #41a21e;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 
-.result-label {
-  font-weight: 600;
-  margin-right: 8px;
-}
-
-.result-value {
-  font-family: "Fira Code",monospace;
-  white-space: pre;
-}
 .problem-loading-spinner {
   position: fixed;
   top: 50%;
   left: 50%;
-  transform: translate(-50%, -50%); /* 偏移自身寬高的一半 */
+  transform: translate(-50%, -50%);
   z-index: 2;
+}
+.custom-color {
+  color: #41a21e; /* 替換為您想要的顏色 */
 }

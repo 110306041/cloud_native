@@ -48,7 +48,7 @@ export default function NavBar(props) {
       <div className="navbarWrapper">
         <div className="navLeft">
           <Link to="/" className="logo">
-            NCCU MIS OJ
+            NCCU MIS ONLINE JUGDGE
           </Link>
           <div className="navbarList">
             {login && (

@@ -1,39 +1,26 @@
 import { faPaperPlane } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import React from "react";
-import AceEditor from "react-ace";
-
+import PlayCircleOutlineIcon from "@mui/icons-material/PlayCircleOutline";
 import Button from "@mui/material/Button";
 import Chip from "@mui/material/Chip";
 import CircularProgress from "@mui/material/CircularProgress";
 import FormControl from "@mui/material/FormControl";
 import InputLabel from "@mui/material/InputLabel";
 import Select from "@mui/material/Select";
-// import { makeStyles } from "@material-ui/core/styles";
 import Switch from "@mui/material/Switch";
+import React from "react";
+import AceEditor from "react-ace";
 
-import PlayCircleOutlineIcon from "@mui/icons-material/PlayCircleOutline";
-
-import "./codeEditor.css";
-
-import * as ace from "ace-builds/src-noconflict/ace";
 import "ace-builds/src-noconflict/ext-language_tools";
 import "ace-builds/src-noconflict/mode-c_cpp";
 import "ace-builds/src-noconflict/mode-java";
 import "ace-builds/src-noconflict/mode-python";
 import "ace-builds/src-noconflict/theme-dracula";
 import "ace-builds/src-noconflict/theme-eclipse";
-ace.config.set("basePath", "/ace-builds/src-noconflict");
-
-// const useStyles = makeStyles((theme) => ({
-//   formControl: {
-//     margin: theme.spacing(1),
-//     minWidth: 200,
-//   },
-//   selectEmpty: {
-//     marginTop: theme.spacing(2),
-//   },
-// }));
+import "./codeEditor.css";
+import "ace-builds/src-noconflict/mode-javascript";
+import "ace-builds/src-noconflict/worker-javascript";
+import "ace-builds/webpack-resolver";
 
 const CodeEditor = ({
   language,
@@ -42,11 +29,10 @@ const CodeEditor = ({
   handleModeChange,
   onCodeChange,
   submit,
+  run,
   runLoading,
   submitLoading,
 }) => {
-  //   const classes = useStyles();
-
   const languageList = ["Javascript", "C++", "Java", "Python"];
 
   const handleThemeChange = (e) => {
@@ -54,16 +40,20 @@ const CodeEditor = ({
   };
 
   const getLanguage = () => {
-    return language === "C" || language === "C++"
-      ? "c_cpp"
-      : language === "Java"
-      ? "java"
-      : "python";
+    switch (language) {
+      case "Javascript":
+        return "javascript";
+      case "C++":
+        return "c_cpp";
+      case "Java":
+        return "java";
+      case "Python":
+        return "python";
+      default:
+        return "javascript";
+    }
   };
 
-  const getLabel = () => {
-    return (darkMode === false ? "Dark" : "Light") + " Mode";
-  };
   return (
     <div>
       <div className="code-editor-controls">
@@ -131,16 +121,16 @@ const CodeEditor = ({
             inputProps={{ "aria-label": "secondary checkbox" }}
             sx={{
               "& .MuiSwitch-switchBase.Mui-checked": {
-                color: "#6B7280", // 開啟時按鈕的顏色
+                color: "#6B7280",
               },
               "& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track": {
-                backgroundColor: "#6B7280", // 開啟時軌道的顏色
+                backgroundColor: "#6B7280",
               },
               "& .MuiSwitch-switchBase": {
-                color: "#445e93", // 未開啟時按鈕的顏色
+                color: "#445e93",
               },
               "& .MuiSwitch-track": {
-                backgroundColor: "#445e93", // 未開啟時軌道的顏色
+                backgroundColor: "#445e93",
               },
             }}
           />
@@ -167,20 +157,19 @@ const CodeEditor = ({
             showLineNumbers: true,
           }}
           style={{
-            borderRadius: "4px", // 設置圓角
-            overflow: "hidden", // 避免內容溢出圓角
+            borderRadius: "4px",
+            overflow: "hidden",
           }}
         />
       </div>
 
       <div className="code-editor-btn">
-        {/* Run Button */}
         <div className="code-editor-runcode-btn">
           <Button
             variant="contained"
             color="primary"
             value="runcode"
-            onClick={submit}
+            onClick={run}
             sx={{
               width: "120px",
               fontSize: "16px",
@@ -199,7 +188,6 @@ const CodeEditor = ({
           </Button>
         </div>
 
-        {/* Submit Button */}
         <div className="code-editor-submit-btn">
           <Button
             variant="contained"
