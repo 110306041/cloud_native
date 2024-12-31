@@ -230,7 +230,11 @@ Response: (200 OK)
 			"Code": "string",
 			"Language": "string",
 			"UserID": "UUID",
-			"QuestionID": "UUID"
+			"QuestionID": "UUID",
+			"Question": {
+				"question_name": "string"
+			}
+
         }
     ]
 }
