@@ -154,3 +154,18 @@ export const courseExamTeacherColumn = [
   { id: "startDate", label: "Start Date", minWidth: 120, maxWidth: 150, align: "center" },
   { id: "dueDate", label: "Due Date", minWidth: 120, maxWidth: 150, align: "center" },
 ]
+
+// problemSet
+export const problemsetStudentColumn = [
+  { id: "id", label: "#", minWidth: 20, align: "center" },
+  { id: "name", label: "Problem Name", minWidth: 100 },
+  { id: "difficulty", label: "Difficulty", minWidth: 50, align: "center" },
+  { id: "score", label: "Score", minWidth: 100, align: "center" },
+]
+
+export const problemsetTeacherColumn = [
+  { id: "id", label: "#", minWidth: 20, align: "center" },
+  { id: "name", label: "Problem Name", minWidth: 100 },
+  { id: "description", label: "Description", minWidth: 100, maxWidth: 150 },
+  { id: "difficulty", label: "Difficulty", minWidth: 50, align: "center" },
+]

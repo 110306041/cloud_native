@@ -1,22 +1,22 @@
-import React, { useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
-import axios from "axios";
-import { BACK_SERVER_URL } from "../../../config/config";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 import { faPaperPlane } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  Button,
-  TextField,
-  Paper,
-  Typography,
-  CircularProgress,
-  Box,
-  Container,
-  ThemeProvider,
-  createTheme,
+    Box,
+    Button,
+    CircularProgress,
+    Container,
+    Paper,
+    TextField,
+    ThemeProvider,
+    Typography,
+    createTheme,
 } from "@mui/material";
+import axios from "axios";
+import React, { useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { BACK_SERVER_URL } from "../../../config/config";
 
 const theme = createTheme({
   palette: {
@@ -141,7 +141,7 @@ const AddExam = () => {
           alignItems: "center",
           justifyContent: "center",
           bgcolor: "#f5f5f5",
-          marginTop: "-40px", // 調整負的 margin 來上移
+        //   marginTop: "-10px", // 調整負的 margin 來上移
         }}
       >
         <Container maxWidth="sm">
@@ -225,7 +225,7 @@ const AddExam = () => {
                 <Button
                   variant="outlined"
                   fullWidth
-                  onClick={() => navigate(`/courses/${courseId}`)}
+                  onClick={() => navigate(`/course/${courseId}`)}
                   sx={{
                     borderColor: "#445E93",
                     color: "#445E93",

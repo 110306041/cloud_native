@@ -1,5 +1,6 @@
 import axios from "axios";
 
+import { Button } from "@mui/material";
 import Chip from "@mui/material/Chip";
 import Paper from "@mui/material/Paper";
 import Table from "@mui/material/Table";
@@ -15,14 +16,16 @@ import { BeatLoader } from "react-spinners";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { BACK_SERVER_URL } from "../../config/config";
-import { getDateTime } from "../../utils";
+import {
+  getDateTime,
+  problemsetStudentColumn,
+  problemsetTeacherColumn,
+} from "../../utils";
 import "./problemset.css";
-const columns = [
-  { id: "id", label: "#", minWidth: 20, align: "center" },
-  { id: "name", label: "Problem Name", minWidth: 100 },
-  { id: "difficulty", label: "Difficulty", minWidth: 50, align: "center" },
-  { id: "score", label: "Score", minWidth: 100, align: "center" },
-];
+let columns =
+  localStorage.getItem("role") === "student"
+    ? problemsetStudentColumn
+    : problemsetTeacherColumn;
 
 const styles = {
   assignmentTitle: {
@@ -30,6 +33,11 @@ const styles = {
     fontSize: "1.5rem",
     fontWeight: "bold",
     color: "#445E93",
+  },
+  infoAndButton: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
   },
   problemsetInfo: {
     display: "flex",
@@ -54,9 +62,19 @@ export default function ProblemSet() {
   const navigate = useNavigate();
 
   useLayoutEffect(() => {
+    columns =
+      localStorage.getItem("role") === "student"
+        ? problemsetStudentColumn
+        : problemsetTeacherColumn;
+
+    const apiUrl =
+      localStorage.getItem("role") === "student"
+        ? `${BACK_SERVER_URL}/api/student/${problemsetInfo.problemType}/questions/${id}`
+        : `${BACK_SERVER_URL}/api/teacher/${problemsetInfo.problemType}/questions/${id}`;
+
     axios
       .get(
-        `${BACK_SERVER_URL}/api/student/${problemsetInfo.problemType}/questions/${id}`,
+        `${BACK_SERVER_URL}/api/student/${problemsetInfo.problemType}/questions/${id}`, //TODO: change to apiUrl
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("access-token")}`,
@@ -116,6 +134,12 @@ export default function ProblemSet() {
     });
   };
 
+  const handleButtonClick = (id, problemtype) => {
+    navigate(`/addProblem`, {
+      state: { id, problemtype },
+    });
+  };
+
   return (
     <div className="courses-container">
       <ToastContainer />
@@ -134,25 +158,44 @@ export default function ProblemSet() {
           {problemsetInfo.problemsetName}
         </h2>
 
-        <div style={styles.problemsetInfo}>
-          <div style={styles.infoLabel}>
-            <span>
-              Start Date:{" "}
-              {problemsetInfo.startDate
-                ? getDateTime(problemsetInfo.startDate)
-                : problemsetInfo.startDate}
+        <div style={styles.infoAndButton}>
+          <div style={styles.problemsetInfo}>
+            <div style={styles.infoLabel}>
+              <span>
+                Start Date:{" "}
+                {problemsetInfo.startDate
+                  ? getDateTime(problemsetInfo.startDate)
+                  : problemsetInfo.startDate}
+              </span>
+            </div>
+
+            <span style={styles.infoLabel}>
+              Due Date: {getDateTime(problemsetInfo.dueDate)}
             </span>
           </div>
-
-          <span style={styles.infoLabel}>
-            Due Date: {getDateTime(problemsetInfo.dueDate)}
-          </span>
+          {localStorage.getItem("role") === "student" ? null : (
+            <Button
+              type="submit"
+              color="primary"
+              variant="contained"
+              className="add-course-btn"
+              sx={{
+                backgroundColor: "#445E93",
+                fontWeight: "bold",
+                "&:hover": {
+                  backgroundColor: "#29335C",
+                },
+              }}
+              onClick={() => handleButtonClick(id, problemsetInfo.problemType)}
+            >
+              Add Problem
+            </Button>
+          )}
         </div>
 
         <Paper
           sx={{
             width: "100%",
-            height: "800px",
             borderRadius: "16px",
             overflow: "hidden",
             marginBottom: "40px",
@@ -261,6 +304,10 @@ export default function ProblemSet() {
                                     fontWeight: "regular",
                                     fontSize: "16px",
                                     color: "#222222",
+                                    textOverflow: "ellipsis",
+                                    maxWidth: column.maxWidth,
+                                    display: "inline-block",
+                                    overflow: "hidden",
                                   }}
                                 >
                                   {value}

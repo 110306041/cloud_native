@@ -6,6 +6,7 @@ import { AuthContext } from "./authContext";
 import AddCourse from "./components/add/addCourse/AddCourse";
 import AddExam from "./components/add/addExam/AddExam";
 import AddHw from "./components/add/addHw/AddHw";
+import AddProblem from "./components/add/addProblem/AddProblem";
 import Course from "./components/course/Course";
 import Courses from "./components/courses/Courses";
 import NavBar from "./components/navbar/Navbar";
@@ -36,6 +37,7 @@ function App() {
             <Route path="/addCourse" element={<AddCourse />} />
             <Route path="/addHw" element={<AddHw />} />
             <Route path="/addExam" element={<AddExam />} />
+            <Route path="/addProblem" element={<AddProblem />} />
           </Routes>
         </Router>
       </div>

@@ -1,5 +1,5 @@
-import CheckCircleTwoToneIcon from "@mui/icons-material/CheckCircleTwoTone";
 import CancelTwoToneIcon from "@mui/icons-material/CancelTwoTone";
+import CheckCircleTwoToneIcon from "@mui/icons-material/CheckCircleTwoTone";
 import Chip from "@mui/material/Chip";
 import axios from "axios";
 import React, { useEffect, useRef, useState } from "react";
@@ -20,7 +20,7 @@ const Problem = (props) => {
   const [loading, setLoading] = useState(true);
   const [problemDoesNotExists, setProblemDoesNotExists] = useState(false);
   const [problem, setProblem] = useState({});
-  const [language, setLanguage] = useState("C++");
+  const [language, setLanguage] = useState("Javascript");
   const [darkMode, setDarkMode] = useState(false);
   const [code, setCode] = useState("");
   //   const [results, setResults] = useState([]);
