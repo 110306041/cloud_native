@@ -17,8 +17,17 @@ export const getSubmissionByStudent = async (req, res) => {
     const studentID = req.user.id;
 
     const submissions = await Submission.findAll({
-      where: { UserID: studentID},
-    });
+        where: {
+          UserID: studentID,
+        },
+        include: [
+          {
+            model: Question,
+            attributes: [['Name', 'question_name']], 
+            where: { DeletedAt: null }, 
+          },
+        ],
+      });
 
 
     res.status(200).json({
