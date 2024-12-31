@@ -56,7 +56,9 @@ export default function NavBar(props) {
                 <NavLink
                   to="/courses"
                   className={({ isActive }) =>
-                    isActive || isCourseRelated(window.location.pathname)
+                    localStorage.getItem("role") === "teacher" ||
+                    isActive ||
+                    isCourseRelated(window.location.pathname)
                       ? "navbarItem active"
                       : "navbarItem"
                   }

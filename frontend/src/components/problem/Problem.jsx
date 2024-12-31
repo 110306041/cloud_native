@@ -103,7 +103,7 @@ const Problem = () => {
 
     try {
       const response = await axios.post(
-        `https://f133-140-119-235-6.ngrok-free.app/student/submissions`,
+        `https://658c-140-119-235-6.ngrok-free.app/student/submissions`,
         {
           questionID: id,
           language: languageExtension[language],
@@ -131,6 +131,8 @@ const Problem = () => {
           totalTestCases: output.total_test_cases,
           passedTestCases: output.passed_test_cases,
           score: output.score,
+          cpuUsage: output.cpu_usage,
+          memoryUsage: output.memory_usage,
           executionTime: output.execution_time,
         });
       }
@@ -347,7 +349,6 @@ const Problem = () => {
               </h2>
             </div>
             {/* result */}
-            {/* Inside the Problem component, replace the result section with: */}
             <div className="problem-container">
               {result.success !== undefined && (
                 <div className="result">
@@ -357,7 +358,13 @@ const Problem = () => {
                         <span className="sample-label">Error Code:</span>
                         <span
                           className="monospace"
-                          style={{ color: "#FF0000" }}
+                          style={{
+                            color: "#FF0000",
+                            wordBreak: "break-word",
+                            whiteSpace: "pre-wrap",
+                            overflow: "auto",
+                            maxWidth: "100%",
+                          }}
                         >
                           {result.error.code}
                         </span>
@@ -366,7 +373,13 @@ const Problem = () => {
                         <span className="sample-label">Error Message:</span>
                         <span
                           className="monospace"
-                          style={{ color: "#FF0000" }}
+                          style={{
+                            color: "#FF0000",
+                            wordBreak: "break-word",
+                            whiteSpace: "pre-wrap",
+                            overflow: "auto",
+                            maxWidth: "100%",
+                          }}
                         >
                           {result.error.message}
                         </span>
@@ -376,7 +389,13 @@ const Problem = () => {
                           <span className="sample-label">Error Line:</span>
                           <span
                             className="monospace"
-                            style={{ color: "#FF0000" }}
+                            style={{
+                              color: "#FF0000",
+                              wordBreak: "break-word",
+                              whiteSpace: "pre-wrap",
+                              overflow: "auto",
+                              maxWidth: "100%",
+                            }}
                           >
                             {result.error.line}
                           </span>
@@ -387,7 +406,13 @@ const Problem = () => {
                           <span className="sample-label">Details:</span>
                           <span
                             className="monospace"
-                            style={{ color: "#FF0000" }}
+                            style={{
+                              color: "#FF0000",
+                              wordBreak: "break-word",
+                              whiteSpace: "pre-wrap",
+                              overflow: "auto",
+                              maxWidth: "100%",
+                            }}
                           >
                             {result.error.errorMessage}
                           </span>
@@ -417,6 +442,16 @@ const Problem = () => {
                         <div className="sample-line">
                           <span className="sample-label">Score:</span>
                           <span className="monospace">{result.score}</span>
+                        </div>
+                        <div className="sample-line">
+                          <span className="sample-label">CPU Usage:</span>
+                          <span className="monospace">{result.cpuUsage}</span>
+                        </div>
+                        <div className="sample-line">
+                          <span className="sample-label">Memory Usage:</span>
+                          <span className="monospace">
+                            {result.memoryUsage}
+                          </span>
                         </div>
                         <div className="sample-line">
                           <span className="sample-label">Execution Time:</span>
