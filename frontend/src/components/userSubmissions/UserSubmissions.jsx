@@ -53,7 +53,29 @@ const columns = [
 //     maxHeight: "75vh",
 //   },
 // }));
-
+const styles = {
+  assignmentTitle: {
+    marginTop: "0.6rem",
+    marginBottom: "0.2rem",
+    fontSize: "1.7rem",
+    fontWeight: "900",
+    color: "#445E93",
+  },
+  infoAndButton: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  problemsetInfo: {
+    display: "flex",
+    flexDirection: "column",
+    marginBottom: "1rem",
+  },
+  infoLabel: {
+    display: "block",
+    marginBottom: "0.2rem",
+  },
+};
 function getModalStyle() {
   const top = 50;
   const left = 50;
@@ -74,7 +96,7 @@ export default function UserSubmissions() {
   const [modalStyle] = useState(getModalStyle);
   const [modalState, setModalState] = useState({ submission: {}, open: false });
   // const [hasSubmissions, setHasSubmissions] = useState(true);
-  const [submissions, setSubmissions] = useState([])
+  const [submissions, setSubmissions] = useState([]);
   const verdictMap = {
     AC: "Accepted",
     WA: "Wrong Answer",
@@ -120,12 +142,14 @@ export default function UserSubmissions() {
 
     axios
       .get(`${BACK_SERVER_URL}/student/submissions`, {
-        headers: { Authorization: `Bearer ${localStorage.getItem("access-token")}` },
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("access-token")}`,
+        },
       })
       .then((res) => {
         let submissions = res.data.submissions;
-        setSubmissions(submissions)
-        setRows(submissions)
+        setSubmissions(submissions);
+        setRows(submissions);
         // if (!res.data || res.data.length === 0) setHasSubmissions(false);
         // else setRows(res.data);
         setLoader(false);
@@ -216,7 +240,7 @@ export default function UserSubmissions() {
         <div className="courses-spinner">
           <BeatLoader color={"#7D99D3"} size={20} loading={loader} />
         </div>
-        <h2 style={{ padding: "20px 0" }}>Submissions</h2>
+        <h1 style={styles.assignmentTitle}>Submissions</h1>
 
         {/* <Paper className={classes.root}> */}
         <Paper
@@ -225,6 +249,7 @@ export default function UserSubmissions() {
             minHeight: "600px",
             borderRadius: "16px",
             overflow: "hidden",
+            marginTop: "30px",
             marginBottom: "20px",
           }}
         >

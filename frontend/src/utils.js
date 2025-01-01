@@ -121,9 +121,21 @@ export const courses = [
     align: "left",
   },
   { id: "name", label: "Course Name", minWidth: 250, align: "left" },
-  { id: "hw", label: "Homework", minWidth: 100, maxWidth: 120, align: "center" },
-  { id: "exam", label: "Active Exam", minWidth: 100, maxWidth: 120, align: "center" },
-]
+  {
+    id: "hw",
+    label: "Homework",
+    minWidth: 100,
+    maxWidth: 120,
+    align: "center",
+  },
+  {
+    id: "exam",
+    label: "Active Exam",
+    minWidth: 100,
+    maxWidth: 120,
+    align: "center",
+  },
+];
 
 // courseHw
 export const courseHwStudentColumn = [
@@ -245,7 +257,7 @@ export const problemsetStudentColumn = [
   {
     id: "name",
     label: "Problem Name",
-    width: 150,
+    width: 200,
     align: "left",
   },
   {
@@ -259,7 +271,7 @@ export const problemsetStudentColumn = [
     id: "difficulty",
     label: "Difficulty",
     width: 120,
-    align: "left",
+    align: "center",
   },
   {
     id: "score",
