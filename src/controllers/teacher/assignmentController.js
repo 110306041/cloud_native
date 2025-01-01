@@ -52,6 +52,7 @@ export const getAssignmentsAndExams = async (req, res) => {
         {
           model: Question,
           attributes: [],
+          required: false,
           where: { DeletedAt: null },
         },
       ],
