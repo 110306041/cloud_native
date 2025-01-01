@@ -36,8 +36,8 @@ export default function Course() {
   useEffect(() => {
     let apiUrl =
       localStorage.getItem("role") === "student"
-        ? `${BACK_SERVER_URL}/api/student/assignmentsAndExams/${id}`
-        : `${BACK_SERVER_URL}/api/teacher/assignmentsAndExams/${id}`;
+        ? `${BACK_SERVER_URL}/student/assignmentsAndExams/${id}`
+        : `${BACK_SERVER_URL}/teacher/assignmentsAndExams/${id}`;
 
     axios
       .get(apiUrl, {

@@ -41,8 +41,8 @@ export default function Courses() {
   useLayoutEffect(() => {
     let apiUrl =
       localStorage.getItem("role") === "student"
-        ? `${BACK_SERVER_URL}/api/student/courses`
-        : `${BACK_SERVER_URL}/api/teacher/courses`;
+        ? `${BACK_SERVER_URL}/student/courses`
+        : `${BACK_SERVER_URL}/teacher/courses`;
 
     axios
       .get(apiUrl, {

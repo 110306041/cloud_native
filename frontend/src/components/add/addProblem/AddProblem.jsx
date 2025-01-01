@@ -14,7 +14,6 @@ import {
 } from "@mui/material";
 import axios from "axios";
 import React, { useState } from "react";
-import { Form } from "react-bootstrap";
 import { useLocation, useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -172,7 +171,7 @@ const AddProblem = () => {
     }
 
     try {
-      await axios.post(`${BACK_SERVER_URL}/api/teacher/questions`, data, {
+      await axios.post(`${BACK_SERVER_URL}/teacher/questions`, data, {
         headers: {
           Authorization: `Bear ${localStorage.getItem("access-token")}`,
         },

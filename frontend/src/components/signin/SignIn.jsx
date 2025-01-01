@@ -33,7 +33,7 @@ const SignIn = () => {
     setLoading(true);
 
     axios
-      .post(`${BACK_SERVER_URL}/api/auth/login`, {
+      .post(`${BACK_SERVER_URL}/auth/login`, {
         email,
         password,
       })

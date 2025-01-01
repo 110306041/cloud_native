@@ -1,15 +1,15 @@
 import { faPaperPlane } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-    Box,
-    Button,
-    CircularProgress,
-    Container,
-    Paper,
-    TextField,
-    ThemeProvider,
-    Typography,
-    createTheme,
+  Box,
+  Button,
+  CircularProgress,
+  Container,
+  Paper,
+  TextField,
+  ThemeProvider,
+  Typography,
+  createTheme,
 } from "@mui/material";
 import axios from "axios";
 import React, { useState } from "react";
@@ -80,7 +80,7 @@ const AddExam = () => {
     };
 
     axios
-      .post(`${BACK_SERVER_URL}/api/teacher/exams/${courseId}`, data, {
+      .post(`${BACK_SERVER_URL}/teacher/exams/${courseId}`, data, {
         headers: {
           Authorization: `Bear ${localStorage.getItem("access-token")}`,
         },
