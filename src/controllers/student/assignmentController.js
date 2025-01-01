@@ -31,6 +31,7 @@ export const getAssignmentsAndExams = async (req, res) => {
         {
           model: Question,
           attributes: [], 
+          required: false,
           where: { DeletedAt: null },
         },
       ],
@@ -41,6 +42,8 @@ export const getAssignmentsAndExams = async (req, res) => {
         "Assignment.StartDate",
       ], // Include all selected columns
     });
+
+    console.log(assignments)
 
     // Map assignments to include the score
     const assignmentsWithScore = await Promise.all(
