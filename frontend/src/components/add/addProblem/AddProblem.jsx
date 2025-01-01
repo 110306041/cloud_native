@@ -1,29 +1,27 @@
-import {
-    faPlus,
-    faTrash
-} from "@fortawesome/free-solid-svg-icons";
+import { faPlus, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Send } from "@mui/icons-material";
 import {
-    Box,
-    Button,
-    CircularProgress,
-    Container,
-    Paper,
-    TextField,
-    ThemeProvider,
-    Typography,
-    createTheme,
+  Box,
+  Button,
+  CircularProgress,
+  Container,
+  Paper,
+  TextField,
+  ThemeProvider,
+  Typography,
+  createTheme,
 } from "@mui/material";
 import axios from "axios";
 import React, { useState } from "react";
-import { Form, Table } from "react-bootstrap";
+import { Form } from "react-bootstrap";
 import { useLocation, useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { BACK_SERVER_URL } from "../../../config/config";
 import "./addProblem.css";
 
+// --------- Theme 設定 ---------
 const theme = createTheme({
   palette: {
     primary: {
@@ -31,6 +29,22 @@ const theme = createTheme({
     },
     secondary: {
       main: "#445E93",
+    },
+  },
+  typography: {
+    h4: {
+      fontSize: "24px",
+      fontWeight: 600,
+    },
+    body1: {
+      fontSize: "14px",
+    },
+    body2: {
+      fontSize: "14px",
+    },
+    subtitle1: {
+      fontSize: "16px",
+      fontWeight: 500,
     },
   },
   components: {
@@ -45,6 +59,8 @@ const theme = createTheme({
       styleOverrides: {
         root: {
           borderRadius: 8,
+          fontSize: "14px",
+          textTransform: "none",
         },
       },
     },
@@ -53,6 +69,13 @@ const theme = createTheme({
         root: {
           "& .MuiOutlinedInput-root": {
             borderRadius: 8,
+            fontSize: "14px",
+          },
+          "& .MuiInputLabel-root": {
+            fontSize: "14px",
+          },
+          "& .MuiInputBase-input": {
+            fontSize: "14px",
           },
         },
       },
@@ -62,6 +85,7 @@ const theme = createTheme({
 
 const problemDifficulty = ["easy", "medium", "hard"];
 
+// --------- 主元件 AddProblem ---------
 const AddProblem = () => {
   const [questionName, setQuestionName] = useState("");
   const [difficulty, setDifficulty] = useState("");
@@ -70,18 +94,24 @@ const AddProblem = () => {
   const [submissionLimit, setSubmissionLimit] = useState();
   const [dueDate, setDueDate] = useState(""); // TODO: discard dueDate
   const [description, setDescription] = useState("");
-  const [testCases, setTestCases] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
 
+  // 用來管理 sample testcases 的 input/output
   const [input, setInput] = useState([]);
   const [output, setOutput] = useState([]);
+
+  // 用來儲存 <SampleTestcase> 元件的陣列
   const [children, setChildren] = useState([]);
 
+  // loading 狀態
+  const [loading, setLoading] = useState(false);
+
+  const navigate = useNavigate();
   const location = useLocation();
+
   const id = location.state?.id;
   const problemType = location.state?.problemType;
 
+  // --------- 新增一筆 sample testcase ---------
   const addTestcase = () => {
     setChildren(
       children.concat(
@@ -97,17 +127,27 @@ const AddProblem = () => {
     );
   };
 
+  // --------- 刪除最後一筆 sample testcase ---------
   const handleDelete = () => {
-    let newChildren = children;
-    newChildren.splice(-1);
-    setChildren([...newChildren]);
+    const newInput = [...input];
+    const newOutput = [...output];
+    newInput.pop();
+    newOutput.pop();
+    setInput(newInput);
+    setOutput(newOutput);
+
+    let newChildren = [...children];
+    newChildren.pop();
+    setChildren(newChildren);
   };
 
+  // --------- 送出表單 ---------
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     let data = {};
 
+    // 把 input / output 資料組合為 sampleTestcases 陣列
     let sampleTestcases = [];
     for (let i = 0; i < input.length; i++) {
       sampleTestcases.push({
@@ -116,6 +156,7 @@ const AddProblem = () => {
       });
     }
 
+    // 決定傳給後端的 data 結構
     if (problemType === "assignments") {
       data = {
         assignment_id: id,
@@ -176,6 +217,7 @@ const AddProblem = () => {
     }
   };
 
+  // --------- 畫面呈現 ---------
   return (
     <ThemeProvider theme={theme}>
       <Box
@@ -185,7 +227,6 @@ const AddProblem = () => {
           alignItems: "center",
           justifyContent: "center",
           bgcolor: "#f5f5f5",
-          marginTop: "-10px", // 調整負的 margin 來上移
         }}
       >
         <Container maxWidth="sm">
@@ -213,6 +254,7 @@ const AddProblem = () => {
               </Typography>
             </Box>
 
+            {/* 表單開始 */}
             <form
               onSubmit={handleSubmit}
               style={{ display: "flex", flexDirection: "column", gap: "24px" }}
@@ -253,15 +295,13 @@ const AddProblem = () => {
                 }}
               />
 
+              {/* 難度選擇 */}
               <select
                 required
                 id="difficulty"
                 name="difficulty"
                 value={difficulty}
-                onChange={(event) => {
-                  setDifficulty(event.target.value);
-                }}
-                // fullWidth
+                onChange={(event) => setDifficulty(event.target.value)}
                 style={{
                   width: "100%",
                   height: "55px",
@@ -270,7 +310,7 @@ const AddProblem = () => {
                   paddingLeft: "10px",
                   borderRadius: "5px",
                   border: "1px solid #445E93",
-                  color: difficulty ? "#000000" : "445E937", // 選擇完後變黑色
+                  color: difficulty ? "#000000" : "#445E93",
                 }}
               >
                 <option value="" disabled style={{ color: "#445E93" }}>
@@ -285,6 +325,7 @@ const AddProblem = () => {
                 })}
               </select>
 
+              {/* Time / Memory / Submission Limit */}
               <div style={{ display: "flex", gap: 5 }}>
                 <NumberField
                   label="Time Limit"
@@ -305,37 +346,46 @@ const AddProblem = () => {
                   placeholder="Submission times limit"
                 />
               </div>
-              
-              <Form.Group>{children}</Form.Group>
-              <Form.Group>
-                <div style={{ display: "flex", gap: "15px" }}>
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    style={{
-                      color: "#fff",
-                      width: "80%",
-                    }}
-                    size="large"
-                    onClick={addTestcase}
-                    type="button"
-                  >
-                    <FontAwesomeIcon icon={faPlus} /> &nbsp; Add Sample Testcase
-                  </Button>
-                  <Button
-                    variant="contained"
-                    color="secondary"
-                    style={{ color: "#fff", width: "20%" }}
-                    size="large"
-                    onClick={handleDelete}
-                    disabled={children.length === 0}
-                    type="button"
-                  >
-                    Delete &nbsp; <FontAwesomeIcon icon={faTrash} />
-                  </Button>
-                </div>
-              </Form.Group>
+              {children.length > 0 && <div>{children}</div>}
+              <Box sx={{ display: "flex", gap: 2 }}>
+                <Button
+                  variant="contained"
+                  onClick={addTestcase}
+                  type="button"
+                  startIcon={<FontAwesomeIcon icon={faPlus} />}
+                  fullWidth
+                  sx={{
+                    height: 50,
+                    backgroundColor: "#445E93",
+                    color: "#fff",
+                    "&:hover": {
+                      backgroundColor: "#374B76",
+                    },
+                  }}
+                >
+                  Add Sample Testcase
+                </Button>
+                <Button
+                  variant="contained"
+                  fullWidth
+                  sx={{
+                    height: 50,
+                    backgroundColor: "#FA7272",
+                    color: "#fff",
+                    "&:hover": {
+                      backgroundColor: "#E56666",
+                    },
+                  }}
+                  onClick={handleDelete}
+                  disabled={children.length === 0}
+                  type="button"
+                  startIcon={<FontAwesomeIcon icon={faTrash} />}
+                >
+                  Delete
+                </Button>
+              </Box>
 
+              {/* 下方取消 / 送出按鈕 */}
               <Box sx={{ display: "flex", gap: 2, mt: 2 }}>
                 <Button
                   variant="outlined"
@@ -343,6 +393,7 @@ const AddProblem = () => {
                   onClick={() => navigate("/courses")}
                   disabled={loading}
                   sx={{
+                    height: 50,
                     borderColor: "#445E93",
                     color: "#445E93",
                     "&:hover": {
@@ -376,6 +427,7 @@ const AddProblem = () => {
 
 export default AddProblem;
 
+// --------- NumberField 子元件 ---------
 export const NumberField = ({ label, value, setValue, placeholder }) => {
   return (
     <TextField
@@ -383,59 +435,61 @@ export const NumberField = ({ label, value, setValue, placeholder }) => {
       type="number"
       value={value}
       onChange={(e) => {
-        const value = e.target.value;
-        if (/^\d*$/.test(value)) {
-          //   setStudentLimit(value);
-          setValue(value);
+        const newVal = e.target.value;
+        if (/^\d*$/.test(newVal)) {
+          setValue(newVal);
         }
       }}
       placeholder={placeholder}
       fullWidth
       required
       variant="outlined"
-      sx={{
-        "& .MuiInputBase-input": {
-          fontSize: "10px", // 設定輸入框文字字體大小
-        },
-        "& .MuiInputLabel-root": {
-          fontSize: "14px", // 設定標籤文字字體大小
-        },
-      }}
     />
   );
 };
 
+// --------- SampleTestcase 子元件 ---------
 const SampleTestcase = ({ i, input, output, setInput, setOutput }) => {
+  const handleInputChange = (e) => {
+    const newInput = [...input];
+    newInput[i] = e.target.value;
+    setInput(newInput);
+  };
+
+  const handleOutputChange = (e) => {
+    const newOutput = [...output];
+    newOutput[i] = e.target.value;
+    setOutput(newOutput);
+  };
+
   return (
-    <div>
-      <Table>
-        <tbody>
-          <br />
-          <tr>
-            <Form.Group className="input-output">
-              <Form.Label className="sample-testcase-input">
-                Sample Input {i + 1}
-              </Form.Label>
-              <Form.Control
-                as="textarea"
-                name={"input" + (i + 1)}
-                rows={3}
-                onChange={(e) => setInput([...input, e.target.value])}
-              />
-              <br />
-              <Form.Label className="sample-testcase-output">
-                Sample Output {i + 1}
-              </Form.Label>
-              <Form.Control
-                as="textarea"
-                name={"output" + (i + 1)}
-                rows={3}
-                onChange={(e) => setOutput([...output, e.target.value])}
-              />
-            </Form.Group>
-          </tr>
-        </tbody>
-      </Table>
-    </div>
+    <Box sx={{ mt: 2 }}>
+      <Typography variant="subtitle1" sx={{ mb: 2, color: "primary.main" }}>
+        Sample Testcase {i + 1}
+      </Typography>
+
+      <TextField
+        label="Sample Input"
+        multiline
+        rows={3}
+        fullWidth
+        value={input[i] || ""}
+        onChange={handleInputChange}
+        placeholder="Enter input test case"
+        variant="outlined"
+        sx={{ mb: 2 }}
+      />
+
+      <TextField
+        label="Sample Output"
+        multiline
+        rows={3}
+        fullWidth
+        value={output[i] || ""}
+        onChange={handleOutputChange}
+        placeholder="Enter expected output"
+        variant="outlined"
+      />
+    </Box>
   );
 };
