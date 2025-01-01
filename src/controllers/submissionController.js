@@ -34,7 +34,7 @@ export function updateVMStats(vmId, updatedStats) {
   if (connectedAgents.has(vmId)) {
     const currentStats = connectedAgents.get(vmId);
     connectedAgents.set(vmId, { ...currentStats, ...updatedStats });
-    console.log(`Updated stats for VM ${vmId}:`, connectedAgents.get(vmId));
+    // console.log(`Updated stats for VM ${vmId}:`, connectedAgents.get(vmId));
   } else {
     console.error(`VM with ID ${vmId} not found.`);
   }
@@ -69,6 +69,25 @@ export function selectBestVM(requiredCpu, requiredMemory) {
 
   return bestVM;
 }
+export async function waitAndRetrySelectBestVM(requiredCpu, requiredMemory, maxRetries = 36, delayMs = 5000) {
+  let attempt = 0;
+  while (attempt < maxRetries) {
+    console.log(`Attempt ${attempt + 1}: Looking for the best VM...`);
+    const bestVM = await selectBestVM(requiredCpu, requiredMemory);
+
+    if (bestVM) {
+      return bestVM; 
+    }
+
+    console.log(`No VM found. Retrying in ${delayMs / 1000} seconds...`);
+    await new Promise((resolve) => setTimeout(resolve, delayMs));
+    attempt++;
+  }
+
+  console.error("Max retries reached. No VM available.");
+  return null; 
+}
+
 
 export async function handleRequest(req, res) {
   try {
@@ -141,7 +160,7 @@ export async function handleRequest(req, res) {
     }
 
     // 2) Select best VM
-    const bestVM = await selectBestVM(
+    const bestVM = await waitAndRetrySelectBestVM(
       allocatedResource.cpu,
       allocatedResource.memory
     );
@@ -238,7 +257,7 @@ export async function handleRequest(req, res) {
           },
         };
         await revertResources();
-
+        console.log(connectedAgents);
         return res.status(400).json({ status: "error", errorRes });
       }
       const resultt = response.data.result;
