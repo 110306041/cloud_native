@@ -178,13 +178,13 @@ const Problem = () => {
     } catch (err) {
       // 處理例外錯誤
       console.error("Submission error:", err);
-      const error = err.response?.data?.message || err.message;
+      const error = err.response?.data?.errorRes?.error || err.message;
       setResult({
         success: false,
         error: {
-          code: "NETWORK_ERROR",
-          message: error,
-          errorMessage: "An unexpected error occurred",
+          code: error.code || "NETWORK_ERROR",
+          message: error.details.error_message || error,
+          errorMessage: error.message || "An unexpected error occurred",
         },
       });
       toast.error(error);
@@ -335,7 +335,7 @@ const Problem = () => {
                   style={{ display: "flex", alignItems: "center", margin: 0 }}
                 >
                   {result.success !== undefined &&
-                    (result.success ? (
+                    (result.success && result.score === 100 ? (
                       <CheckCircleTwoToneIcon
                         sx={{
                           fontSize: "30px",
@@ -443,9 +443,15 @@ const Problem = () => {
                       </div>
                     ) : (
                       <>
-                        <div className="section-title custom-color">
-                          Summary
-                        </div>
+                        {result.score === 100 ? (
+                          <div className="section-title passed-color">
+                            Summary
+                          </div>
+                        ) : (
+                          <div className="section-title failed-color">
+                            Summary
+                          </div>
+                        )}
                         <div className="sample-block">
                           <div className="sample-line">
                             <span className="sample-label">
@@ -490,9 +496,15 @@ const Problem = () => {
                         {result.output &&
                           result.output.map((test) => (
                             <React.Fragment key={test.caseId}>
-                              <div className="section-title custom-color">
-                                Test Case {test.caseId}
-                              </div>
+                              {test.status === "passed" ? (
+                                <div className="section-title passed-color">
+                                  Test Case {test.caseId}
+                                </div>
+                              ) : (
+                                <div className="section-title failed-color">
+                                  Test Case {test.caseId}
+                                </div>
+                              )}
                               <div className="sample-block">
                                 <div className="sample-line">
                                   <span className="sample-label">Status:</span>
