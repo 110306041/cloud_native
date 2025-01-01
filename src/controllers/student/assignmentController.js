@@ -59,7 +59,7 @@ export const getAssignmentsAndExams = async (req, res) => {
                 AND "QuestionID" IN (
                   SELECT "ID"
                   FROM "Question"
-                  WHERE "DeletedAt" = null AND "AssignmentID" = '${assignment.ID}'
+                  WHERE "DeletedAt" IS NULL AND "AssignmentID" = '${assignment.ID}'
                 )
             ) AS max_scores
           `,
@@ -109,7 +109,7 @@ export const getAssignmentsAndExams = async (req, res) => {
                 AND "QuestionID" IN (
                   SELECT "ID"
                   FROM "Question"
-                  WHERE "DeletedAt" = null AND "ExamID" = '${exam.ID}'
+                  WHERE "DeletedAt" IS NULL AND "ExamID" = '${exam.ID}'
                 )
             ) AS max_scores
           `,
