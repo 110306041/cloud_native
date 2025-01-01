@@ -23,42 +23,47 @@ const languageResources = {
   javascript: { cpu: 0.5, memory: 256 },
 };
 
-export async function getAllVMStats() {
-  const vmKeys = await redisClient.keys("worker:*");
-  const vmStats = [];
-  for (const key of vmKeys) {
-    const vmData = await redisClient.hGetAll(key);
-    vmStats.push(vmData);
+export function getAllVMStats() {
+  return Array.from(connectedAgents.entries()).map(([agentId, stats]) => ({
+    agentId,
+    ...stats,
+  }));
+}
+
+export function updateVMStats(vmId, updatedStats) {
+  if (connectedAgents.has(vmId)) {
+    const currentStats = connectedAgents.get(vmId);
+    connectedAgents.set(vmId, { ...currentStats, ...updatedStats });
+    console.log(`Updated stats for VM ${vmId}:`, connectedAgents.get(vmId));
+  } else {
+    console.error(`VM with ID ${vmId} not found.`);
   }
-  return vmStats;
 }
 
-export async function updateVMStats(vm_id, stats) {
-  const vmKey = `worker:${vm_id}`;
-  console.log(vmKey);
-  await redisClient.hSet(vmKey, stats);
-}
-
-export async function selectBestVM(allocatedCpu, allocatedMemory) {
-  const vmStats = await getAllVMStats();
-  console.log(allocatedCpu, allocatedMemory);
-  console.log(vmStats);
+export function selectBestVM(requiredCpu, requiredMemory) {
+  const vmStats = getAllVMStats();
   let bestVM = null;
-  let bestScore = Number.MAX_SAFE_INTEGER;
+  let bestScore = Infinity;
 
   for (const vm of vmStats) {
     const availableCpu = vm.total_cpu - vm.cpu_usage;
     const availableMemory = vm.total_memory - vm.memory_usage;
 
-    const isResourceSufficient =
-      availableCpu >= allocatedCpu && availableMemory >= allocatedMemory;
+    if (availableCpu < requiredCpu || availableMemory < requiredMemory) {
+      continue;
+    }
 
-    if (isResourceSufficient) {
-      const score = availableCpu + availableMemory;
-      if (score < bestScore) {
-        bestScore = score;
-        bestVM = vm;
-      }
+    const normalizedCpuUtilization =
+      (availableCpu - requiredCpu) / vm.total_cpu;
+    const normalizedMemoryUtilization =
+      (availableMemory - requiredMemory) / vm.total_memory;
+
+    const score =
+      normalizedCpuUtilization * 0.5 + normalizedMemoryUtilization * 0.5;
+
+    if (score < bestScore) {
+      bestScore = score;
+      bestVM = vm;
     }
   }
 
@@ -69,19 +74,17 @@ export async function handleRequest(req, res) {
   try {
     const { questionID, language, code } = req.body;
     const studentID = req.user.id;
-    // const task = req.body;
     const submissionCount = await Submission.count({
       where: { UserID: studentID, QuestionID: questionID },
     });
-    console.log(submissionCount);
+    // console.log(submissionCount);
     const question = await Question.findOne({
       where: { ID: questionID, DeletedAt: null },
       attributes: ["SubmissionLimit"],
     });
-    console.log(question.SubmissionLimit);
+    // console.log(question.SubmissionLimit);
 
     if (question && submissionCount >= question.SubmissionLimit) {
-      // The count is greater than or equal to the submission limit
       return res.status(403).json({ error: "Submission limit reached." });
     }
 
@@ -112,7 +115,6 @@ export async function handleRequest(req, res) {
       expected: parseInputOrOutput(testCase.Output),
     }));
 
-    // const taskId = 'rivjdfiovjdoifv';
     const taskId = uuidv4();
 
     const task = {
@@ -121,8 +123,6 @@ export async function handleRequest(req, res) {
       code: code,
       testCases: formattedTestCases,
     };
-    console.log("oooo");
-    console.log(task);
     const newSubmission = await Submission.create({
       //   ID: uuidv4(),
       Score: 0 || null,
@@ -133,43 +133,42 @@ export async function handleRequest(req, res) {
       UserID: studentID,
       QuestionID: questionID,
     });
-    // Suppose user is in req.user if needed:  const user = req.user;
 
     // 1) Resource lookup
-    // const allocatedResource = languageResources[language];
-    // if (!allocatedResource) {
-    //   return res.status(400).json({ message: "Unsupported language" });
-    // }
+    const allocatedResource = languageResources[language];
+    if (!allocatedResource) {
+      return res.status(400).json({ message: "Unsupported language" });
+    }
 
     // 2) Select best VM
-    // const bestVM = await selectBestVM(allocatedResource.cpu, allocatedResource.memory);
-    // if (!bestVM) {
-    //   return res.status(503).json({ message: "No worker available" });
-        //  may have to do it again for a while and autoscaling
-    // }
+    const bestVM = await selectBestVM(
+      allocatedResource.cpu,
+      allocatedResource.memory
+    );
+    if (!bestVM) {
+      return res.status(503).json({ message: "No worker available" });
+      // --------------------------------------------------------------------------------------------------------
+      // DO THE AUTO SCALING
+      // --------------------------------------------------------------------------------------------------------
+    }
 
     // ****** The agent ID must match bestVM.id. So your agent must have registered with the same ID. *******
+    const agentId = bestVM.agentId; // Get the agentId
+    const fullVMDetails = connectedAgents.get(agentId);
+    const agentWs = fullVMDetails.endpoint;
 
-    // const agentWs = connectedAgents.get(bestVM.id);
-    const agentWs = Array.from(connectedAgents.values())[0];
-    // if (!agentWs) {
-    //   return res.status(503).json({ message: "Selected VM is not connected" });
-    // }
-
-    // console.log(`Selected worker: ${bestVM.id}`);
+    // VM checkpoint
+    if (!agentWs) {
+      return res.status(503).json({ message: "Selected VM is not connected" });
+    }
 
     // 3) Update VM stats (pre-allocate)
-    // await updateVMStats(bestVM.id, {
-    //   cpu_usage: parseFloat(bestVM.cpu_usage) + allocatedResource.cpu,
-    //   memory_usage: parseFloat(bestVM.memory_usage) + allocatedResource.memory,
-    //   num_runners: parseInt(bestVM.num_runners) + 1,
-    // });
-
-    // 4) Create submission data
-    // const submissionData = { questionID, language, code };
-
-    // 5) Create a unique task ID for correlation
-    // const taskId = "ffjewioejweowijw";
+    await updateVMStats(agentId, {
+      cpu_usage: parseFloat(fullVMDetails.cpu_usage) + allocatedResource.cpu,
+      memory_usage:
+        parseFloat(fullVMDetails.memory_usage) + allocatedResource.memory,
+      num_runners: parseInt(fullVMDetails.num_runners) + 1,
+    });
 
     // 6) Create a promise to await the agent's response
     const agentPromise = new Promise((resolve, reject) => {
@@ -189,18 +188,16 @@ export async function handleRequest(req, res) {
       JSON.stringify({
         type: "task",
         task: task,
-        // taskId,
-        // payload: submissionData,
       }),
       (err) => {
         if (err) {
           // If there's an error sending, remove from pendingTasks and revert usage
           pendingTasks.delete(taskId);
-          // updateVMStats(bestVM.id, {
-          //   cpu_usage: parseFloat(bestVM.cpu_usage),
-          //   memory_usage: parseFloat(bestVM.memory_usage),
-          //   num_runners: parseInt(bestVM.num_runners),
-          // });
+          updateVMStats(agentId, {
+            cpu_usage: parseFloat(fullVMDetails.cpu_usage),
+            memory_usage: parseFloat(fullVMDetails.memory_usage),
+            num_runners: parseInt(fullVMDetails.num_runners),
+          });
           return res
             .status(500)
             .json({ message: "Failed to send task to agent" });
@@ -211,13 +208,23 @@ export async function handleRequest(req, res) {
     // 8) Await the agent's response
     try {
       const response = await agentPromise;
-      // This resolves when we get "taskComplete" or rejects on "taskError"
+      let resourcesReverted = false;
 
-      
-      // console.log(resultt);
+      const currentStats = connectedAgents.get(agentId);
+      const revertResources = async () => {
+        if (!resourcesReverted) {
+          await updateVMStats(agentId, {
+            cpu_usage:
+              parseFloat(currentStats.cpu_usage) - allocatedResource.cpu,
+            memory_usage:
+              parseFloat(currentStats.memory_usage) - allocatedResource.memory,
+            num_runners: parseInt(currentStats.num_runners) - 1,
+          });
+          resourcesReverted = true;
+        }
+      };
+
       if (!response.success) {
-        console.log('log errorlogging')
-        console.log(response);
         const errorDetails = response.data.match(/code (\d+)/);
         const lineNumber = errorDetails ? parseInt(errorDetails[1], 10) : 0;
         const errorRes = {
@@ -225,73 +232,66 @@ export async function handleRequest(req, res) {
             code: "EXECUTION_ERROR",
             message: "程式執行錯誤",
             details: {
-              line: lineNumber, // Use extracted line number or default to 0
+              line: lineNumber,
               error_message: response.data || "runtime error",
             },
           },
         };
-        // const err = resultt.data;
+        await revertResources();
+
         return res.status(400).json({ status: "error", errorRes });
       }
       const resultt = response.data.result;
       const metrics = response.data.metrics;
 
-      // Transform test cases
       const transformedTestCases = resultt.cases.map((testCase) => {
         return {
           case_id: testCase.id,
           status: testCase.status,
-          // Convert seconds to milliseconds, e.g., 0.04s -> 40ms
           execution_time: Math.round(testCase.time * 1000),
-          // If you don't have memory data, you could hardcode or estimate
-          // memory_used: 1024, // for example, in KB
-          // Convert inputs/outputs to string or keep as array — your choice
+
           input: JSON.stringify(testCase.input),
           expected_output: JSON.stringify(testCase.expected),
           actual_output: JSON.stringify(testCase.actual),
         };
       });
 
-      // Calculate a score, e.g. percentage of passed test cases
-      // This is an example formula, tweak as necessary
       const score = Math.round((resultt.passed / resultt.total) * 100);
 
-      // Combine everything into the desired format
       const output = {
         test_cases: transformedTestCases,
         total_test_cases: resultt.total,
         passed_test_cases: resultt.passed,
         score: score,
-        cpu_usage:metrics.resources.cpu.used,       
-        memory_usage:metrics.resources.memory.used,
+        cpu_usage: metrics.resources.cpu.used,
+        memory_usage: metrics.resources.memory.used,
 
-        // Convert the overall execution time (seconds) to ms
         execution_time: Math.round(resultt.execution_time * 1000),
       };
 
-      // Now `output` has the structure you described
-
       await newSubmission.update({
         Score: score,
-        TimeSpend: output.execution_time, // or keep in seconds
-        MemoryUsage: 1024, // or a real measurement if available
+        TimeSpend: output.execution_time,
+        MemoryUsage: output.memory_usage,
       });
 
-      // console.log("Received result from worker:", resultt);
+      await revertResources();
+      console.log(connectedAgents);
+      console.log("end");
 
-      // 9) Return success to the client
       return res.json({ status: "success", output });
-      // return res.status(200).json({ status: "success", output });
     } catch (error) {
-      // If the agent reported a taskError or we timed out
       console.error("Agent error:", error);
 
       // Revert usage stats
-      // await updateVMStats(bestVM.id, {
-      //   cpu_usage: parseFloat(bestVM.cpu_usage),
-      //   memory_usage: parseFloat(bestVM.memory_usage),
-      //   num_runners: parseInt(bestVM.num_runners),
-      // });
+      if (!resourcesReverted) {
+        await updateVMStats(agentId, {
+          cpu_usage: parseFloat(currentStats.cpu_usage) - allocatedResource.cpu,
+          memory_usage:
+            parseFloat(currentStats.memory_usage) - allocatedResource.memory,
+          num_runners: parseInt(currentStats.num_runners) - 1,
+        });
+      }
 
       return res.status(500).json({
         status: "error",

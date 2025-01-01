@@ -1,62 +1,14 @@
-// import dotenv from "dotenv";
-// dotenv.config();
-// import app from "./app.js"; // ES module import
-// // import sequelize from "../syncDB.js"; // Your Sequelize instance
-// import db from "../models/index.js";
-// // import http from 'http';
-// // import { createClient } from "redis";
-// import { createServer } from "http";
-
-// import redisClient from "../connectRedis.js";
-// // import { Server as SocketServer } from "socket.io";
-// // import handleSocketEvents from "../socketHandler.js";
-
-// const PORT = process.env.PORT || 3000;
-// const SOCKET_PORT = process.env.SOCKET_PORT || 4000;
-
-
-// (async () => {
-//   try {
-//     // Check Redis connection
-//     const isRedisConnected = await redisClient.ping();
-//     if (isRedisConnected !== "PONG") {
-//       throw new Error("Redis not connected");
-//     }
-//     console.log("Redis is ready");
-
-//     // Test the DB connection
-//     await db.sequelize.authenticate();
-//     console.log("Database connected successfully!");
-
-//     // Sync all models
-//     await db.sequelize.sync(); // or sync({ alter: true }) / sync({ force: true })
-//     console.log("All models were synchronized successfully.");
-
-//     // Start the HTTP server
-//     app.listen(PORT, () => {
-//       console.log(`Server is running on http://localhost:${PORT}`);
-//     });
-
-
-//   } catch (error) {
-//     console.error("Server initialization error:", error);
-//     process.exit(1);
-//   }
-// })();
-
-
-
 import dotenv from "dotenv";
 dotenv.config();
 
 import app from "./app.js"; // Express app
 import db from "../models/index.js"; // Sequelize models
-import redisClient from "../connectRedis.js"; // Redis client
+// import redisClient from "../connectRedis.js"; // Redis client
 import { createServer } from "http";
 import { WebSocketServer } from "ws";
 import { v4 as uuidv4 } from "uuid";
 
-/** 
+/**
  * We keep these in memory:
  * connectedAgents: key=agentId, value=WebSocket instance
  * pendingTasks: key=taskId, value={ resolve, reject }
@@ -72,11 +24,11 @@ const WS_PORT = process.env.SOCKET_PORT || 4000;
 (async () => {
   try {
     // 1. Check Redis connection
-    const isRedisConnected = await redisClient.ping();
-    if (isRedisConnected !== "PONG") {
-      throw new Error("Redis not connected");
-    }
-    console.log("Redis is ready");
+    // const isRedisConnected = await redisClient.ping();
+    // if (isRedisConnected !== "PONG") {
+    //   throw new Error("Redis not connected");
+    // }
+    // console.log("Redis is ready");
 
     // 2. Test the DB connection
     await db.sequelize.authenticate();
@@ -107,43 +59,49 @@ const WS_PORT = process.env.SOCKET_PORT || 4000;
           // Example: { type: "register", agentId: "worker-xyz" }
           const { agentId } = message;
           console.log(`Agent ${agentId} registered`);
-          connectedAgents.set(agentId, ws);
-        }
-
-        else if (message.type === "taskComplete") {
-          // Example: { type: "taskComplete", taskId: "...", result: {...} }
-          // console.log('loggong messsage');
-          // console.log(message);
+          // connectedAgents.set(agentId, ws);
+          connectedAgents.set(agentId, {
+            total_cpu: message.resources.cpu,
+            cpu_usage: 0,
+            total_memory: message.resources.memory,
+            memory_usage: 0,
+            num_runners: 0,
+            endpoint: ws,
+          });
+        } else if (message.type === "taskComplete") {
           const { taskId, result, metrics } = message;
-          console.log(`Task ${taskId} completed:`, JSON.stringify(result, null, 2));
-          console.log('okokokok');
+          console.log(
+            `Task ${taskId} completed:`,
+            JSON.stringify(result, null, 2)
+          );
+          console.log("okokokok");
           console.log(metrics);
 
           if (pendingTasks.has(taskId)) {
-            pendingTasks.get(taskId).resolve({success:true, data:message});
+            pendingTasks.get(taskId).resolve({ success: true, data: message });
             pendingTasks.delete(taskId);
           }
-        }
-
-        else if (message.type === "taskError") {
-          // Example: { type: "taskError", taskId: "...", error: "...error details..." }
-        
+        } else if (message.type === "taskError") {
           const { taskId, error } = message;
-          console.error(`Task ${taskId} failed:`, JSON.stringify(error, null, 2));
+          console.error(
+            `Task ${taskId} failed:`,
+            JSON.stringify(error, null, 2)
+          );
 
           if (pendingTasks.has(taskId)) {
             // pendingTasks.get(taskId).reject(new Error(error || "Task error"));
             // pendingTasks.delete(taskId);
             pendingTasks.get(taskId).resolve({
               success: false,
-              data: error
+              data: error,
             });
             pendingTasks.delete(taskId);
           }
-        }
-
-        else if (message.type === "resourceUpdate") {
-          console.log(`Agent ${message.agentId} resources:`, JSON.stringify(message.metrics, null, 2));
+        } else if (message.type === "resourceUpdate") {
+          console.log(
+            `Agent ${message.agentId} resources:`,
+            JSON.stringify(message.metrics, null, 2)
+          );
           // Possibly update some internal data structure
         }
       });
@@ -158,9 +116,6 @@ const WS_PORT = process.env.SOCKET_PORT || 4000;
         }
       });
     });
-
-    // 6. Example REST API to send tasks (not necessarily needed if you have handleRequest)
-   
   } catch (error) {
     console.error("Server initialization error:", error);
     process.exit(1);

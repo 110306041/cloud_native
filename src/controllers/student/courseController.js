@@ -41,35 +41,6 @@ export const getCoursesByStudent = async (req, res) => {
           },
         });
 
-        // Calculate completed assignments
-        // const completedAssignmentGroups = await Assignment.count({
-        //   where: { CourseID: courseId },
-        //   include: [
-        //     {
-        //       model: Question,
-        //       include: [
-        //         {
-        //           model: Submission,
-        //           where: { UserID: studentId },
-        //           attributes: [],
-        //         },
-        //       ],
-        //       attributes: [],
-        //     },
-        //   ],
-        //   group: ["Assignment.ID"],
-        //   having: Sequelize.literal(
-        //     `COUNT(DISTINCT "Questions"."ID") = (
-        //         SELECT COUNT(*)
-        //         FROM "Question"
-        //         WHERE "Question"."AssignmentID" = "Assignment"."ID"
-        //       )`
-        //   ),
-        //   logging: console.log,
-        // });
-        // const completedAssignments = Array.isArray(completedAssignmentGroups)
-        //   ? completedAssignmentGroups.length
-        //   : 0;
         const completedAssignments = await Submission.count({
           distinct: true,
           col: "QuestionID",
@@ -77,18 +48,19 @@ export const getCoursesByStudent = async (req, res) => {
             UserID: studentId,
             QuestionID: {
               [Op.in]: Sequelize.literal(`
-              (SELECT "ID" 
-                FROM "Question" 
-                WHERE "DeletedAt" = null AND "AssignmentID" IN (
-                  SELECT "ID" 
-                  FROM "Assignment" 
-                  WHERE "DeletedAt" = null AND "CourseID" = '${courseId}'
+                (SELECT "ID"
+                 FROM "Question"
+                 WHERE "DeletedAt" IS NULL AND "AssignmentID" IN (
+                   SELECT "ID"
+                   FROM "Assignment"
+                   WHERE "DeletedAt" IS NULL AND "CourseID" = '${courseId}'
+                 )
                 )
-              )
               `),
             },
           },
         });
+        console.log(completedAssignments);
         // Calculate active exams
         const activeExams = await Exam.count({
           where: {
