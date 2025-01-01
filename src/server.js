@@ -112,17 +112,22 @@ const WS_PORT = process.env.SOCKET_PORT || 4000;
 
         else if (message.type === "taskComplete") {
           // Example: { type: "taskComplete", taskId: "...", result: {...} }
-          const { taskId, result } = message;
+          // console.log('loggong messsage');
+          // console.log(message);
+          const { taskId, result, metrics } = message;
           console.log(`Task ${taskId} completed:`, JSON.stringify(result, null, 2));
+          console.log('okokokok');
+          console.log(metrics);
 
           if (pendingTasks.has(taskId)) {
-            pendingTasks.get(taskId).resolve(result);
+            pendingTasks.get(taskId).resolve({success:true, data:message});
             pendingTasks.delete(taskId);
           }
         }
 
         else if (message.type === "taskError") {
           // Example: { type: "taskError", taskId: "...", error: "...error details..." }
+        
           const { taskId, error } = message;
           console.error(`Task ${taskId} failed:`, JSON.stringify(error, null, 2));
 

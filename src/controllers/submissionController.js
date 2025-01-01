@@ -145,9 +145,11 @@ export async function handleRequest(req, res) {
     // const bestVM = await selectBestVM(allocatedResource.cpu, allocatedResource.memory);
     // if (!bestVM) {
     //   return res.status(503).json({ message: "No worker available" });
+        //  may have to do it again for a while and autoscaling
     // }
 
-    // The agent ID must match bestVM.id. So your agent must have registered with the same ID.
+    // ****** The agent ID must match bestVM.id. So your agent must have registered with the same ID. *******
+
     // const agentWs = connectedAgents.get(bestVM.id);
     const agentWs = Array.from(connectedAgents.values())[0];
     // if (!agentWs) {
@@ -211,10 +213,12 @@ export async function handleRequest(req, res) {
       const response = await agentPromise;
       // This resolves when we get "taskComplete" or rejects on "taskError"
 
-      const resultt = response;
-      console.log(resultt);
-      if (!resultt.success) {
-        const errorDetails = resultt.data.match(/code (\d+)/);
+      
+      // console.log(resultt);
+      if (!response.success) {
+        console.log('log errorlogging')
+        console.log(response);
+        const errorDetails = response.data.match(/code (\d+)/);
         const lineNumber = errorDetails ? parseInt(errorDetails[1], 10) : 0;
         const errorRes = {
           error: {
@@ -222,13 +226,15 @@ export async function handleRequest(req, res) {
             message: "程式執行錯誤",
             details: {
               line: lineNumber, // Use extracted line number or default to 0
-              error_message: resultt.data || "runtime error",
+              error_message: response.data || "runtime error",
             },
           },
         };
         // const err = resultt.data;
         return res.status(400).json({ status: "error", errorRes });
       }
+      const resultt = response.data.result;
+      const metrics = response.data.metrics;
 
       // Transform test cases
       const transformedTestCases = resultt.cases.map((testCase) => {
@@ -238,7 +244,7 @@ export async function handleRequest(req, res) {
           // Convert seconds to milliseconds, e.g., 0.04s -> 40ms
           execution_time: Math.round(testCase.time * 1000),
           // If you don't have memory data, you could hardcode or estimate
-          memory_used: 1024, // for example, in KB
+          // memory_used: 1024, // for example, in KB
           // Convert inputs/outputs to string or keep as array — your choice
           input: JSON.stringify(testCase.input),
           expected_output: JSON.stringify(testCase.expected),
@@ -256,6 +262,9 @@ export async function handleRequest(req, res) {
         total_test_cases: resultt.total,
         passed_test_cases: resultt.passed,
         score: score,
+        cpu_usage:metrics.resources.cpu.used,       
+        memory_usage:metrics.resources.memory.used,
+
         // Convert the overall execution time (seconds) to ms
         execution_time: Math.round(resultt.execution_time * 1000),
       };
@@ -268,7 +277,7 @@ export async function handleRequest(req, res) {
         MemoryUsage: 1024, // or a real measurement if available
       });
 
-      console.log("Received result from worker:", resultt);
+      // console.log("Received result from worker:", resultt);
 
       // 9) Return success to the client
       return res.json({ status: "success", output });
