@@ -113,7 +113,7 @@ const Problem = () => {
 
     try {
       const response = await axios.post(
-        `https://658c-140-119-235-6.ngrok-free.app/student/submissions`,
+        `${BACK_SERVER_URL}/student/submissions`,
         {
           questionID: id,
           language: languageExtension[language],

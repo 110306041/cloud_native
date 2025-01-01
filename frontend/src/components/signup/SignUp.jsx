@@ -70,7 +70,7 @@ const SignUp = () => {
     setLoading(true);
 
     axios
-      .post(`${BACK_SERVER_URL}/api/auth/register`, {
+      .post(`${BACK_SERVER_URL}/auth/register`, {
         type,
         username,
         email,

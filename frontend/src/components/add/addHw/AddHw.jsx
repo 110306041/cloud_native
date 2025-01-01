@@ -95,7 +95,7 @@ const AddHw = () => {
     };
 
     axios
-      .post(`${BACK_SERVER_URL}/api/teacher/assignments/${courseId}`, data, {
+      .post(`${BACK_SERVER_URL}/teacher/assignments/${courseId}`, data, {
         headers: {
           Authorization: `Bear ${localStorage.getItem("access-token")}`,
           "Content-Type": "application/json",
