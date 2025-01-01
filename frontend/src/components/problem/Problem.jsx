@@ -104,6 +104,10 @@ const Problem = () => {
   };
 
   const handleSubmit = async () => {
+    if (!code.trim()) {
+      toast.error("Code cannot be empty. Please write your solution.");
+      return; // 終止函式執行
+    }
     const accessToken = localStorage.getItem("access-token");
     if (!accessToken) {
       toast.error("Access token is missing. Please log in again.");
@@ -125,8 +129,9 @@ const Problem = () => {
         }
       );
 
-      // 如果是成功的回應
-      if (response.data.status === "success") {
+      // 根據 HTTP 狀態碼處理
+      if (response.status === 200 && response.data.status === "success") {
+        // 處理成功邏輯
         const output = response.data.output;
         setResult({
           success: true,
@@ -146,45 +151,42 @@ const Problem = () => {
           memoryUsage: output.memory_usage,
           executionTime: output.execution_time,
         });
-      }
-      // 如果是錯誤的回應
-      else if (response.data.status === "error") {
-        const errorDetails = response.data.errorRes.error;
+      } else if (response.status === 400 || response.status === 500) {
+        // 處理錯誤回應
+        const errorDetails = response.data?.errorRes?.error || {};
         setResult({
           success: false,
           error: {
-            code: errorDetails.code,
-            message: errorDetails.message,
-            line: errorDetails.details?.line,
-            errorMessage: errorDetails.details?.error_message,
+            code: errorDetails.code || "UNKNOWN_ERROR",
+            message: errorDetails.message || "An error occurred",
+            line: errorDetails.details?.line || "N/A",
+            errorMessage: errorDetails.details?.error_message || "N/A",
           },
-          output: [],
-          totalTestCases: 0,
-          passedTestCases: 0,
-          score: 0,
-          executionTime: 0,
         });
-
-        toast.error(errorDetails.message);
+        toast.error(errorDetails.message || "An error occurred.");
+      } else {
+        // 處理非預期狀態
+        setResult({
+          success: false,
+          error: {
+            code: "UNEXPECTED_STATUS",
+            message: `Unexpected status code: ${response.status}`,
+          },
+        });
+        toast.error(`Unexpected status code: ${response.status}`);
       }
     } catch (err) {
+      // 處理例外錯誤
       console.error("Submission error:", err);
       const error = err.response?.data?.message || err.message;
-
       setResult({
         success: false,
         error: {
-          code: "UNKNOWN_ERROR",
+          code: "NETWORK_ERROR",
           message: error,
           errorMessage: "An unexpected error occurred",
         },
-        output: [],
-        totalTestCases: 0,
-        passedTestCases: 0,
-        score: 0,
-        executionTime: 0,
       });
-
       toast.error(error);
     } finally {
       setSubmitLoading(false);
