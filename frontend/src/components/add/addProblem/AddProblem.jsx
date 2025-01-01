@@ -51,7 +51,7 @@ const theme = createTheme({
       styleOverrides: {
         root: {
           borderRadius: 16,
-          marginTop: "36px", 
+          marginTop: "36px",
         },
       },
     },
@@ -92,7 +92,6 @@ const AddProblem = () => {
   const [timeLimit, setTimeLimit] = useState();
   const [memoryLimit, setMemoryLimit] = useState();
   const [submissionLimit, setSubmissionLimit] = useState();
-  const [dueDate, setDueDate] = useState(""); // TODO: discard dueDate
   const [description, setDescription] = useState("");
 
   // 用來管理 sample testcases 的 input/output
@@ -107,7 +106,7 @@ const AddProblem = () => {
   const location = useLocation();
 
   const id = location.state?.id;
-  const problemType = location.state?.problemType;
+  const problemType = location.state?.problemtype;
 
   // --------- 新增一筆 sample testcase ---------
   const addTestcase = () => {
@@ -119,8 +118,8 @@ const AddProblem = () => {
   // --------- 刪除最後一筆 sample testcase ---------
   const handleDelete = () => {
     if (testcaseCount > 0) {
-      const newInput = [...input];
-      const newOutput = [...output];
+      let newInput = [...input];
+      let newOutput = [...output];
       newInput.pop();
       newOutput.pop();
       setInput(newInput);
@@ -151,7 +150,6 @@ const AddProblem = () => {
         time_limit: timeLimit,
         memory_limit: memoryLimit,
         submission_limit: submissionLimit,
-        due_date: dueDate,
         description: description,
         test_cases: sampleTestcases,
         question_name: questionName,
@@ -163,7 +161,6 @@ const AddProblem = () => {
         time_limit: timeLimit,
         memory_limit: memoryLimit,
         submission_limit: submissionLimit,
-        due_date: dueDate,
         description: description,
         test_cases: sampleTestcases,
         question_name: questionName,
@@ -265,19 +262,6 @@ const AddProblem = () => {
                 variant="outlined"
                 multiline
                 rows={4}
-              />
-              {/* TODO: remove dueDate */}
-              <TextField
-                label="Due Date"
-                type="datetime-local"
-                value={dueDate}
-                onChange={(e) => setDueDate(e.target.value)}
-                fullWidth
-                required
-                variant="outlined"
-                InputLabelProps={{
-                  shrink: true,
-                }}
               />
               {/* 難度選擇 */}
               <select
@@ -429,7 +413,7 @@ export const NumberField = ({ label, value, setValue, placeholder }) => {
       type="number"
       value={value}
       onChange={(e) => {
-        const newVal = e.target.value;
+        let newVal = e.target.value;
         if (/^\d*$/.test(newVal)) {
           setValue(newVal);
         }
@@ -445,13 +429,13 @@ export const NumberField = ({ label, value, setValue, placeholder }) => {
 // --------- SampleTestcase 子元件 ---------
 const SampleTestcase = ({ i, input, output, setInput, setOutput }) => {
   const handleInputChange = (e) => {
-    const newInput = [...input];
+    let newInput = [...input];
     newInput[i] = e.target.value;
     setInput(newInput);
   };
 
   const handleOutputChange = (e) => {
-    const newOutput = [...output];
+    let newOutput = [...output];
     newOutput[i] = e.target.value;
     setOutput(newOutput);
   };

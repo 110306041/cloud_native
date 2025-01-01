@@ -1,4 +1,4 @@
-export const userType = ["Student", "Professor"];
+export const userType = ["Student", "Teacher"];
 
 export const tagsData = [
   "Binary Search",
