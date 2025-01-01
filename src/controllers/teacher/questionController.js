@@ -195,13 +195,12 @@ export const createQuestion = async (req, res) => {
       time_limit,
       memory_limit,
       submission_limit,
-      due_date,
       description,
       test_cases,
       question_name,
     } = req.body;
 
-    const teacherID = req.user.id; // Assuming authentication middleware provides the teacher ID
+    const teacherID = req.user.id; 
     const isTeacher = await User.findOne({
       where: { ID: teacherID, Type: "teacher" },
     });
@@ -295,7 +294,6 @@ export const createQuestion = async (req, res) => {
         TimeLimit: time_limit,
         MemoryLimit: memory_limit,
         SubmissionLimit: submission_limit,
-        DueDate: new Date(due_date),
         Description: description,
       },
       { transaction: transaction }
