@@ -123,7 +123,7 @@ const AddHw = () => {
         setLoadingSpinner(false);
         toast.success("HW Created Successfully");
         // 修改這行，添加 state 參數
-        navigate(`/course/${courseId}`, {
+        navigate(-1, {
           state: {
             refresh: true,
           },

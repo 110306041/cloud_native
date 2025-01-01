@@ -96,7 +96,7 @@ const AddExam = () => {
           draggable: true,
           progress: undefined,
         });
-        navigate(`/course/${courseId}`);
+        navigate(-1);
       })
       .catch((err) => {
         setLoadingSpinner(false);
