@@ -1,18 +1,18 @@
 import { faPaperPlane } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-    Box,
-    Button,
-    CircularProgress,
-    Container,
-    Paper,
-    TextField,
-    ThemeProvider,
-    Typography,
-    createTheme,
+  Box,
+  Button,
+  CircularProgress,
+  Container,
+  Paper,
+  TextField,
+  ThemeProvider,
+  Typography,
+  createTheme,
 } from "@mui/material";
 import axios from "axios";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -57,6 +57,7 @@ const theme = createTheme({
 
 const AddHw = () => {
   const [assignmentName, setAssignmentName] = useState("");
+  const [startDate, setStartDate] = useState("");
   const [dueDate, setDueDate] = useState("");
   const [description, setDescription] = useState("");
   const [loadingSpinner, setLoadingSpinner] = useState(false);
@@ -65,15 +66,31 @@ const AddHw = () => {
   const location = useLocation();
   const courseId = location.state?.id;
 
+  useEffect(() => {
+    if (!courseId) {
+      console.error("No courseId provided");
+      toast.error("Course ID is missing");
+      navigate("/courses");
+      return;
+    }
+    console.log("Current courseId:", courseId);
+  }, [courseId, navigate]);
+
   const onFormSubmit = (e) => {
     e.preventDefault();
     setLoadingSpinner(true);
 
-    const datetime = new Date(dueDate).toISOString();
+    setLoadingSpinner(true);
+    if (!courseId) {
+      setLoadingSpinner(false);
+      toast.error("Course ID is missing");
+      return;
+    }
 
     const data = {
       assignment_name: assignmentName,
-      due_date: datetime,
+      start_date: new Date(startDate).toISOString(),
+      due_date: new Date(dueDate).toISOString(),
       description: description,
     };
 
@@ -81,20 +98,18 @@ const AddHw = () => {
       .post(`${BACK_SERVER_URL}/api/teacher/assignments/${courseId}`, data, {
         headers: {
           Authorization: `Bear ${localStorage.getItem("access-token")}`,
+          "Content-Type": "application/json",
         },
       })
       .then(() => {
         setLoadingSpinner(false);
-        toast.success("Course Created Successfully", {
-          position: "top-right",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
+        toast.success("HW Created Successfully");
+        // 修改這行，添加 state 參數
+        navigate(`/course/${courseId}`, {
+          state: {
+            refresh: true,
+          },
         });
-        navigate(`/course/${courseId}`);
       })
       .catch((err) => {
         setLoadingSpinner(false);
@@ -111,7 +126,6 @@ const AddHw = () => {
         });
       });
   };
-
   return (
     <ThemeProvider theme={theme}>
       <Box
@@ -163,7 +177,18 @@ const AddHw = () => {
                 required
                 variant="outlined"
               />
-
+              <TextField
+                label="Start Date"
+                type="datetime-local"
+                value={startDate}
+                onChange={(e) => setStartDate(e.target.value)}
+                fullWidth
+                required
+                variant="outlined"
+                InputLabelProps={{
+                  shrink: true,
+                }}
+              />
               <TextField
                 label="Due Date"
                 type="datetime-local"

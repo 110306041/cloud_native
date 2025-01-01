@@ -10,6 +10,7 @@ import CourseHw from "./hw/CourseHw";
 
 export default function Course() {
   const { id } = useParams();
+  const [refreshKey, setRefreshKey] = useState(0);
 
   const location = useLocation();
   const courseInfo = location.state?.courseInfo;
@@ -18,7 +19,11 @@ export default function Course() {
   const [hws, setHws] = useState([]);
   const [exams, setExams] = useState([]);
   const [loader, setLoader] = useState(true);
-
+  useEffect(() => {
+    if (location.state?.refresh) {
+      setRefreshKey((prev) => prev + 1);
+    }
+  }, [location]);
   useEffect(() => {
     let apiUrl =
       localStorage.getItem("role") === "student"
@@ -50,7 +55,7 @@ export default function Course() {
         });
         setLoader(false);
       });
-  }, [id]);
+  }, [id, refreshKey]);
 
   return (
     <div>
@@ -61,20 +66,13 @@ export default function Course() {
       ) : (
         <div className="courses-container">
           <ToastContainer />
-          {loader ? (
-            <div className="courses-spinner">
-              <BeatLoader color={"#7D99D3"} size={20} loading={loader} />
-            </div>
-          ) : (
-            <div className="courses-right">
-              <h2 style={{ color: "#445E93" }}>
-                {courseInfo?.semester} {courseInfo?.name}
-              </h2>
-
-              <CourseHw hws={hws} courseInfo={courseInfo}></CourseHw>
-              <CourseExam exams={exams} courseInfo={courseInfo}></CourseExam>
-            </div>
-          )}
+          <div className="courses-right">
+            <h2 style={{ color: "#445E93" }}>
+              {courseInfo?.semester} {courseInfo?.name}
+            </h2>
+            <CourseHw hws={hws} courseInfo={courseInfo} />
+            <CourseExam exams={exams} courseInfo={courseInfo} />
+          </div>
         </div>
       )}
     </div>

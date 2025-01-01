@@ -29,9 +29,10 @@ let columns =
 
 const styles = {
   assignmentTitle: {
-    marginBottom: "1rem",
-    fontSize: "1.5rem",
-    fontWeight: "bold",
+    marginTop: "0.6rem",
+    marginBottom: "0.2rem",
+    fontSize: "1.7rem",
+    fontWeight: "900",
     color: "#445E93",
   },
   infoAndButton: {
@@ -202,8 +203,12 @@ export default function ProblemSet() {
             marginTop: "20px",
           }}
         >
-          <TableContainer>
-            <Table stickyHeader aria-label="sticky table">
+          <TableContainer sx={{ maxWidth: "100%" }}>
+            <Table
+              sx={{ minWidth: 800 }}
+              stickyHeader
+              aria-label="sticky table"
+            >
               <TableHead>
                 <TableRow>
                   {columns.map((column) => (
@@ -212,10 +217,12 @@ export default function ProblemSet() {
                       align={column.align}
                       style={{
                         minWidth: column.minWidth,
-                        maxWidth: column.maxWidth,
                         fontWeight: "bold",
                         fontSize: "16px",
                         backgroundColor: "#FFF9D0",
+                        whiteSpace: "nowrap", // Add this to prevent wrapping
+                        overflow: "hidden", // Add this to handle overflow
+                        textOverflow: "ellipsis", // Add this to show ellipsis if text overflows
                       }}
                     >
                       {column.label}
@@ -247,7 +254,30 @@ export default function ProblemSet() {
                             column.id === "id"
                               ? page * rowsPerPage + index + 1
                               : row[column.id];
-
+                          if (column.id === "description") {
+                            return (
+                              <TableCell
+                                key={column.id}
+                                align={column.align}
+                                sx={{
+                                  maxWidth: "250px",
+                                  fontSize: "16px", // 直接設定在 TableCell 上
+                                  "& span": {
+                                    fontSize: "inherit", // 繼承父元素的字體大小
+                                    display: "block",
+                                    whiteSpace: "normal",
+                                    overflow: "hidden",
+                                    textOverflow: "ellipsis",
+                                    wordBreak: "break-word",
+                                    padding: "8px 0",
+                                    maxWidth: "100%",
+                                  },
+                                }}
+                              >
+                                <span>{value}</span>
+                              </TableCell>
+                            );
+                          }
                           if (column.id === "score") {
                             return (
                               <TableCell key={column.id} align={column.align}>
@@ -290,6 +320,7 @@ export default function ProblemSet() {
                                   style={{
                                     fontWeight: "bold",
                                     color: "white",
+
                                     backgroundColor: badgeColor,
                                     textTransform: "capitalize",
                                   }}
@@ -304,10 +335,10 @@ export default function ProblemSet() {
                                     fontWeight: "regular",
                                     fontSize: "16px",
                                     color: "#222222",
-                                    textOverflow: "ellipsis",
-                                    maxWidth: column.maxWidth,
-                                    display: "inline-block",
-                                    overflow: "hidden",
+                                    display: "block", // 填滿單元格寬度
+                                    whiteSpace: "normal", // 允許自動換行
+                                    overflow: "hidden", // 隱藏溢出的內容（若需要）
+                                    maxWidth: 300,
                                   }}
                                 >
                                   {value}

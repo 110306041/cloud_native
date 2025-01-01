@@ -194,6 +194,11 @@ export default function Courses() {
                               ? page * rowsPerPage + index + 1
                               : row[column.id];
                           if (column.id === "hw") {
+                            console.log('HW Data:', {
+                              completed: row.completed_assignments,
+                              total: row.total_assignments,
+                              row: row
+                            });
                             let assignmentsDisplay =
                               localStorage.getItem("role") === "student"
                                 ? `${row.completed_assignments} / ${row.total_assignments}`
@@ -212,6 +217,10 @@ export default function Courses() {
                               </TableCell>
                             );
                           } else if (column.id === "exam") {
+                            console.log('Exam Data:', {
+                              active: row.active_exams,
+                              row: row
+                            });
                             return (
                               <TableCell key={column.id} align={column.align}>
                                 <span
