@@ -8,6 +8,8 @@ import {
   getQuestionDetails,
 } from "../controllers/student/questionController.js";
 import { getSubmissionByStudent } from "../controllers/student/submissioinController.js";
+import { handleRequest } from '../controllers/submissionController.js';
+
 // import { createCourse } from '../controllers/teacher/courseController.js';
 // import (createCourse)
 
@@ -29,5 +31,7 @@ router.get(
 );
 
 router.get("/submissions", authenticateToken, getSubmissionByStudent);
+router.post('/submissions',authenticateToken, handleRequest);
+
 
 export default router;
