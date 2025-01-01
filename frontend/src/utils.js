@@ -1,7 +1,4 @@
-export const userType = [
-  "Student",
-  "Professor",
-]
+export const userType = ["Student", "Professor"];
 
 export const tagsData = [
   "Binary Search",
@@ -60,7 +57,8 @@ export const mockHws = [
     status: "completed", // 測試狀態
     due_date: "2024-01-15T23:59:59",
     score: 85,
-    description: "a;eifja;weifja;weoifja;wefija;woeifaj;weoifja;woeifja;weoifa;woeifja;oewifja;woeifja;oewifja;woeifj"
+    description:
+      "a;eifja;weifja;weoifja;wefija;woeifaj;weoifja;woeifja;weoifa;woeifja;oewifja;woeifja;oewifja;woeifj",
   },
   {
     id: 2,
@@ -82,26 +80,26 @@ export const mockHws = [
 
 export const problemFake = {
   id: 1,
-  name: 'Merge Strings Alternately',
-  description: 'hahahahhahahahahaha',
+  name: "Merge Strings Alternately",
+  description: "hahahahhahahahahaha",
   timeLimit: 60, // sec
   memoryLimit: 500, // mb
   sampleTestcases: [
     {
-      input: 'case',
-      output: 'output',
-      explanation: 'this is ....\n next line'
+      input: "case",
+      output: "output",
+      explanation: "this is ....\n next line",
     },
     {
-      input: 'case',
-      output: 'output',
-      explanation: 'this is ....\n next line'
+      input: "case",
+      output: "output",
+      explanation: "this is ....\n next line",
     },
   ],
-  constraints: 'constraints',
+  constraints: "constraints",
   // difficulty: '',
   // submissionLimit: 3,
-}
+};
 
 export const resultFake = {
   success: true,
@@ -109,13 +107,19 @@ export const resultFake = {
   cpuUsage: 0.5,
   memoryUsage: 80,
   executionTime: 0.7,
-}
+};
 
 // table column
 // courses
 export const courses = [
   { id: "id", label: "#", minWidth: 30, maxWidth: 50, align: "center" },
-  { id: "semester", label: "Semester", minWidth: 120, maxWidth: 150, align: "left" },
+  {
+    id: "semester",
+    label: "Semester",
+    minWidth: 120,
+    maxWidth: 150,
+    align: "left",
+  },
   { id: "name", label: "Course Name", minWidth: 250, align: "left" },
   { id: "hw", label: "Homework", minWidth: 100, maxWidth: 120, align: "center" },
   { id: "exam", label: "Active Exam", minWidth: 100, maxWidth: 120, align: "center" },
@@ -125,48 +129,171 @@ export const courses = [
 export const courseHwStudentColumn = [
   { id: "id", label: "#", minWidth: 50, maxWidth: 70, align: "center" },
   { id: "name", label: "Assignment Name", minWidth: 150, align: "left" },
-  { id: "question_count", label: "Question amount", minWidth: 100, maxWidth: 120, align: "center" },
-  { id: "status", label: "Status", minWidth: 100, maxWidth: 120, align: "center" },
-  { id: "dueDate", label: "Due Date", minWidth: 120, maxWidth: 150, align: "center" },
-  { id: "score", label: "Score", minWidth: 100, maxWidth: 120, align: "center" },
-]
+  {
+    id: "question_count",
+    label: "Question amount",
+    minWidth: 100,
+    maxWidth: 120,
+    align: "center",
+  },
+  {
+    id: "status",
+    label: "Status",
+    minWidth: 100,
+    maxWidth: 120,
+    align: "center",
+  },
+
+  {
+    id: "dueDate",
+    label: "Due Date",
+    minWidth: 120,
+    maxWidth: 150,
+    align: "center",
+  },
+  {
+    id: "score",
+    label: "Score",
+    minWidth: 100,
+    maxWidth: 120,
+    align: "center",
+  },
+];
 
 export const courseHwTeacherColumn = [
   { id: "id", label: "#", minWidth: 50, maxWidth: 70, align: "center" },
   { id: "name", label: "Assignment Name", minWidth: 150, align: "left" },
-  { id: "description", label: "Description", minWidth: 150, maxWidth: 200, align: "left" },
-  { id: "question_count", label: "Question amount", minWidth: 100, maxWidth: 120, align: "center" },
-  { id: "dueDate", label: "Due Date", minWidth: 120, maxWidth: 150, align: "center" },
-]
+  {
+    id: "description",
+    label: "Description",
+    minWidth: 150,
+    maxWidth: 200,
+    align: "left",
+  },
+  {
+    id: "question_count",
+    label: "Question amount",
+    minWidth: 100,
+    maxWidth: 120,
+    align: "center",
+  },
+
+  {
+    id: "dueDate",
+    label: "Due Date",
+    minWidth: 120,
+    maxWidth: 150,
+    align: "center",
+  },
+];
 
 // courseExam
 export const courseExamStudentColumn = [
   { id: "id", label: "#", minWidth: 50, maxWidth: 70, align: "center" },
   { id: "name", label: "Exam Name", minWidth: 150, align: "left" },
-  { id: "startDate", label: "Start Date", minWidth: 120, maxWidth: 150, align: "center" },
-  { id: "dueDate", label: "Due Date", minWidth: 120, maxWidth: 150, align: "center" },
-  { id: "score", label: "Score", minWidth: 100, maxWidth: 120, align: "center" },
-]
+  {
+    id: "startDate",
+    label: "Start Date",
+    minWidth: 120,
+    maxWidth: 150,
+    align: "center",
+  },
+  {
+    id: "dueDate",
+    label: "Due Date",
+    minWidth: 120,
+    maxWidth: 150,
+    align: "center",
+  },
+  {
+    id: "score",
+    label: "Score",
+    minWidth: 100,
+    maxWidth: 120,
+    align: "center",
+  },
+];
 
 export const courseExamTeacherColumn = [
   { id: "id", label: "#", minWidth: 50, maxWidth: 70, align: "center" },
   { id: "name", label: "Exam Name", minWidth: 150, align: "left" },
-  { id: "startDate", label: "Start Date", minWidth: 120, maxWidth: 150, align: "center" },
-  { id: "dueDate", label: "Due Date", minWidth: 120, maxWidth: 150, align: "center" },
-]
+  {
+    id: "startDate",
+    label: "Start Date",
+    minWidth: 120,
+    maxWidth: 150,
+    align: "center",
+  },
+  {
+    id: "dueDate",
+    label: "Due Date",
+    minWidth: 120,
+    maxWidth: 150,
+    align: "center",
+  },
+];
 
 // problemSet
+// 學生的欄位配置
 export const problemsetStudentColumn = [
-  { id: "id", label: "#", minWidth: 20, align: "center" },
-  { id: "name", label: "Problem Name", minWidth: 100 },
-  { id: "difficulty", label: "Difficulty", minWidth: 50, align: "center" },
-  { id: "score", label: "Score", minWidth: 100, align: "center" },
-]
+  {
+    id: "id",
+    label: "#",
+    width: 50,
+    align: "center",
+  },
+  {
+    id: "name",
+    label: "Problem Name",
+    width: 150,
+    align: "left",
+  },
+  {
+    id: "description",
+    label: "Description",
+    minWidth: 200,
+    maxWidth: 400, // Add maxWidth
+    align: "left",
+  },
+  {
+    id: "difficulty",
+    label: "Difficulty",
+    width: 120,
+    align: "left",
+  },
+  {
+    id: "score",
+    label: "Score",
+    width: 100,
+    align: "center",
+  },
+];
 
+// Similar update for teacher columns:
 export const problemsetTeacherColumn = [
-  { id: "id", label: "#", minWidth: 20, align: "center" },
-  { id: "name", label: "Problem Name", minWidth: 100 },
-  { id: "description", label: "Description", minWidth: 100, maxWidth: 150 },
-  { id: "difficulty", label: "Difficulty", minWidth: 50, align: "center" },
-  { id: "highestScore", label: "Highest Score", minWidth: 100, align: "center" },
-]
+  {
+    id: "id",
+    label: "#",
+    width: 50,
+    align: "center",
+  },
+  {
+    id: "name",
+    label: "Problem Name",
+    width: 150,
+    align: "left",
+  },
+  {
+    id: "description",
+    label: "Description",
+    minWidth: 200,
+    maxWidth: 400, // Add maxWidth
+    align: "left",
+  },
+  {
+    id: "difficulty",
+    label: "Difficulty",
+    width: 120,
+    align: "center",
+  },
+];

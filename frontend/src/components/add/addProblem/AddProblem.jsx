@@ -51,6 +51,7 @@ const theme = createTheme({
       styleOverrides: {
         root: {
           borderRadius: 16,
+          marginTop: "36px", 
         },
       },
     },
@@ -95,11 +96,9 @@ const AddProblem = () => {
   const [description, setDescription] = useState("");
 
   // 用來管理 sample testcases 的 input/output
-  const [input, setInput] = useState([]);
-  const [output, setOutput] = useState([]);
-
-  // 用來儲存 <SampleTestcase> 元件的陣列
-  const [children, setChildren] = useState([]);
+  const [input, setInput] = useState([""]);
+  const [output, setOutput] = useState([""]);
+  const [testcaseCount, setTestcaseCount] = useState(1);
 
   // loading 狀態
   const [loading, setLoading] = useState(false);
@@ -112,34 +111,23 @@ const AddProblem = () => {
 
   // --------- 新增一筆 sample testcase ---------
   const addTestcase = () => {
-    setChildren(
-      children.concat(
-        <SampleTestcase
-          key={children.length}
-          i={children.length}
-          input={input}
-          setInput={setInput}
-          output={output}
-          setOutput={setOutput}
-        />
-      )
-    );
+    setInput([...input, ""]);
+    setOutput([...output, ""]);
+    setTestcaseCount(testcaseCount + 1);
   };
 
   // --------- 刪除最後一筆 sample testcase ---------
   const handleDelete = () => {
-    const newInput = [...input];
-    const newOutput = [...output];
-    newInput.pop();
-    newOutput.pop();
-    setInput(newInput);
-    setOutput(newOutput);
-
-    let newChildren = [...children];
-    newChildren.pop();
-    setChildren(newChildren);
+    if (testcaseCount > 0) {
+      const newInput = [...input];
+      const newOutput = [...output];
+      newInput.pop();
+      newOutput.pop();
+      setInput(newInput);
+      setOutput(newOutput);
+      setTestcaseCount(testcaseCount - 1);
+    }
   };
-
   // --------- 送出表單 ---------
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -267,7 +255,6 @@ const AddProblem = () => {
                 required
                 variant="outlined"
               />
-
               <TextField
                 label="Description"
                 value={description}
@@ -279,7 +266,6 @@ const AddProblem = () => {
                 multiline
                 rows={4}
               />
-
               {/* TODO: remove dueDate */}
               <TextField
                 label="Due Date"
@@ -293,7 +279,6 @@ const AddProblem = () => {
                   shrink: true,
                 }}
               />
-
               {/* 難度選擇 */}
               <select
                 required
@@ -323,7 +308,6 @@ const AddProblem = () => {
                   );
                 })}
               </select>
-
               {/* Time / Memory / Submission Limit */}
               <div style={{ display: "flex", gap: 5 }}>
                 <NumberField
@@ -345,7 +329,20 @@ const AddProblem = () => {
                   placeholder="Submission times limit"
                 />
               </div>
-              {children.length > 0 && <div>{children}</div>}
+              {testcaseCount > 0 && (
+                <div>
+                  {Array.from({ length: testcaseCount }).map((_, index) => (
+                    <SampleTestcase
+                      key={index}
+                      i={index}
+                      input={input}
+                      setInput={setInput}
+                      output={output}
+                      setOutput={setOutput}
+                    />
+                  ))}
+                </div>
+              )}{" "}
               <Box sx={{ display: "flex", gap: 2 }}>
                 <Button
                   variant="contained"
@@ -376,14 +373,12 @@ const AddProblem = () => {
                     },
                   }}
                   onClick={handleDelete}
-                  disabled={children.length === 0}
                   type="button"
                   startIcon={<FontAwesomeIcon icon={faTrash} />}
                 >
                   Delete
                 </Button>
               </Box>
-
               {/* 下方取消 / 送出按鈕 */}
               <Box sx={{ display: "flex", gap: 2, mt: 2 }}>
                 <Button
