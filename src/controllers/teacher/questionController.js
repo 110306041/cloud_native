@@ -51,7 +51,7 @@ export const getAssignmentQuestions = async (req, res) => {
           name: question.Name,
           description: question.Description,
           difficulty: question.Difficulty,
-          score: highestScore || "0", // Default to '0' if no submission exists
+          highestScore: parseInt(highestScore, 10) || 0,
         };
       })
     );
@@ -95,7 +95,7 @@ export const getExamQuestions = async (req, res) => {
           name: question.Name,
           description: question.Description,
           difficulty: question.Difficulty,
-          score: highestScore || "0", // Default to '0' if no submission exists
+          highestScore: parseInt(highestScore, 10) || 0,
         };
       })
     );
@@ -200,7 +200,7 @@ export const createQuestion = async (req, res) => {
       question_name,
     } = req.body;
 
-    const teacherID = req.user.id; 
+    const teacherID = req.user.id;
     const isTeacher = await User.findOne({
       where: { ID: teacherID, Type: "teacher" },
     });
@@ -355,7 +355,7 @@ export const deleteQuestion = async (req, res) => {
 
     // Soft delete related Test Cases
     await TestCase.update(
-      { DeletedAt: Sequelize.fn("NOW")},
+      { DeletedAt: Sequelize.fn("NOW") },
       {
         where: { QuestionID: questionID, DeletedAt: null },
         transaction: transaction,
@@ -363,7 +363,7 @@ export const deleteQuestion = async (req, res) => {
     );
 
     await transaction.commit();
-    console.log('success');
+    console.log("success");
     res.status(200).end();
   } catch (error) {
     await transaction.rollback();
@@ -372,14 +372,20 @@ export const deleteQuestion = async (req, res) => {
   }
 };
 
-
 export const updateQuestion = async (req, res) => {
   try {
-    const {questionID} = req.params; 
-    const updatedData = req.body; 
+    const { questionID } = req.params;
+    const updatedData = req.body;
 
     // Fields to exclude from update
-    const excludedFields = ['ID', 'CreatedAt', 'DeletedAt', 'UpdatedAt', 'AssignmentId', 'ExamID'];
+    const excludedFields = [
+      "ID",
+      "CreatedAt",
+      "DeletedAt",
+      "UpdatedAt",
+      "AssignmentId",
+      "ExamID",
+    ];
 
     // Filter out excluded fields
     const filteredData = {};
@@ -398,12 +404,16 @@ export const updateQuestion = async (req, res) => {
     });
 
     if (affectedRows === 0) {
-      return res.status(404).json({message: 'question not found or already deleted.' });
+      return res
+        .status(404)
+        .json({ message: "question not found or already deleted." });
     }
 
-    return res.status(200).json({message: 'question updated successfully.' });
+    return res.status(200).json({ message: "question updated successfully." });
   } catch (error) {
-    console.error('Error updating assignment:', error);
-    return res.status(500).json({ message: 'An error occurred while updating the question.' });
+    console.error("Error updating assignment:", error);
+    return res
+      .status(500)
+      .json({ message: "An error occurred while updating the question." });
   }
 };

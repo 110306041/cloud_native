@@ -294,6 +294,45 @@ Response: (200 OK)
     ]
 }
 ```
+#### GET /teacher/assignments/questions/{AssignmentID}
+
+回傳一個 Assignment 的問題列表
+
+Response: (200 OK)
+```json
+{
+	"questions": [
+		{
+			"id": uuid,
+			"name": "string",
+			"description": "string",
+			"difficulty": "string",
+			"score": int
+		}
+		
+	]
+}
+```
+
+#### GET /teacher/exams/questions/{examID}
+
+回傳一個 Exam 的問題列表
+
+Response: (200 OK)
+```json
+{
+	"questions": [
+		{
+			"id": uuid,
+			"name": "string",
+			"description": "string",
+			"difficulty": "string",
+			"score": int
+		}
+		
+	]
+}
+```
 
 #### GET /teacher/questions/{questionID}
 
