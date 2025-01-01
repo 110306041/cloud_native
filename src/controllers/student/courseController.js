@@ -7,13 +7,12 @@ export const getCoursesByStudent = async (req, res) => {
   try {
     const user = req.user;
     const studentId = user.id;
-    // Fetch user courses
     const userCourses = await UserCourse.findAll({
       where: { UserID: studentId, DeletedAt: null },
       include: {
         model: Course,
         attributes: ["ID", "Name", "Semester"],
-        where: { DeletedAt: null }
+        where: { DeletedAt: null },
       },
       order: [[{ model: Course }, "Semester", "DESC"]],
     });
@@ -22,7 +21,6 @@ export const getCoursesByStudent = async (req, res) => {
       userCourses.map(async (uc) => {
         const courseId = uc.CourseID;
 
-        // Fetch teacher name
         const teacher = await UserCourse.findOne({
           where: { CourseID: courseId },
           include: {
@@ -32,42 +30,45 @@ export const getCoursesByStudent = async (req, res) => {
         });
         const teacherName = teacher?.User?.Name || "Unknown";
 
-        // Calculate total assignments
-        const totalAssignments = await Assignment.count({
+        const assignments = await Assignment.findAll({
           where: {
             CourseID: courseId,
             DeletedAt: null,
-            // DueDate: { [Op.gte]: new Date() },
+          },
+          include: {
+            model: Question,
+            attributes: ["ID"],
+            where: { DeletedAt: null },
           },
         });
 
-        const completedAssignments = await Submission.count({
-          distinct: true,
-          col: "QuestionID",
-          where: {
-            UserID: studentId,
-            QuestionID: {
-              [Op.in]: Sequelize.literal(`
-                (SELECT "ID"
-                 FROM "Question"
-                 WHERE "DeletedAt" IS NULL AND "AssignmentID" IN (
-                   SELECT "ID"
-                   FROM "Assignment"
-                   WHERE "DeletedAt" IS NULL AND "CourseID" = '${courseId}'
-                 )
-                )
-              `),
-            },
-          },
-        });
-        console.log(completedAssignments);
-        // Calculate active exams
+        let completedAssignments = 0;
+        for (const assignment of assignments) {
+          const questions = assignment.Questions;
+          const totalQuestions = questions.length;
+          const completedQuestions = new Set(
+            await Submission.findAll({
+              attributes: ["QuestionID"],
+              where: {
+                UserID: studentId,
+                QuestionID: { [Op.in]: questions.map((q) => q.ID) },
+              },
+              raw: true,
+            }).then((submissions) =>
+              submissions.map((submission) => submission.QuestionID)
+            )
+          );
+          if (completedQuestions.size === totalQuestions) {
+            completedAssignments++;
+          }
+        }
+
         const activeExams = await Exam.count({
           where: {
             CourseID: courseId,
             DeletedAt: null,
-            StartDate: { [Op.lte]: new Date() }, // Ensure the exam has started
-            DueDate: { [Op.gte]: new Date() }, // Ensure the exam is still ongoing
+            StartDate: { [Op.lte]: new Date() },
+            DueDate: { [Op.gte]: new Date() },
           },
         });
 
@@ -76,20 +77,18 @@ export const getCoursesByStudent = async (req, res) => {
           name: uc.Course?.Name || "Unknown",
           semester: uc.Course?.Semester || "Unknown",
           teacher_name: teacherName,
-          total_assignments: totalAssignments,
+          total_assignments: assignments.length,
           completed_assignments: completedAssignments,
           active_exams: activeExams,
         };
       })
     );
 
-    // return courses;
     res.status(200).json({
       courses,
     });
   } catch (error) {
     console.error("Error fetching courses by student ID:", error);
     res.status(500).json({ error: error.message });
-    // throw error; // Ensure proper error propagation
   }
 };
