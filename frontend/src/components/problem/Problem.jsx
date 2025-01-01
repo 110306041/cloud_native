@@ -255,32 +255,18 @@ const Problem = () => {
                   </div>
                 </React.Fragment>
               ))}
-            <div className="section-title">Constraints</div>
-            <li>{problem.constraints}</li>
-            <div className="sample-line">
-              <span className="section-title">Time Limit </span>
+
+            <div className="section-title">Limit</div>
+            <div className="sample-block">
+              <div className="sample-line">
+                <span className="sample-label">Time:</span>
+                <span className="monospace">{problem.time_limit} second</span>
+              </div>
+              <div className="sample-line">
+                <span className="sample-label">Memory:</span>
+                <span className="monospace">{problem.memory_limit} MB</span>
+              </div>
             </div>
-            <span
-              style={{
-                fontWeight: "normal",
-                fontFamily: "Fira Code",
-                fontSize: "16px",
-              }}
-            >
-              {problem.time_limit} second
-            </span>
-            <div className="sample-line">
-              <span className="section-title">Memory Limit </span>
-            </div>
-            <span
-              style={{
-                fontWeight: "normal",
-                fontFamily: "Fira Code",
-                fontSize: "16px",
-              }}
-            >
-              {problem.memory_limit} MB
-            </span>
           </div>
         </div>
 

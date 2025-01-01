@@ -9,6 +9,15 @@ import CourseExam from "./exam/CourseExam";
 import CourseHw from "./hw/CourseHw";
 
 export default function Course() {
+  const styles = {
+    assignmentTitle: {
+      marginTop: "0.6rem",
+      marginBottom: "0.2rem",
+      fontSize: "1.7rem",
+      fontWeight: "900",
+      color: "#445E93",
+    },
+  };
   const { id } = useParams();
   const [refreshKey, setRefreshKey] = useState(0);
 
@@ -67,9 +76,9 @@ export default function Course() {
         <div className="courses-container">
           <ToastContainer />
           <div className="courses-right">
-            <h2 style={{ color: "#445E93" }}>
+            <h1 style={styles.assignmentTitle}>
               {courseInfo?.semester} {courseInfo?.name}
-            </h2>
+            </h1>
             <CourseHw hws={hws} courseInfo={courseInfo} />
             <CourseExam exams={exams} courseInfo={courseInfo} />
           </div>
