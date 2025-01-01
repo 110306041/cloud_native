@@ -23,6 +23,8 @@ const Problem = () => {
   const [runLoading, setRunLoading] = useState(false);
   const [submitLoading, setSubmitLoading] = useState(false);
   const [badgeColor, setBadgeColor] = useState("#D9D9D9");
+  const [teacherProblemDetails, setTeacherProblemDetails] = useState({});
+
   const { id } = useParams();
 
   const languageExtension = {
@@ -38,9 +40,14 @@ const Problem = () => {
       setLoading(false);
       return;
     }
+    const role = localStorage.getItem("role") || "guest";
+    let apiUrl =
+      role === "student"
+        ? `${BACK_SERVER_URL}/api/student/questions/${id}`
+        : `${BACK_SERVER_URL}/api/teacher/questions/${id}`;
 
     axios
-      .get(`${BACK_SERVER_URL}/student/questions/${id}`, {
+      .get(apiUrl, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("access-token")}`,
         },
@@ -50,6 +57,9 @@ const Problem = () => {
           setProblemDoesNotExists(true);
         } else {
           setProblem(res.data);
+          if (role === "teacher") {
+            setTeacherProblemDetails(res.data);
+          }
           // Set badge color based on difficulty
           const normalizedValue = res.data.difficulty?.toLowerCase();
           switch (normalizedValue) {
@@ -275,248 +285,284 @@ const Problem = () => {
         </div>
 
         <div className="problem-page-right">
-          <div>
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "1rem",
-                padding: "20px 0",
-              }}
-            >
-              <h2 style={{ margin: 0 }}>Code</h2>
-              <h2 style={{ margin: 0, color: "#8ACB88" }}>{"</>"}</h2>
-            </div>
-            <div className="problem-container">
-              <div className="code-editor">
-                <CodeEditor
-                  language={language}
-                  handleLanguageSelect={handleLanguageSelect}
-                  darkMode={darkMode}
-                  handleModeChange={handleModeChange}
-                  onCodeChange={handleCodeChange}
-                  submit={handleSubmit}
-                  run={handleRun}
-                  runLoading={runLoading}
-                  submitLoading={submitLoading}
-                />
+          {localStorage.getItem("role") === "teacher" &&
+          teacherProblemDetails ? (
+            <div>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "1rem",
+                  padding: "20px 0",
+                }}
+              >
+                <h2 style={{ margin: 0 }}> Student Performance Overview</h2>
+              </div>
+              <div className="problem-container">
+                <div className="section-title">
+                  Number of Students Completed
+                </div>
+
+                <div>{teacherProblemDetails.finish_num}</div>
+                <div className="section-title">Number of Correct Answers</div>
+
+                <div>{teacherProblemDetails.AC_num}</div>
               </div>
             </div>
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "0.5rem",
-                padding: "20px 0",
-              }}
-            >
-              <h2 style={{ margin: 0 }}>Result</h2>
-              <h2 style={{ display: "flex", alignItems: "center", margin: 0 }}>
-                {result.success !== undefined &&
-                  (result.success ? (
-                    <CheckCircleTwoToneIcon
-                      sx={{
-                        fontSize: "30px",
-                        borderRadius: "50%",
-                        display: "inline-block",
-                        padding: "0px",
-                        boxSizing: "border-box",
-                        "& path:first-of-type": {
-                          color: "#f8f8f8",
-                        },
-                        "& path:last-child": {
-                          color: "#36B408",
-                        },
-                      }}
-                    />
-                  ) : (
-                    <CancelTwoToneIcon
-                      sx={{
-                        fontSize: "30px",
-                        borderRadius: "50%",
-                        display: "inline-block",
-                        padding: "0px",
-                        boxSizing: "border-box",
-                        "& path:first-of-type": {
-                          color: "#f8f8f8",
-                        },
-                        "& path:last-child": {
-                          color: "#FF0000",
-                        },
-                      }}
-                    />
-                  ))}
-              </h2>
-            </div>
-            {/* result */}
-            <div className="problem-container">
-              {result.success !== undefined && (
-                <div className="result">
-                  {result.error ? (
-                    <div className="sample-block">
-                      <div className="sample-line">
-                        <span className="sample-label">Error Code:</span>
-                        <span
-                          className="monospace"
-                          style={{
+          ) : (
+            <div>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "1rem",
+                  padding: "20px 0",
+                }}
+              >
+                <h2 style={{ margin: 0 }}>Code</h2>
+                <h2 style={{ margin: 0, color: "#8ACB88" }}>{"</>"}</h2>
+              </div>
+              <div className="problem-container">
+                <div className="code-editor">
+                  <CodeEditor
+                    language={language}
+                    handleLanguageSelect={handleLanguageSelect}
+                    darkMode={darkMode}
+                    handleModeChange={handleModeChange}
+                    onCodeChange={handleCodeChange}
+                    submit={handleSubmit}
+                    run={handleRun}
+                    runLoading={runLoading}
+                    submitLoading={submitLoading}
+                  />
+                </div>
+              </div>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "0.5rem",
+                  padding: "20px 0",
+                }}
+              >
+                <h2 style={{ margin: 0 }}>Result</h2>
+                <h2
+                  style={{ display: "flex", alignItems: "center", margin: 0 }}
+                >
+                  {result.success !== undefined &&
+                    (result.success ? (
+                      <CheckCircleTwoToneIcon
+                        sx={{
+                          fontSize: "30px",
+                          borderRadius: "50%",
+                          display: "inline-block",
+                          padding: "0px",
+                          boxSizing: "border-box",
+                          "& path:first-of-type": {
+                            color: "#f8f8f8",
+                          },
+                          "& path:last-child": {
+                            color: "#36B408",
+                          },
+                        }}
+                      />
+                    ) : (
+                      <CancelTwoToneIcon
+                        sx={{
+                          fontSize: "30px",
+                          borderRadius: "50%",
+                          display: "inline-block",
+                          padding: "0px",
+                          boxSizing: "border-box",
+                          "& path:first-of-type": {
+                            color: "#f8f8f8",
+                          },
+                          "& path:last-child": {
                             color: "#FF0000",
-                            wordBreak: "break-word",
-                            whiteSpace: "pre-wrap",
-                            overflow: "auto",
-                            maxWidth: "100%",
-                          }}
-                        >
-                          {result.error.code}
-                        </span>
-                      </div>
-                      <div className="sample-line">
-                        <span className="sample-label">Error Message:</span>
-                        <span
-                          className="monospace"
-                          style={{
-                            color: "#FF0000",
-                            wordBreak: "break-word",
-                            whiteSpace: "pre-wrap",
-                            overflow: "auto",
-                            maxWidth: "100%",
-                          }}
-                        >
-                          {result.error.message}
-                        </span>
-                      </div>
-                      {result.error.line && (
-                        <div className="sample-line">
-                          <span className="sample-label">Error Line:</span>
-                          <span
-                            className="monospace"
-                            style={{
-                              color: "#FF0000",
-                              wordBreak: "break-word",
-                              whiteSpace: "pre-wrap",
-                              overflow: "auto",
-                              maxWidth: "100%",
-                            }}
-                          >
-                            {result.error.line}
-                          </span>
-                        </div>
-                      )}
-                      {result.error.errorMessage && (
-                        <div className="sample-line">
-                          <span className="sample-label">Details:</span>
-                          <span
-                            className="monospace"
-                            style={{
-                              color: "#FF0000",
-                              wordBreak: "break-word",
-                              whiteSpace: "pre-wrap",
-                              overflow: "auto",
-                              maxWidth: "100%",
-                            }}
-                          >
-                            {result.error.errorMessage}
-                          </span>
-                        </div>
-                      )}
-                    </div>
-                  ) : (
-                    <>
-                      <div className="section-title custom-color">Summary</div>
+                          },
+                        }}
+                      />
+                    ))}
+                </h2>
+              </div>
+              {/* result */}
+              <div className="problem-container">
+                {result.success !== undefined && (
+                  <div className="result">
+                    {result.error ? (
                       <div className="sample-block">
                         <div className="sample-line">
-                          <span className="sample-label">
-                            Total Test Cases:
-                          </span>
-                          <span className="monospace">
-                            {result.totalTestCases}
-                          </span>
-                        </div>
-                        <div className="sample-line">
-                          <span className="sample-label">
-                            Passed Test Cases:
-                          </span>
-                          <span className="monospace">
-                            {result.passedTestCases}
-                          </span>
-                        </div>
-                        <div className="sample-line">
-                          <span className="sample-label">Score:</span>
-                          <span className="monospace">{result.score}</span>
-                        </div>
-                        <div className="sample-line">
-                          <span className="sample-label">CPU Usage:</span>
-                          <span className="monospace">{result.cpuUsage}</span>
-                        </div>
-                        <div className="sample-line">
-                          <span className="sample-label">Memory Usage:</span>
-                          <span className="monospace">
-                            {result.memoryUsage}
+                          <span className="sample-label">Error Code:</span>
+                          <span
+                            className="monospace"
+                            style={{
+                              color: "#FF0000",
+                              wordBreak: "break-word",
+                              whiteSpace: "pre-wrap",
+                              overflow: "auto",
+                              maxWidth: "100%",
+                            }}
+                          >
+                            {result.error.code}
                           </span>
                         </div>
                         <div className="sample-line">
-                          <span className="sample-label">Execution Time:</span>
-                          <span className="monospace">
-                            {result.executionTime}ms
+                          <span className="sample-label">Error Message:</span>
+                          <span
+                            className="monospace"
+                            style={{
+                              color: "#FF0000",
+                              wordBreak: "break-word",
+                              whiteSpace: "pre-wrap",
+                              overflow: "auto",
+                              maxWidth: "100%",
+                            }}
+                          >
+                            {result.error.message}
                           </span>
                         </div>
+                        {result.error.line && (
+                          <div className="sample-line">
+                            <span className="sample-label">Error Line:</span>
+                            <span
+                              className="monospace"
+                              style={{
+                                color: "#FF0000",
+                                wordBreak: "break-word",
+                                whiteSpace: "pre-wrap",
+                                overflow: "auto",
+                                maxWidth: "100%",
+                              }}
+                            >
+                              {result.error.line}
+                            </span>
+                          </div>
+                        )}
+                        {result.error.errorMessage && (
+                          <div className="sample-line">
+                            <span className="sample-label">Details:</span>
+                            <span
+                              className="monospace"
+                              style={{
+                                color: "#FF0000",
+                                wordBreak: "break-word",
+                                whiteSpace: "pre-wrap",
+                                overflow: "auto",
+                                maxWidth: "100%",
+                              }}
+                            >
+                              {result.error.errorMessage}
+                            </span>
+                          </div>
+                        )}
                       </div>
+                    ) : (
+                      <>
+                        <div className="section-title custom-color">
+                          Summary
+                        </div>
+                        <div className="sample-block">
+                          <div className="sample-line">
+                            <span className="sample-label">
+                              Total Test Cases:
+                            </span>
+                            <span className="monospace">
+                              {result.totalTestCases}
+                            </span>
+                          </div>
+                          <div className="sample-line">
+                            <span className="sample-label">
+                              Passed Test Cases:
+                            </span>
+                            <span className="monospace">
+                              {result.passedTestCases}
+                            </span>
+                          </div>
+                          <div className="sample-line">
+                            <span className="sample-label">Score:</span>
+                            <span className="monospace">{result.score}</span>
+                          </div>
+                          <div className="sample-line">
+                            <span className="sample-label">CPU Usage:</span>
+                            <span className="monospace">{result.cpuUsage}</span>
+                          </div>
+                          <div className="sample-line">
+                            <span className="sample-label">Memory Usage:</span>
+                            <span className="monospace">
+                              {result.memoryUsage}
+                            </span>
+                          </div>
+                          <div className="sample-line">
+                            <span className="sample-label">
+                              Execution Time:
+                            </span>
+                            <span className="monospace">
+                              {result.executionTime}ms
+                            </span>
+                          </div>
+                        </div>
 
-                      {result.output &&
-                        result.output.map((test) => (
-                          <React.Fragment key={test.caseId}>
-                            <div className="section-title custom-color">
-                              Test Case {test.caseId}
-                            </div>
-                            <div className="sample-block">
-                              <div className="sample-line">
-                                <span className="sample-label">Status:</span>
-                                <span className="monospace">{test.status}</span>
+                        {result.output &&
+                          result.output.map((test) => (
+                            <React.Fragment key={test.caseId}>
+                              <div className="section-title custom-color">
+                                Test Case {test.caseId}
                               </div>
-                              <div className="sample-line">
-                                <span className="sample-label">
-                                  Execution Time:
-                                </span>
-                                <span className="monospace">
-                                  {test.executionTime}ms
-                                </span>
+                              <div className="sample-block">
+                                <div className="sample-line">
+                                  <span className="sample-label">Status:</span>
+                                  <span className="monospace">
+                                    {test.status}
+                                  </span>
+                                </div>
+                                <div className="sample-line">
+                                  <span className="sample-label">
+                                    Execution Time:
+                                  </span>
+                                  <span className="monospace">
+                                    {test.executionTime}ms
+                                  </span>
+                                </div>
+                                <div className="sample-line">
+                                  <span className="sample-label">
+                                    Memory Used:
+                                  </span>
+                                  <span className="monospace">
+                                    {test.memoryUsed}KB
+                                  </span>
+                                </div>
+                                <div className="sample-line">
+                                  <span className="sample-label">Input:</span>
+                                  <span className="monospace">
+                                    {test.input}
+                                  </span>
+                                </div>
+                                <div className="sample-line">
+                                  <span className="sample-label">
+                                    Expected Output:
+                                  </span>
+                                  <span className="monospace">
+                                    {test.expectedOutput}
+                                  </span>
+                                </div>
+                                <div className="sample-line">
+                                  <span className="sample-label">
+                                    Actual Output:
+                                  </span>
+                                  <span className="monospace">
+                                    {test.actualOutput}
+                                  </span>
+                                </div>
                               </div>
-                              <div className="sample-line">
-                                <span className="sample-label">
-                                  Memory Used:
-                                </span>
-                                <span className="monospace">
-                                  {test.memoryUsed}KB
-                                </span>
-                              </div>
-                              <div className="sample-line">
-                                <span className="sample-label">Input:</span>
-                                <span className="monospace">{test.input}</span>
-                              </div>
-                              <div className="sample-line">
-                                <span className="sample-label">
-                                  Expected Output:
-                                </span>
-                                <span className="monospace">
-                                  {test.expectedOutput}
-                                </span>
-                              </div>
-                              <div className="sample-line">
-                                <span className="sample-label">
-                                  Actual Output:
-                                </span>
-                                <span className="monospace">
-                                  {test.actualOutput}
-                                </span>
-                              </div>
-                            </div>
-                          </React.Fragment>
-                        ))}
-                    </>
-                  )}
-                </div>
-              )}
+                            </React.Fragment>
+                          ))}
+                      </>
+                    )}
+                  </div>
+                )}
+              </div>
             </div>
-          </div>
+          )}
         </div>
       </div>
     </div>
