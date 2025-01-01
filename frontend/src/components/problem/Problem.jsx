@@ -43,8 +43,8 @@ const Problem = () => {
     const role = localStorage.getItem("role") || "guest";
     let apiUrl =
       role === "student"
-        ? `${BACK_SERVER_URL}/api/student/questions/${id}`
-        : `${BACK_SERVER_URL}/api/teacher/questions/${id}`;
+        ? `${BACK_SERVER_URL}/student/questions/${id}`
+        : `${BACK_SERVER_URL}/teacher/questions/${id}`;
 
     axios
       .get(apiUrl, {
@@ -53,6 +53,7 @@ const Problem = () => {
         },
       })
       .then((res) => {
+        console.log(res);
         if (!res.data || Object.keys(res.data).length === 0) {
           setProblemDoesNotExists(true);
         } else {
@@ -234,7 +235,7 @@ const Problem = () => {
             <div>{problem.description}</div>
             <br />
             {problem.sample_test_cases &&
-              problem.sample_test_cases.map((testcase, index) => (
+              problem.sample_test_cases.slice(0, 2).map((testcase, index) => (
                 <React.Fragment key={index}>
                   <div className="section-title">Sample {index + 1}</div>
                   <div className="sample-block">
@@ -247,10 +248,6 @@ const Problem = () => {
                       <span className="monospace">
                         {testcase.expected_output}
                       </span>
-                    </div>
-                    <div className="sample-line">
-                      <span className="sample-label">Explanation:</span>
-                      <span>{testcase.explanation}</span>
                     </div>
                   </div>
                 </React.Fragment>
