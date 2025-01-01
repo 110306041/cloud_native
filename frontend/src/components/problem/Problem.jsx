@@ -43,8 +43,8 @@ const Problem = () => {
     const role = localStorage.getItem("role") || "guest";
     let apiUrl =
       role === "student"
-        ? `${BACK_SERVER_URL}/api/student/questions/${id}`
-        : `${BACK_SERVER_URL}/api/teacher/questions/${id}`;
+        ? `${BACK_SERVER_URL}/student/questions/${id}`
+        : `${BACK_SERVER_URL}/teacher/questions/${id}`;
 
     axios
       .get(apiUrl, {

@@ -106,7 +106,7 @@ const AddProblem = () => {
   const location = useLocation();
 
   const id = location.state?.id;
-  const problemType = location.state?.problemType;
+  const problemType = location.state?.problemtype;
 
   // --------- 新增一筆 sample testcase ---------
   const addTestcase = () => {
