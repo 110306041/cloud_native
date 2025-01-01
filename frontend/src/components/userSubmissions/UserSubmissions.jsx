@@ -119,7 +119,7 @@ export default function UserSubmissions() {
     // const userId = parseJwt(accessToken).sub;
 
     axios
-      .get(`${BACK_SERVER_URL}/api/student/submissions`, {
+      .get(`${BACK_SERVER_URL}/student/submissions`, {
         headers: { Authorization: `Bearer ${localStorage.getItem("access-token")}` },
       })
       .then((res) => {

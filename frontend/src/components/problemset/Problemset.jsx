@@ -69,12 +69,11 @@ export default function ProblemSet() {
 
     const apiUrl =
       localStorage.getItem("role") === "student"
-        ? `${BACK_SERVER_URL}/api/student/${problemsetInfo.problemType}/questions/${id}`
-        : `${BACK_SERVER_URL}/api/teacher/${problemsetInfo.problemType}/questions/${id}`;
+        ? `${BACK_SERVER_URL}/student/${problemsetInfo.problemType}/questions/${id}`
+        : `${BACK_SERVER_URL}/teacher/${problemsetInfo.problemType}/questions/${id}`;
 
     axios
-      .get(
-        `${BACK_SERVER_URL}/api/student/${problemsetInfo.problemType}/questions/${id}`, //TODO: change to apiUrl
+      .get(apiUrl,
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("access-token")}`,

@@ -1,6 +1,5 @@
 import { faPaperPlane } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import PlayCircleOutlineIcon from "@mui/icons-material/PlayCircleOutline";
 import Button from "@mui/material/Button";
 import Chip from "@mui/material/Chip";
 import CircularProgress from "@mui/material/CircularProgress";
@@ -14,13 +13,13 @@ import AceEditor from "react-ace";
 import "ace-builds/src-noconflict/ext-language_tools";
 import "ace-builds/src-noconflict/mode-c_cpp";
 import "ace-builds/src-noconflict/mode-java";
+import "ace-builds/src-noconflict/mode-javascript";
 import "ace-builds/src-noconflict/mode-python";
 import "ace-builds/src-noconflict/theme-dracula";
 import "ace-builds/src-noconflict/theme-eclipse";
-import "./codeEditor.css";
-import "ace-builds/src-noconflict/mode-javascript";
 import "ace-builds/src-noconflict/worker-javascript";
 import "ace-builds/webpack-resolver";
+import "./codeEditor.css";
 
 const CodeEditor = ({
   language,
@@ -33,7 +32,7 @@ const CodeEditor = ({
   runLoading,
   submitLoading,
 }) => {
-  const languageList = ["Javascript", "C++", "Java", "Python"];
+  const languageList = ["Javascript", "Java", "Python"];
 
   const handleThemeChange = (e) => {
     handleModeChange(e.target.checked);
@@ -43,8 +42,6 @@ const CodeEditor = ({
     switch (language) {
       case "Javascript":
         return "javascript";
-      case "C++":
-        return "c_cpp";
       case "Java":
         return "java";
       case "Python":
@@ -164,7 +161,7 @@ const CodeEditor = ({
       </div>
 
       <div className="code-editor-btn">
-        <div className="code-editor-runcode-btn">
+        {/* <div className="code-editor-runcode-btn">
           <Button
             variant="contained"
             color="primary"
@@ -186,7 +183,7 @@ const CodeEditor = ({
               </span>
             )}
           </Button>
-        </div>
+        </div> */}
 
         <div className="code-editor-submit-btn">
           <Button

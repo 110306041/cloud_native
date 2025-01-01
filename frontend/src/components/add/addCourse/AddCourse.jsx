@@ -68,7 +68,7 @@ const AddCourse = () => {
     };
 
     try {
-      await axios.post(`${BACK_SERVER_URL}/api/teacher/courses`, data, {
+      await axios.post(`${BACK_SERVER_URL}/teacher/courses`, data, {
         headers: {
           Authorization: `Bear ${localStorage.getItem("access-token")}`,
         },
