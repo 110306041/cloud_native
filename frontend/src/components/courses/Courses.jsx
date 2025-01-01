@@ -29,7 +29,15 @@ export default function Courses() {
   const [loader, setLoader] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const navigate = useNavigate();
-
+  const styles = {
+    assignmentTitle: {
+      marginTop: "0.6rem",
+      marginBottom: "0.2rem",
+      fontSize: "1.7rem",
+      fontWeight: "900",
+      color: "#445E93",
+    },
+  };
   useLayoutEffect(() => {
     let apiUrl =
       localStorage.getItem("role") === "student"
@@ -110,7 +118,7 @@ export default function Courses() {
             padding: "20px 0",
           }}
         >
-          <h2>Courses</h2>
+          <h1 style={styles.assignmentTitle}>Courses</h1>
           {localStorage.getItem("role") === "student" ? null : (
             <Button
               type="submit"
@@ -194,10 +202,10 @@ export default function Courses() {
                               ? page * rowsPerPage + index + 1
                               : row[column.id];
                           if (column.id === "hw") {
-                            console.log('HW Data:', {
+                            console.log("HW Data:", {
                               completed: row.completed_assignments,
                               total: row.total_assignments,
-                              row: row
+                              row: row,
                             });
                             let assignmentsDisplay =
                               localStorage.getItem("role") === "student"
@@ -217,9 +225,9 @@ export default function Courses() {
                               </TableCell>
                             );
                           } else if (column.id === "exam") {
-                            console.log('Exam Data:', {
+                            console.log("Exam Data:", {
                               active: row.active_exams,
-                              row: row
+                              row: row,
                             });
                             return (
                               <TableCell key={column.id} align={column.align}>
