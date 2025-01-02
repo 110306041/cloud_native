@@ -1,8 +1,6 @@
-// import { DataTypes } from "sequelize";
 
 import { Sequelize } from "sequelize";
 
-// import sequelize from "../syncDB.js";
 export default (sequelize, DataTypes) => {
   const Assignment = sequelize.define(
     "Assignment",
@@ -30,9 +28,8 @@ export default (sequelize, DataTypes) => {
     },
     {
       tableName: "Assignment",
-      timestamps: false, // Disable createdAt and updatedAt
+      timestamps: false, 
     }
   );
   return Assignment;
 };
-// export default Assignment;

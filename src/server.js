@@ -1,12 +1,11 @@
 import dotenv from "dotenv";
 dotenv.config();
 
-import app from "./app.js"; // Express app
-import db from "../models/index.js"; // Sequelize models
+import app from "./app.js";
+import db from "../models/index.js";
 // import redisClient from "../connectRedis.js"; // Redis client
 import { createServer } from "http";
 import { WebSocketServer } from "ws";
-import { v4 as uuidv4 } from "uuid";
 
 /**
  * We keep these in memory:
@@ -16,7 +15,7 @@ import { v4 as uuidv4 } from "uuid";
 const connectedAgents = new Map();
 const pendingTasks = new Map();
 
-export { connectedAgents, pendingTasks }; // We’ll import these in handleRequest.js if needed
+export { connectedAgents, pendingTasks };
 
 const HTTP_PORT = process.env.PORT || 3000;
 const WS_PORT = process.env.SOCKET_PORT || 4000;
@@ -30,21 +29,17 @@ const WS_PORT = process.env.SOCKET_PORT || 4000;
     // }
     // console.log("Redis is ready");
 
-    // 2. Test the DB connection
     await db.sequelize.authenticate();
     console.log("Database connected successfully!");
 
-    // 3. Sync all models
-    await db.sequelize.sync(); // or sync({ alter: true }) / sync({ force: true })
+    await db.sequelize.sync();
     console.log("All models were synchronized successfully.");
 
-    // 4. Start the HTTP server
     const httpServer = createServer(app);
     httpServer.listen(HTTP_PORT, () => {
       console.log(`HTTP Server is running on http://localhost:${HTTP_PORT}`);
     });
 
-    // 5. Start the WebSocket server
     const wss = new WebSocketServer({ port: WS_PORT });
     console.log(`WebSocket Server is running on ws://localhost:${WS_PORT}`);
 
@@ -56,16 +51,13 @@ const WS_PORT = process.env.SOCKET_PORT || 4000;
         console.log("Received message:", JSON.stringify(message, null, 2));
 
         if (message.type === "register") {
-          // Example: { type: "register", agentId: "worker-xyz" }
           const { agentId } = message;
           console.log(`Agent ${agentId} registered`);
-          // connectedAgents.set(agentId, ws);
           connectedAgents.set(agentId, {
             total_cpu: message.resources.cpu,
             cpu_usage: 0,
             total_memory: message.resources.memory,
             memory_usage: 0,
-            num_runners: 0,
             endpoint: ws,
           });
         } else if (message.type === "taskComplete") {
@@ -102,15 +94,33 @@ const WS_PORT = process.env.SOCKET_PORT || 4000;
             `Agent ${message.agentId} resources:`,
             JSON.stringify(message.metrics, null, 2)
           );
-          // Possibly update some internal data structure
+          const existingAgent = connectedAgents.get(message.agentId);
+
+          if (existingAgent) {
+            // Update only the resource-related fields
+            connectedAgents.set(message.agentId, {
+              ...existingAgent, // Preserve other fields like endpoint
+              total_cpu: message.metrics.cpu.total,
+              cpu_usage: message.metrics.cpu.used,
+              total_memory: message.metrics.memory.total,
+              memory_usage: message.metrics.memory.used,
+            });
+          } else {
+            console.warn(`Agent ${message.agentId} not found. Cannot update resources.`);
+          }
         }
       });
 
       ws.on("close", () => {
         for (const [agentId, agent] of connectedAgents.entries()) {
-          if (agent === ws) {
+          console.log(agent);
+          if (agent.endpoint === ws) {
             console.log(`Agent ${agentId} disconnected`);
             connectedAgents.delete(agentId);
+            console.log('logging connectedAgent maps')
+            console.log(connectedAgents);
+
+
             break;
           }
         }

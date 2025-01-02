@@ -1,9 +1,3 @@
-// import UserCourse from "../../../models/UserCourse.js";
-// import Course from "../../../models/Course.js";
-// import Assignment from "../../../models/Assignment.js";
-// import Submission from "../../../models/Submission.js";
-// import Exam from "../../../models/Exam.js";
-// import { Op } from "sequelize";
 import { Op, Sequelize } from "sequelize";
 
 import db from "../../../models/index.js";
@@ -32,14 +26,12 @@ export const getAssignmentQuestions = async (req, res) => {
         .json({ error: "The Assignment has been deleted." });
     }
 
-    // Fetch questions for the specified assignment
     const questions = await Question.findAll({
       where: { AssignmentID: assignmentID, DeletedAt: null },
       attributes: ["ID", "Name", "Description", "Difficulty"],
       raw: true,
     });
 
-    // Map questions to include the highest score from the Submission table
     const questionsWithScores = await Promise.all(
       questions.map(async (question) => {
         const highestScore = await Submission.max("Score", {
@@ -56,7 +48,6 @@ export const getAssignmentQuestions = async (req, res) => {
       })
     );
 
-    // Send response
     res.status(200).json({
       questions: questionsWithScores,
     });
@@ -76,14 +67,12 @@ export const getExamQuestions = async (req, res) => {
       return res.status(500).json({ error: "The exam has been deleted." });
     }
 
-    // Fetch questions for the specified exam
     const questions = await Question.findAll({
       where: { ExamID: examID, DeletedAt: null },
       attributes: ["ID", "Name", "Description", "Difficulty"],
       raw: true,
     });
 
-    // Map questions to include the highest score from the Submission table
     const questionsWithScores = await Promise.all(
       questions.map(async (question) => {
         const highestScore = await Submission.max("Score", {
@@ -100,7 +89,6 @@ export const getExamQuestions = async (req, res) => {
       })
     );
 
-    // Send response
     res.status(200).json({
       questions: questionsWithScores,
     });
@@ -119,7 +107,6 @@ export const getQuestionDetails = async (req, res) => {
     if (isDeleted) {
       return res.status(500).json({ error: "The Question has been deleted." });
     }
-    // Fetch question details
     const question = await Question.findOne({
       where: { ID: questionID },
       attributes: [
@@ -138,7 +125,6 @@ export const getQuestionDetails = async (req, res) => {
       return res.status(404).json({ error: "Question not found" });
     }
 
-    // Fetch sample test cases for the question
     const sampleTestCases = await TestCase.findAll({
       where: { QuestionID: questionID, DeletedAt: null },
       attributes: ["Input", "Output"],
@@ -210,7 +196,6 @@ export const createQuestion = async (req, res) => {
         .json({ error: "Only teacher are able to add question" });
     }
 
-    // Ensure the question is linked to either an exam or an assignment, not both
     if (!exam_id && !assignment_id) {
       return res
         .status(400)
@@ -222,9 +207,7 @@ export const createQuestion = async (req, res) => {
       });
     }
 
-    // Validate the teacher's relationship with the course for the exam or assignment
     let courseID;
-    // let parentDueDate;
     if (exam_id) {
       const exam = await Exam.findOne({
         where: { ID: exam_id, DeletedAt: null },
@@ -244,7 +227,6 @@ export const createQuestion = async (req, res) => {
       }
 
       courseID = exam.CourseID;
-      // parentDueDate = exam.DueDate;
     }
 
     if (assignment_id) {
@@ -266,7 +248,6 @@ export const createQuestion = async (req, res) => {
       }
 
       courseID = assignment.CourseID;
-      // parentDueDate = assignment.DueDate;
     }
     const existingQuestion = await Question.findOne({
       where: {

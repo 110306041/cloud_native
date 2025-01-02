@@ -1,5 +1,3 @@
-// import { DataTypes } from "sequelize";
-// import sequelize from "../syncDB.js";
 import { Sequelize } from "sequelize";
 
 export default (sequelize, DataTypes) => {
@@ -27,9 +25,8 @@ export default (sequelize, DataTypes) => {
     },
     {
       tableName: "TestCase",
-      timestamps: false, // Disable createdAt and updatedAt
+      timestamps: false, 
     }
   );
   return TestCase;
 };
-// export default TestCase;

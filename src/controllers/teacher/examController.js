@@ -1,16 +1,3 @@
-// import User from "./User.js";
-// import Course from "./Course.js";
-// import Assignment from "./Assignment.js";
-// import UserCourse from "./UserCourse.js";
-// import Exam from "./Exam.js";
-// import Question from "./Question.js";
-// import TestCase from "./TestCase.js";
-// import Submission from "./Submission.js";
-// import UserCourse from "../../../models/UserCourse.js";
-// import Course from "../../../models/Course.js";
-// import Assignment from "../../../models/Assignment.js";
-// import Submission from "../../../models/Submission.js";
-// import Exam from "../../../models/Exam.js";
 import db from "../../../models/index.js";
 import { Op, Sequelize } from "sequelize";
 
@@ -94,7 +81,7 @@ export const createExam = async (req, res) => {
 };
 
 export const deleteExam = async (req, res) => {
-  const transaction = await Exam.sequelize.transaction(); // Start a transaction
+  const transaction = await Exam.sequelize.transaction(); 
 
   try {
     // Soft delete the Exam
@@ -111,7 +98,6 @@ export const deleteExam = async (req, res) => {
         .json({ error: "error occur when deleting course." });
     }
 
-    // Soft delete related Questions
     await Question.update(
       { DeletedAt: Sequelize.fn("NOW") },
       { where: { ExamID: examID, DeletedAt: null }, transaction: transaction }
@@ -132,10 +118,8 @@ export const updateExam = async (req, res) => {
       const {examID} = req.params; 
       const updatedData = req.body; 
   
-      // Fields to exclude from update
       const excludedFields = ['ID', 'CreatedAt', 'DeletedAt', 'UpdatedAt', 'CourseID'];
   
-      // Filter out excluded fields
       const filteredData = {};
       Object.keys(updatedData).forEach((key) => {
         if (!excludedFields.includes(key)) {
@@ -143,12 +127,10 @@ export const updateExam = async (req, res) => {
         }
       });
   
-      // Add manual UpdatedAt since timestamps are disabled in the model
       filteredData.UpdatedAt = new Date();
   
-      // Perform the update
       const [affectedRows] = await Exam.update(filteredData, {
-        where: { ID: examID, DeletedAt: null }, // Only update non-deleted courses
+        where: { ID: examID, DeletedAt: null }, 
       });
   
       if (affectedRows === 0) {

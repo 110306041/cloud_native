@@ -86,7 +86,8 @@ Response: (200 OK)
             "name": "string",
             "due_date": "string",
             "question_count": int,
-            "score": int
+            "score": int,
+            "status": "string"
         }
     ],
     "exams": [

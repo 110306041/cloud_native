@@ -7,15 +7,13 @@ import {
   getExamQuestions,
   getQuestionDetails,
 } from "../controllers/student/questionController.js";
-import { getSubmissionByStudent } from "../controllers/student/submissioinController.js";
-import { handleRequest } from '../controllers/submissionController.js';
-
-// import { createCourse } from '../controllers/teacher/courseController.js';
-// import (createCourse)
+import {
+  getSubmissionByStudent,
+  submitCode,
+} from "../controllers/student/submissioinController.js";
 
 const router = express.Router();
 
-// Route that triggers the dynamic WebSocket operation
 router.get("/courses", authenticateToken, getCoursesByStudent);
 router.get(
   "/assignments/questions/:assignmentsID",
@@ -31,7 +29,6 @@ router.get(
 );
 
 router.get("/submissions", authenticateToken, getSubmissionByStudent);
-router.post('/submissions',authenticateToken, handleRequest);
-
+router.post("/submissions", authenticateToken, submitCode);
 
 export default router;

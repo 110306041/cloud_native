@@ -52,19 +52,25 @@ export const getAssignmentsAndExams = async (req, res) => {
       raw: false,
     });
 
-
+    // todo
     function determineAssignmentStatus(assignment, isComplete) {
       const currentDate = new Date(); // Get the current date
       const startDate = new Date(assignment.start_date);
       const dueDate = new Date(assignment.due_date);
 
-      if (isComplete) {
-        return "completed";
-      }
-
       if (currentDate > dueDate) {
         return "overdue";
       }
+
+      if (currentDate < startDate) {
+        return "not started";
+      }
+
+      if (isComplete===2) {
+        return "completed";
+      }
+
+      
 
       if (currentDate >= startDate && currentDate <= dueDate) {
         return "in progress"
@@ -99,7 +105,16 @@ export const getAssignmentsAndExams = async (req, res) => {
           )
         );
 
-        const isComplete = completedQuestions.size === totalQuestions;
+        let isComplete;
+
+        if (completedQuestions.size === totalQuestions) {
+          isComplete = 2;
+        } else if (completedQuestions.size !== totalQuestions && completedQuestions.size > 0) {
+          isComplete = 1;
+        } else {
+          isComplete = 0;
+        }
+                
 
         console.log(questionIds);
         const questionIdsString = questionIds.map((id) => `'${id}'`).join(","); 

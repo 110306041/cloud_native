@@ -1,6 +1,5 @@
 import express from "express";
 import { authenticateToken } from "../middlewares/authMiddleware.js";
-import { handleRequest } from "../controllers/submissionController.js";
 import {
   getCoursesByTeacher,
   createCourse,
@@ -26,12 +25,9 @@ import {
   updateQuestion,
   deleteQuestion,
 } from "../controllers/teacher/questionController.js";
-// import { getCoursesByTeacher } from "../controllers/teacher/courseController.js";
 
 const router = express.Router();
 
-// Route that triggers the dynamic WebSocket operation
-// router.post('/send-websocket',authenticateToken, handleRequest);
 router.post("/courses", authenticateToken, createCourse);
 router.post("/assignments/:courseID", authenticateToken, createAssignment);
 router.post("/exams/:courseID", authenticateToken, createExam);
@@ -59,10 +55,6 @@ router.delete("/exams/:examID", authenticateToken, deleteExam);
 router.get("/questions/:questionID", authenticateToken, getQuestionDetails);
 router.get("/assignments/questions/:assignmentID", authenticateToken, getAssignmentQuestions);
 router.get("/exams/questions/:examID", authenticateToken, getExamQuestions);
-
-
-
-// assignments/questions/{assignmentID} 和exams
 
 router.put("");
 

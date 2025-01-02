@@ -1,9 +1,8 @@
-// models/index.js
 import fs from 'fs';
 import path from 'path';
 import { Sequelize, DataTypes } from 'sequelize';
 import { fileURLToPath } from 'url';
-import { initializeAssociations } from './associations.js'; // your associations initializer, if any
+import { initializeAssociations } from './associations.js'; 
 import configFile from '../config/config.json' assert { type: 'json' };
 
 const __filename = fileURLToPath(import.meta.url);
