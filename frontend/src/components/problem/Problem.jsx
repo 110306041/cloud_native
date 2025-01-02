@@ -31,7 +31,7 @@ const Problem = () => {
     Javascript: "javascript",
     "C++": "cpp",
     Java: "java",
-    Python: "py",
+    Python: "python",
   };
 
   useEffect(() => {
@@ -151,7 +151,7 @@ const Problem = () => {
           memoryUsage: output.memory_usage,
           executionTime: output.execution_time,
         });
-      } else if (response.status === 400 || response.status === 500) {
+      } else if (response.status === 202 || response.status === 500) {
         // 處理錯誤回應
         const errorDetails = response.data?.errorRes?.error || {};
         setResult({
