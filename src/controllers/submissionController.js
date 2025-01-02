@@ -106,16 +106,15 @@ export async function handleRequest(req, res) {
     }
 
     function parseInputOrOutput(value) {
-      if (!value) return []; // Return an empty array for null/undefined
+      if (!value) return []; 
 
       const str = String(value).trim();
 
       try {
-        // Attempt to parse as JSON
         return JSON.parse(str);
       } catch (error) {
         console.error(`Failed to parse value as JSON: ${str}`);
-        return []; // Return an empty array if parsing fails
+        return [];
       }
     }
 
@@ -141,7 +140,6 @@ export async function handleRequest(req, res) {
       testCases: formattedTestCases,
     };
     const newSubmission = await Submission.create({
-      //   ID: uuidv4(),
       Score: 0 || null,
       TimeSpend: null || null,
       MemoryUsage: null,
@@ -151,13 +149,11 @@ export async function handleRequest(req, res) {
       QuestionID: questionID,
     });
 
-    // 1) Resource lookup
     const allocatedResource = languageResources[language];
     if (!allocatedResource) {
       return res.status(400).json({ message: "Unsupported language" });
     }
 
-    // 2) Select best VM
     const bestVM = await waitAndRetrySelectBestVM(
       allocatedResource.cpu,
       allocatedResource.memory
@@ -169,7 +165,6 @@ export async function handleRequest(req, res) {
       // --------------------------------------------------------------------------------------------------------
     }
 
-    // ****** The agent ID must match bestVM.id. So your agent must have registered with the same ID. *******
     const agentId = bestVM.agentId; // Get the agentId
     const fullVMDetails = connectedAgents.get(agentId);
     const agentWs = fullVMDetails.endpoint;
@@ -179,7 +174,6 @@ export async function handleRequest(req, res) {
       return res.status(503).json({ message: "Selected VM is not connected" });
     }
 
-    // 3) Update VM stats (pre-allocate)
     await updateVMStats(agentId, {
       cpu_usage: parseFloat(fullVMDetails.cpu_usage) + allocatedResource.cpu,
       memory_usage:
@@ -187,7 +181,6 @@ export async function handleRequest(req, res) {
       num_runners: parseInt(fullVMDetails.num_runners) + 1,
     });
 
-    // 6) Create a promise to await the agent's response
     const agentPromise = new Promise((resolve, reject) => {
       pendingTasks.set(taskId, { resolve, reject });
 
@@ -208,7 +201,6 @@ export async function handleRequest(req, res) {
       }),
       (err) => {
         if (err) {
-          // If there's an error sending, remove from pendingTasks and revert usage
           pendingTasks.delete(taskId);
           updateVMStats(agentId, {
             cpu_usage: parseFloat(fullVMDetails.cpu_usage),
@@ -256,7 +248,7 @@ export async function handleRequest(req, res) {
         };
         await revertResources();
         console.log(connectedAgents);
-        return res.status(400).json({ status: "error", errorRes });
+        return res.status(202).json({ status: "error", errorRes });
       }
       const resultt = response.data.result;
       const metrics = response.data.metrics;
