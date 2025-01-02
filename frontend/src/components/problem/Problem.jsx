@@ -178,12 +178,12 @@ const Problem = () => {
     } catch (err) {
       // 處理例外錯誤
       console.error("Submission error:", err);
-      const error = err.response?.data?.errorRes?.error || err.message;
+      const error = err.response?.data?.message || err.message;
       setResult({
         success: false,
         error: {
           code: error.code || "NETWORK_ERROR",
-          message: error.details.error_message || error,
+          message: error || error,
           errorMessage: error.message || "An unexpected error occurred",
         },
       });
