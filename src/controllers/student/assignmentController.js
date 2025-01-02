@@ -14,7 +14,6 @@ export const getAssignmentsAndExams = async (req, res) => {
       return res.status(500).json({ error: "The course has been deleted." });
     }
 
-    // Fetch assignments
     const assignments = await Assignment.findAll({
       where: { CourseID: courseID, DeletedAt: null },
       attributes: [
@@ -26,11 +25,20 @@ export const getAssignmentsAndExams = async (req, res) => {
           Sequelize.fn("COUNT", Sequelize.col("Questions.ID")),
           "question_count",
         ],
+        [
+          Sequelize.literal(`(
+            SELECT ARRAY_AGG("ID")
+            FROM "Question"
+            WHERE "Question"."AssignmentID" = "Assignment"."ID"
+              AND "Question"."DeletedAt" IS NULL
+          )`),
+          "question_ids", 
+        ],
       ],
       include: [
         {
           model: Question,
-          attributes: [], 
+          attributes: [],
           required: false,
           where: { DeletedAt: null },
         },
@@ -40,14 +48,62 @@ export const getAssignmentsAndExams = async (req, res) => {
         "Assignment.Name",
         "Assignment.DueDate",
         "Assignment.StartDate",
-      ], // Include all selected columns
+      ],
+      raw: false,
     });
 
-    console.log(assignments)
 
-    // Map assignments to include the score
+    function determineAssignmentStatus(assignment, isComplete) {
+      const currentDate = new Date(); // Get the current date
+      const startDate = new Date(assignment.start_date);
+      const dueDate = new Date(assignment.due_date);
+
+      if (isComplete) {
+        return "completed";
+      }
+
+      if (currentDate > dueDate) {
+        return "overdue";
+      }
+
+      if (currentDate >= startDate && currentDate <= dueDate) {
+        return "in progress"
+      }
+
+      if (currentDate < startDate) {
+        return "not started";
+      }
+
+      return "Unknown"; 
+    }
+
     const assignmentsWithScore = await Promise.all(
       assignments.map(async (assignment) => {
+        console.log("log assingment entry");
+        console.log(assignment);
+        const questionIds = assignment.dataValues.question_ids || [];
+        const totalQuestions = questionIds.length;
+        console.log("log questionID");
+        console.log(questionIds);
+
+        const completedQuestions = new Set(
+          await Submission.findAll({
+            attributes: ["QuestionID"],
+            where: {
+              UserID: studentID,
+              QuestionID: { [Op.in]: questionIds },
+            },
+            raw: true,
+          }).then((submissions) =>
+            submissions.map((submission) => submission.QuestionID)
+          )
+        );
+
+        const isComplete = completedQuestions.size === totalQuestions;
+
+        console.log(questionIds);
+        const questionIdsString = questionIds.map((id) => `'${id}'`).join(","); 
+
         const scoreResult = await Submission.sequelize.query(
           `
             SELECT SUM("maxScore") AS score
@@ -56,11 +112,7 @@ export const getAssignmentsAndExams = async (req, res) => {
               FROM public."Submission"
               GROUP BY "QuestionID", "UserID"
               HAVING "UserID" = '${studentID}'
-                AND "QuestionID" IN (
-                  SELECT "ID"
-                  FROM "Question"
-                  WHERE "DeletedAt" IS NULL AND "AssignmentID" = '${assignment.ID}'
-                )
+                AND "QuestionID" IN  (${questionIdsString})
             ) AS max_scores
           `,
           {
@@ -69,19 +121,20 @@ export const getAssignmentsAndExams = async (req, res) => {
         );
 
         const score = scoreResult[0]?.score || 0;
+        const status = determineAssignmentStatus(assignment, isComplete);
 
         return {
           id: assignment.ID,
           name: assignment.Name,
           due_date: assignment.DueDate,
           start_date: assignment.StartDate,
-          question_count: assignment.get("question_count") || 0, // Use .get() with raw: false
-          score: score || 0,
+          question_count: totalQuestions,
+          score: score,
+          status: status,
         };
       })
     );
 
-    // Fetch exams
     const exams = await Exam.findAll({
       where: { CourseID: courseID, DeletedAt: null },
       attributes: ["ID", "Name", "StartDate", "DueDate"],
@@ -92,15 +145,14 @@ export const getAssignmentsAndExams = async (req, res) => {
           where: { DeletedAt: null },
         },
       ],
-      raw: false, // Disable raw for better handling of attributes
+      raw: false, 
     });
 
-    // Map exams to include is_active field
     const examsWithActiveStatus = await Promise.all(
       exams.map(async (exam) => {
         const scoreResult = await Submission.sequelize.query(
           `
-            SELECT SUM("maxScore") AS score
+            (SELECT SUM("maxScore") AS score
             FROM (
               SELECT MAX("Score") AS "maxScore"
               FROM public."Submission"
@@ -112,6 +164,7 @@ export const getAssignmentsAndExams = async (req, res) => {
                   WHERE "DeletedAt" IS NULL AND "ExamID" = '${exam.ID}'
                 )
             ) AS max_scores
+        )
           `,
           {
             type: Sequelize.QueryTypes.SELECT,
@@ -125,7 +178,7 @@ export const getAssignmentsAndExams = async (req, res) => {
           start_date: exam.StartDate,
           due_date: exam.DueDate,
           course: {
-            id: exam.Course?.ID || null, // Use optional chaining for nested fields
+            id: exam.Course?.ID || null, 
             name: exam.Course?.Name || null,
           },
           is_active: new Date() >= exam.StartDate && new Date() <= exam.DueDate,
@@ -134,7 +187,6 @@ export const getAssignmentsAndExams = async (req, res) => {
       })
     );
 
-    // Send response
     res.status(200).json({
       assignments: assignmentsWithScore,
       exams: examsWithActiveStatus,
