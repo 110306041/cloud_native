@@ -1,9 +1,3 @@
-// import User from "./User.js";
-// import Course from "../../../models/Course.js";
-// import Assignment from "../../../models/Assignment.js";
-// import UserCourse from "../../../models/UserCourse.js";
-// import Exam from "../../../models/Exam.js";
-// import User from "../../../models/User.js";
 import db from "../../../models/index.js";
 import { Op, Sequelize } from "sequelize";
 

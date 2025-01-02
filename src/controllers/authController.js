@@ -1,5 +1,3 @@
-// import User from "../models/User.js";
-// import User from "../../models/User.js"
 import db from "../../models/index.js";
 
 const { User } = db;

@@ -1,17 +1,3 @@
-// import User from "./User.js";
-// import Course from "./Course.js";
-// import Assignment from "./Assignment.js";
-// import UserCourse from "./UserCourse.js";
-// import Exam from "./Exam.js";
-// import Question from "./Question.js";
-// import TestCase from "./TestCase.js";
-// import Submission from "./Submission.js";
-// import UserCourse from "../../../models/UserCourse.js";
-// import Course from "../../../models/Course.js";
-// import Assignment from "../../../models/Assignment.js";
-// import Submission from "../../../models/Submission.js";
-// import Exam from "../../../models/Exam.js";
-// import User from "../../../models/User.js";
 import db from "../../../models/index.js";
 
 const { UserCourse, Course, Assignment, Submission, Exam, User, Question } = db;

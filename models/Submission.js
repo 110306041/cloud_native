@@ -1,5 +1,3 @@
-// import { DataTypes } from "sequelize";
-// import sequelize from "../syncDB.js";
 export default (sequelize, DataTypes) => {
 const Submission = sequelize.define(
   "Submission",
@@ -31,9 +29,8 @@ const Submission = sequelize.define(
   },
   {
     tableName: "Submission",
-    timestamps: false, // Disable createdAt and updatedAt
+    timestamps: false, 
   }
 );
 return Submission;
 };
-// export default Submission;
