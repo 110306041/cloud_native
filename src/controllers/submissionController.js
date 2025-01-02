@@ -53,13 +53,7 @@ export function selectBestVM(requiredCpu, requiredMemory) {
       continue;
     }
 
-    const normalizedCpuUtilization =
-      (availableCpu - requiredCpu) / vm.total_cpu;
-    const normalizedMemoryUtilization =
-      (availableMemory - requiredMemory) / vm.total_memory;
-
-    const score =
-      normalizedCpuUtilization * 0.5 + normalizedMemoryUtilization * 0.5;
+    const score = availableCpu * 0.7 + availableMemory * 0.3;
 
     if (score < bestScore) {
       bestScore = score;
@@ -69,14 +63,19 @@ export function selectBestVM(requiredCpu, requiredMemory) {
 
   return bestVM;
 }
-export async function waitAndRetrySelectBestVM(requiredCpu, requiredMemory, maxRetries = 36, delayMs = 5000) {
+export async function waitAndRetrySelectBestVM(
+  requiredCpu,
+  requiredMemory,
+  maxRetries = 36,
+  delayMs = 5000
+) {
   let attempt = 0;
   while (attempt < maxRetries) {
     console.log(`Attempt ${attempt + 1}: Looking for the best VM...`);
     const bestVM = await selectBestVM(requiredCpu, requiredMemory);
 
     if (bestVM) {
-      return bestVM; 
+      return bestVM;
     }
 
     console.log(`No VM found. Retrying in ${delayMs / 1000} seconds...`);
@@ -85,9 +84,8 @@ export async function waitAndRetrySelectBestVM(requiredCpu, requiredMemory, maxR
   }
 
   console.error("Max retries reached. No VM available.");
-  return null; 
+  return null;
 }
-
 
 export async function handleRequest(req, res) {
   try {
