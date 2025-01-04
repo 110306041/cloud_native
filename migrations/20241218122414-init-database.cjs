@@ -1,10 +1,10 @@
-'use strict';
+"use strict";
 
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
     // Create User table
-    await queryInterface.createTable('User', {
+    await queryInterface.createTable("User", {
       ID: {
         type: Sequelize.UUID,
         primaryKey: true,
@@ -30,7 +30,7 @@ module.exports = {
     });
 
     // Create Course table
-    await queryInterface.createTable('Course', {
+    await queryInterface.createTable("Course", {
       ID: {
         type: Sequelize.UUID,
         primaryKey: true,
@@ -55,7 +55,7 @@ module.exports = {
     });
 
     // Create Assignment table
-    await queryInterface.createTable('Assignment', {
+    await queryInterface.createTable("Assignment", {
       ID: {
         type: Sequelize.UUID,
         primaryKey: true,
@@ -77,15 +77,15 @@ module.exports = {
         type: Sequelize.UUID,
         allowNull: false,
         references: {
-          model: 'Course',
-          key: 'ID',
+          model: "Course",
+          key: "ID",
         },
-        onDelete: 'CASCADE',
+        onDelete: "CASCADE",
       },
     });
 
     // Create UserCourse table
-    await queryInterface.createTable('UserCourse', {
+    await queryInterface.createTable("UserCourse", {
       ID: {
         type: Sequelize.UUID,
         primaryKey: true,
@@ -95,24 +95,24 @@ module.exports = {
         type: Sequelize.UUID,
         allowNull: false,
         references: {
-          model: 'User',
-          key: 'ID',
+          model: "User",
+          key: "ID",
         },
-        onDelete: 'CASCADE',
+        onDelete: "CASCADE",
       },
       CourseID: {
         type: Sequelize.UUID,
         allowNull: false,
         references: {
-          model: 'Course',
-          key: 'ID',
+          model: "Course",
+          key: "ID",
         },
-        onDelete: 'CASCADE',
+        onDelete: "CASCADE",
       },
     });
 
     // Create Exam table
-    await queryInterface.createTable('Exam', {
+    await queryInterface.createTable("Exam", {
       ID: {
         type: Sequelize.UUID,
         primaryKey: true,
@@ -138,15 +138,15 @@ module.exports = {
         type: Sequelize.UUID,
         allowNull: false,
         references: {
-          model: 'Course',
-          key: 'ID',
+          model: "Course",
+          key: "ID",
         },
-        onDelete: 'CASCADE',
+        onDelete: "CASCADE",
       },
     });
 
     // Create Question table
-    await queryInterface.createTable('Question', {
+    await queryInterface.createTable("Question", {
       ID: {
         type: Sequelize.UUID,
         primaryKey: true,
@@ -188,24 +188,24 @@ module.exports = {
         type: Sequelize.UUID,
         allowNull: true,
         references: {
-          model: 'Assignment',
-          key: 'ID',
+          model: "Assignment",
+          key: "ID",
         },
-        onDelete: 'CASCADE',
+        onDelete: "CASCADE",
       },
       ExamID: {
         type: Sequelize.UUID,
         allowNull: true,
         references: {
-          model: 'Exam',
-          key: 'ID',
+          model: "Exam",
+          key: "ID",
         },
-        onDelete: 'CASCADE',
+        onDelete: "CASCADE",
       },
     });
 
     // Create TestCase table
-    await queryInterface.createTable('TestCase', {
+    await queryInterface.createTable("TestCase", {
       ID: {
         type: Sequelize.UUID,
         primaryKey: true,
@@ -227,15 +227,15 @@ module.exports = {
         type: Sequelize.UUID,
         allowNull: false,
         references: {
-          model: 'Question',
-          key: 'ID',
+          model: "Question",
+          key: "ID",
         },
-        onDelete: 'CASCADE',
+        onDelete: "CASCADE",
       },
     });
 
     // Create Submission table
-    await queryInterface.createTable('Submission', {
+    await queryInterface.createTable("Submission", {
       ID: {
         type: Sequelize.UUID,
         primaryKey: true,
@@ -269,32 +269,32 @@ module.exports = {
         type: Sequelize.UUID,
         allowNull: false,
         references: {
-          model: 'User',
-          key: 'ID',
+          model: "User",
+          key: "ID",
         },
-        onDelete: 'CASCADE',
+        onDelete: "CASCADE",
       },
       QuestionID: {
         type: Sequelize.UUID,
         allowNull: false,
         references: {
-          model: 'Question',
-          key: 'ID',
+          model: "Question",
+          key: "ID",
         },
-        onDelete: 'CASCADE',
+        onDelete: "CASCADE",
       },
     });
   },
 
   async down(queryInterface, Sequelize) {
     // Drop tables in reverse order to respect foreign key constraints
-    await queryInterface.dropTable('Submission');
-    await queryInterface.dropTable('TestCase');
-    await queryInterface.dropTable('Question');
-    await queryInterface.dropTable('Exam');
-    await queryInterface.dropTable('UserCourse');
-    await queryInterface.dropTable('Assignment');
-    await queryInterface.dropTable('Course');
-    await queryInterface.dropTable('User');
+    await queryInterface.dropTable("Submission");
+    await queryInterface.dropTable("TestCase");
+    await queryInterface.dropTable("Question");
+    await queryInterface.dropTable("Exam");
+    await queryInterface.dropTable("UserCourse");
+    await queryInterface.dropTable("Assignment");
+    await queryInterface.dropTable("Course");
+    await queryInterface.dropTable("User");
   },
 };

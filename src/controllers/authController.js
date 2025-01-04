@@ -48,15 +48,11 @@ export const login = async (req, res) => {
     const { email, password } = req.body;
 
     const user = await User.findOne({ where: { Email: email } });
-    // console.log(user)
 
     if (!user) {
       return res.status(404).json({ error: "User not found" });
     }
-    // console.log(password);
-    // console.log(user.Password);
     const isMatch = await bcrypt.compare(password, user.Password);
-    // console.log(isMatch);
 
     if (!isMatch) {
       return res.status(401).json({ error: "Invalid credentials" });
@@ -65,7 +61,6 @@ export const login = async (req, res) => {
     const { accessToken, refreshToken } = generateTokens(user);
 
     res.status(200).json({
-      //   message: "Login successful",
       accessToken,
       refreshToken,
       user: {
@@ -95,8 +90,6 @@ export const refreshToken = (req, res) => {
     if (!refreshToken) {
       return res.status(401).json({ error: "Refresh token missing" });
     }
-    // console.log(refreshToken);
-    // console.log(REFRESH_SECRET_KEY);
     const decoded = jwt.verify(
       refreshToken,
       process.env.JWT_REFRESH_SECRET_KEY

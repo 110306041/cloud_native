@@ -9,11 +9,11 @@ module.exports = {
      * Example:
      * await queryInterface.createTable('users', { id: Sequelize.INTEGER });
      */
-    
+
     await queryInterface.addColumn("Course", "semester_temp", {
       type: Sequelize.STRING,
-      allowNull: false, // Adjust as needed
-      defaultValue: "Unknown", // Provide a sensible default if necessary
+      allowNull: false,
+      defaultValue: "Unknown",
     });
     await queryInterface.sequelize.query(`
       UPDATE "Course"
@@ -23,7 +23,7 @@ module.exports = {
     await queryInterface.renameColumn("Course", "semester_temp", "Semester");
     await queryInterface.addColumn("Assignment", "StartDate", {
       type: Sequelize.DATE,
-      allowNull: true, // Adjust as needed
+      allowNull: true,
     });
   },
 
@@ -37,22 +37,18 @@ module.exports = {
     await queryInterface.addColumn("Course", "semester_temp", {
       type: Sequelize.INTEGER,
       allowNull: false,
-      defaultValue: 0, // Provide a default or handle existing rows
+      defaultValue: 0,
     });
 
-    // Convert data back from `semester` (string) to `semester_temp` (integer)
     await queryInterface.sequelize.query(`
       UPDATE "Course"
       SET "semester_temp" = CAST("Semester" AS INTEGER)
     `);
 
-    // Remove the `semester` column
     await queryInterface.removeColumn("Course", "Semester");
 
-    // Rename `semester_temp` back to `semester`
     await queryInterface.renameColumn("Course", "semester_temp", "Semester");
 
-    // Remove the `startDate` column
     await queryInterface.removeColumn("Assignment", "StartDate");
   },
 };

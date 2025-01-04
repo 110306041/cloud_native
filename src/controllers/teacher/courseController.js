@@ -1,14 +1,21 @@
 import db from "../../../models/index.js";
 import { Op, Sequelize } from "sequelize";
 
-const { UserCourse, Course, Assignment, Submission, Exam, User, sequelize } =
-  db;
-
+const {
+  UserCourse,
+  User,
+  Course,
+  Assignment,
+  Submission,
+  Exam,
+  Question,
+  TestCase,
+  sequelize,
+} = db;
 export const getCoursesByTeacher = async (req, res) => {
   try {
     const user = req.user;
     const teacherId = user.id;
-    // Fetch user courses
     const userCourses = await UserCourse.findAll({
       where: { UserID: teacherId, DeletedAt: null },
       include: {
@@ -23,16 +30,13 @@ export const getCoursesByTeacher = async (req, res) => {
       userCourses.map(async (uc) => {
         const courseId = uc.CourseID;
 
-        // Calculate total assignments
         const totalAssignments = await Assignment.count({
           where: {
             CourseID: courseId,
             DeletedAt: null,
-            // DueDate: { [Op.gte]: new Date() },
           },
         });
 
-        // Calculate completed assignments
         const completedAssignments = await Assignment.count({
           where: {
             CourseID: courseId,
@@ -41,13 +45,12 @@ export const getCoursesByTeacher = async (req, res) => {
           },
         });
 
-        // Calculate active exams
         const activeExams = await Exam.count({
           where: {
             CourseID: courseId,
             DeletedAt: null,
-            StartDate: { [Op.lte]: new Date() }, // Ensure the exam has started
-            DueDate: { [Op.gte]: new Date() }, // Ensure the exam is still ongoing
+            StartDate: { [Op.lte]: new Date() },
+            DueDate: { [Op.gte]: new Date() },
           },
         });
 
@@ -62,14 +65,12 @@ export const getCoursesByTeacher = async (req, res) => {
       })
     );
 
-    // return courses;
     res.status(200).json({
       courses,
     });
   } catch (error) {
     console.error("Error fetching courses by student ID:", error);
     res.status(500).json({ error: error.message });
-    // throw error; // Ensure proper error propagation
   }
 };
 
@@ -96,7 +97,6 @@ export const createCourse = async (req, res) => {
       });
     }
 
-    // Create a new course
     const newCourse = await Course.create(
       {
         Name: course_name,
@@ -124,10 +124,9 @@ export const createCourse = async (req, res) => {
 
 export const deleteCourse = async (req, res) => {
   const { courseID } = req.params;
-  const transaction = await Course.sequelize.transaction(); // Start a transaction
+  const transaction = await Course.sequelize.transaction();
 
   try {
-    // Soft delete the Course
     const courseResult = await Course.update(
       { DeletedAt: Sequelize.fn("NOW") },
       { where: { ID: courseID, DeletedAt: null }, transaction: transaction }
@@ -148,7 +147,6 @@ export const deleteCourse = async (req, res) => {
       }
     );
 
-    // Soft delete related Exams
     await Exam.update(
       { DeletedAt: Sequelize.fn("NOW") },
       {
@@ -156,7 +154,6 @@ export const deleteCourse = async (req, res) => {
         transaction: transaction,
       }
     );
-    // Soft delete associated UserCourse records
     await UserCourse.update(
       { DeletedAt: Sequelize.fn("NOW") },
       {
@@ -175,17 +172,13 @@ export const deleteCourse = async (req, res) => {
   }
 };
 
-
-
 export const updateCourse = async (req, res) => {
   try {
-    const {courseID} = req.params; 
-    const updatedData = req.body; 
+    const { courseID } = req.params;
+    const updatedData = req.body;
 
-    // Fields to exclude from update
-    const excludedFields = ['ID', 'CreatedAt', 'DeletedAt', 'UpdatedAt'];
+    const excludedFields = ["ID", "CreatedAt", "DeletedAt", "UpdatedAt"];
 
-    // Filter out excluded fields
     const filteredData = {};
     Object.keys(updatedData).forEach((key) => {
       if (!excludedFields.includes(key)) {
@@ -193,21 +186,23 @@ export const updateCourse = async (req, res) => {
       }
     });
 
-    // Add manual UpdatedAt since timestamps are disabled in the model
     filteredData.UpdatedAt = new Date();
 
-    // Perform the update
     const [affectedRows] = await Course.update(filteredData, {
-      where: { ID: courseID, DeletedAt: null }, // Only update non-deleted courses
+      where: { ID: courseID, DeletedAt: null },
     });
 
     if (affectedRows === 0) {
-      return res.status(404).json({ message: 'Course not found or already deleted.' });
+      return res
+        .status(404)
+        .json({ message: "Course not found or already deleted." });
     }
 
-    return res.status(200).json({ message: 'Course updated successfully.' });
+    return res.status(200).json({ message: "Course updated successfully." });
   } catch (error) {
-    console.error('Error updating course:', error);
-    return res.status(500).json({ message: 'An error occurred while updating the course.' });
+    console.error("Error updating course:", error);
+    return res
+      .status(500)
+      .json({ message: "An error occurred while updating the course." });
   }
 };

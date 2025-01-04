@@ -19,13 +19,13 @@ export default (sequelize, DataTypes) => {
         references: { model: "Question", key: "ID" },
         onDelete: "CASCADE",
       },
-      CreatedAt: {type:DataTypes.DATE, defaultValue:Sequelize.NOW},
-      UpdatedAt: {type:DataTypes.DATE, defaultValue:Sequelize.NOW},
-      DeletedAt: {type:DataTypes.DATE, allowNull: true}
+      CreatedAt: { type: DataTypes.DATE, defaultValue: Sequelize.NOW },
+      UpdatedAt: { type: DataTypes.DATE, defaultValue: Sequelize.NOW },
+      DeletedAt: { type: DataTypes.DATE, allowNull: true },
     },
     {
       tableName: "TestCase",
-      timestamps: false, 
+      timestamps: false,
     }
   );
   return TestCase;

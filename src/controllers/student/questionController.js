@@ -3,22 +3,21 @@ import { Op, Sequelize } from "sequelize";
 
 const {
   UserCourse,
+  User,
   Course,
   Assignment,
   Submission,
   Exam,
-  User,
   Question,
   TestCase,
+  sequelize,
 } = db;
-
 export const getAssignmentQuestions = async (req, res) => {
   try {
-    const { assignmentsID } = req.params;
-    // console.log(req.params);
-    // console.log(assignmentsID);
+    const { assignmentID } = req.params;
+
     const isDeleted = await Assignment.findOne({
-      where: { ID: assignmentsID, DeletedAt: { [Op.ne]: null } },
+      where: { ID: assignmentID, DeletedAt: { [Op.ne]: null } },
     });
     if (isDeleted) {
       return res
@@ -26,14 +25,12 @@ export const getAssignmentQuestions = async (req, res) => {
         .json({ error: "The Assignment has been deleted." });
     }
 
-    // Fetch questions for the specified assignment
     const questions = await Question.findAll({
-      where: { AssignmentID: assignmentsID, DeletedAt: null },
+      where: { AssignmentID: assignmentID, DeletedAt: null },
       attributes: ["ID", "Name", "Description", "Difficulty"],
       raw: true,
     });
 
-    // Map questions to include the highest score from the Submission table
     const questionsWithScores = await Promise.all(
       questions.map(async (question) => {
         const highestScore = await Submission.max("Score", {
@@ -45,12 +42,11 @@ export const getAssignmentQuestions = async (req, res) => {
           name: question.Name,
           description: question.Description,
           difficulty: question.Difficulty,
-          score: highestScore || "0", // Default to '0' if no submission exists
+          score: highestScore || "0",
         };
       })
     );
 
-    // Send response
     res.status(200).json({
       questions: questionsWithScores,
     });
@@ -70,14 +66,12 @@ export const getExamQuestions = async (req, res) => {
       return res.status(500).json({ error: "The Exam has been deleted." });
     }
 
-    // Fetch questions for the specified exam
     const questions = await Question.findAll({
       where: { ExamID: examID, DeletedAt: null },
       attributes: ["ID", "Name", "Description", "Difficulty"],
       raw: true,
     });
 
-    // Map questions to include the highest score from the Submission table
     const questionsWithScores = await Promise.all(
       questions.map(async (question) => {
         const highestScore = await Submission.max("Score", {
@@ -89,12 +83,11 @@ export const getExamQuestions = async (req, res) => {
           name: question.Name,
           description: question.Description,
           difficulty: question.Difficulty,
-          score: highestScore || "0", // Default to '0' if no submission exists
+          score: highestScore || "0",
         };
       })
     );
 
-    // Send response
     res.status(200).json({
       questions: questionsWithScores,
     });
@@ -114,7 +107,6 @@ export const getQuestionDetails = async (req, res) => {
       return res.status(500).json({ error: "The Question has been deleted." });
     }
 
-    // Fetch question details
     const question = await Question.findOne({
       where: { ID: questionID },
       attributes: [
@@ -133,12 +125,6 @@ export const getQuestionDetails = async (req, res) => {
       return res.status(404).json({ error: "Question not found" });
     }
 
-    // Fetch sample test cases for the question
-    // const sampleTestCases = await TestCase.findAll({
-    //   where: { QuestionID: questionID, DeletedAt: null },
-    //   attributes: ["Input", "Output", "Sequence"],
-    //   raw: true,
-    // });
     const sampleTestCases = await TestCase.findAll({
       where: { QuestionID: questionID, DeletedAt: null },
       attributes: [
@@ -168,10 +154,6 @@ export const getQuestionDetails = async (req, res) => {
       sample_test_cases: formattedTestCases,
     };
 
-    // Add test cases to the response
-    // question.sample_test_cases = sampleTestCases;
-
-    // Send response
     res.status(200).json(response);
   } catch (error) {
     console.error("Error fetching question details:", error);

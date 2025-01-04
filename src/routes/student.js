@@ -12,23 +12,47 @@ import {
   submitCode,
 } from "../controllers/student/submissioinController.js";
 
+import {
+  checkCourseOwnership,
+  checkAssignmentOwnership,
+  checkExamOwnership,
+  checkQuestionOwnership,
+} from "../middlewares/checkOwnership.js";
+
 const router = express.Router();
 
 router.get("/courses", authenticateToken, getCoursesByStudent);
 router.get(
-  "/assignments/questions/:assignmentsID",
+  "/assignments/questions/:assignmentID",
   authenticateToken,
+  checkAssignmentOwnership,
   getAssignmentQuestions
 );
-router.get("/questions/:questionID", authenticateToken, getQuestionDetails);
-router.get("/exams/questions/:examID", authenticateToken, getExamQuestions);
+router.get(
+  "/questions/:questionID",
+  authenticateToken,
+  checkQuestionOwnership,
+  getQuestionDetails
+);
+router.get(
+  "/exams/questions/:examID",
+  authenticateToken,
+  checkExamOwnership,
+  getExamQuestions
+);
 router.get(
   "/assignmentsAndExams/:courseID",
   authenticateToken,
+  checkCourseOwnership,
   getAssignmentsAndExams
 );
 
 router.get("/submissions", authenticateToken, getSubmissionByStudent);
-router.post("/submissions", authenticateToken, submitCode);
+router.post(
+  "/submissions",
+  authenticateToken,
+  checkQuestionOwnership,
+  submitCode
+);
 
 export default router;

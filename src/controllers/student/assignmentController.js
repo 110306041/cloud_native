@@ -2,8 +2,17 @@ import db from "../../../models/index.js";
 import { Op, Sequelize } from "sequelize";
 import moment from "moment-timezone";
 
-const { UserCourse, Course, Assignment, Submission, Exam, User, Question } = db;
-
+const {
+  UserCourse,
+  User,
+  Course,
+  Assignment,
+  Submission,
+  Exam,
+  Question,
+  TestCase,
+  sequelize,
+} = db;
 export const getAssignmentsAndExams = async (req, res) => {
   try {
     const { courseID } = req.params;
