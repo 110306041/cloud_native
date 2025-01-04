@@ -2,10 +2,8 @@ import { Button } from "@mui/material";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import React, { useContext, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 import { AuthContext } from "../../authContext";
-import { NavLink } from "react-router-dom";
-import BreadcrumbNav from "./BreadcrumbNav";
 
 import "./navbar.css";
 
@@ -50,7 +48,7 @@ export default function NavBar(props) {
         <div className="navbarWrapper">
           <div className="navLeft">
             <Link to="/" className="logo">
-              NCCU MIS ONLINE JUGDGE
+              NCCU MIS ONLINE JUDGE
             </Link>
             <div className="navbarList">
               {login && (
