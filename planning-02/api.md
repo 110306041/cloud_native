@@ -525,3 +525,37 @@ Response: (200 OK)
 
 
 Response: (200 OK)
+
+
+#### POST teacher/enroll/students/courseID
+
+老師新增 學生 至一個 UserCourse 中
+
+Request:
+```json
+{
+   "studentIds":[
+	UUIDS
+]
+}
+```
+Response: (201 CREATED)
+
+
+#### Get teacher/enroll/students
+
+老師拿取 所有學生 資訊
+
+Response: 
+```json
+{
+	"students": [
+		{
+			"ID": UUID,
+			"Name": "string",
+			"Email": "string"
+		}
+		
+	]
+}
+```

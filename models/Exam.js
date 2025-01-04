@@ -27,24 +27,7 @@ export default (sequelize, DataTypes) => {
     {
       tableName: "Exam",
       timestamps: false,
-      hooks: {
-        beforeCreate: (exam) => {
-          if (exam.StartDate) {
-            exam.StartDate = moment.tz(exam.StartDate, "Asia/Taipei").toDate();
-          }
-          if (exam.DueDate) {
-            exam.DueDate = moment.tz(exam.DueDate, "Asia/Taipei").toDate();
-          }
-        },
-        beforeUpdate: (exam) => {
-          if (exam.StartDate) {
-            exam.StartDate = moment.tz(exam.StartDate, "Asia/Taipei").toDate();
-          }
-          if (exam.DueDate) {
-            exam.DueDate = moment.tz(exam.DueDate, "Asia/Taipei").toDate();
-          }
-        },
-      },
+      
     }
   );
   return Exam;

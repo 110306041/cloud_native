@@ -1,6 +1,5 @@
 import db from "../../../models/index.js";
 import { Op, Sequelize } from "sequelize";
-import moment from "moment-timezone";
 
 const {
   UserCourse,
@@ -63,16 +62,10 @@ export const getAssignmentsAndExams = async (req, res) => {
     });
 
     function determineAssignmentStatus(assignment, isComplete) {
-      const currentTime = moment
-        .tz("Asia/Taipei")
-        .format("YYYY-MM-DD HH:mm:ss");
-      const currentDate = moment(currentTime, "YYYY-MM-DD HH:mm:ss").format(
-        "YY-MM-DD HH:mm:ss"
-      );
-      const startDate = moment(assignment.StartDate).format(
-        "YY-MM-DD HH:mm:ss"
-      );
-      const dueDate = moment(assignment.DueDate).format("YY-MM-DD HH:mm:ss");
+      const currentDate = new Date().toISOString(); 
+
+      const startDate = new Date(assignment.StartDate).toISOString();
+      const dueDate = new Date(assignment.DueDate).toISOString();
 
       if (isComplete) {
         return "Completed";

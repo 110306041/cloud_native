@@ -29,38 +29,7 @@ export default (sequelize, DataTypes) => {
     {
       tableName: "Assignment",
       timestamps: false,
-      hooks: {
-        beforeCreate: (assignment) => {
-          if (assignment.StartDate) {
-            assignment.StartDate = moment
-              .tz(assignment.StartDate, "Asia/Taipei")
-              .toDate();
-          }
-          if (assignment.DueDate) {
-            assignment.DueDate = moment
-              .tz(assignment.DueDate, "Asia/Taipei")
-              .toDate();
-          }
-        },
-        beforeUpdate: (assignment) => {
-          if (assignment.StartDate) {
-            console.log("converting to timezone");
-            assignment.StartDate = moment
-              .utc(assignment.StartDate)
-              .tz("Asia/Taipei")
-              .format("YYYY-MM-DD HH:mm:ssZ");
-            console.log(assignment.StartDate);
-          }
-          if (assignment.DueDate) {
-            console.log("converting to timezone");
-            assignment.DueDate = moment
-              .utc(assignment.DueDate)
-              .tz("Asia/Taipei")
-              .format("YYYY-MM-DD HH:mm:ssZ");
-            console.log(assignment.DueDate);
-          }
-        },
-      },
+      
     }
   );
   return Assignment;

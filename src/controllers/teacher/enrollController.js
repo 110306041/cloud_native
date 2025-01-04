@@ -1,8 +1,6 @@
-import { Op, Sequelize } from "sequelize";
-
 import db from "../../../models/index.js";
 
-const { UserCourse, User } = db;
+const { UserCourse, User, Course } = db;
 
 export const getAllStudentIds = async (req, res) => {
   try {
@@ -17,11 +15,17 @@ export const getAllStudentIds = async (req, res) => {
     }
 
     const students = await User.findAll({
-      attributes: ["ID"],
+      attributes: ["ID", "Name", "Email"],
       where: { Type: "student" },
     });
 
-    res.status(200).json(students.map((student) => student.ID));
+    res.status(200).json({
+      students: students.map((student) => ({
+        ID: student.ID,
+        Name: student.Name,
+        Email: student.Email,
+      })),
+    });
   } catch (error) {
     res
       .status(500)
@@ -66,21 +70,21 @@ export const addStudentsToCourse = async (req, res) => {
       });
     }
     const existingRecords = await UserCourse.findAll({
-        where: {
-          CourseID: courseID,
-          UserID: validUserIds,
-        },
-        attributes: ["UserID"],
+      where: {
+        CourseID: courseID,
+        UserID: validUserIds,
+      },
+      attributes: ["UserID"],
+    });
+
+    const existingUserIds = existingRecords.map((record) => record.UserID);
+
+    if (existingUserIds.length > 0) {
+      return res.status(400).json({
+        error: "Some students are already enrolled in the course",
+        existingUserIds,
       });
-  
-      const existingUserIds = existingRecords.map((record) => record.UserID);
-  
-      if (existingUserIds.length > 0) {
-        return res.status(400).json({
-          error: "Some students are already enrolled in the course",
-          existingUserIds,
-        });
-      }
+    }
     const records = studentIds.map((studentId) => ({
       UserID: studentId,
       CourseID: courseID,
@@ -88,9 +92,28 @@ export const addStudentsToCourse = async (req, res) => {
 
     await UserCourse.bulkCreate(records, { ignoreDuplicates: true });
 
-    res
-      .status(201)
-      .json({ message: "Students added to the course successfully" });
+    const totalStudents = await UserCourse.count({
+      where: {
+        CourseID: courseID,
+        DeletedAt: null,
+      },
+      include: [
+        {
+          model: User,
+          where: {
+            Type: "student",
+          },
+          required: true,
+        },
+      ],
+    });
+
+    await Course.update(
+      { StudentCount: totalStudents },
+      { where: { ID: courseID } }
+    );
+
+    res.status(201).end();
   } catch (error) {
     res.status(500).json({
       error: "Failed to add students to the course",
