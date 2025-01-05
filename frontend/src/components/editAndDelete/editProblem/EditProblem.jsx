@@ -1,5 +1,3 @@
-import { faPlus, faTrash } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Send } from "@mui/icons-material";
 import {
   Box,
@@ -18,7 +16,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { BACK_SERVER_URL } from "../../../config/config";
-import "./addProblem.css";
+import "./editProblem.css";
 
 // --------- Theme 設定 ---------
 const theme = createTheme({
@@ -86,89 +84,40 @@ const theme = createTheme({
 const problemDifficulty = ["easy", "medium", "hard"];
 
 // --------- 主元件 AddProblem ---------
-const AddProblem = () => {
-  const [questionName, setQuestionName] = useState("");
-  const [difficulty, setDifficulty] = useState("");
-  const [timeLimit, setTimeLimit] = useState();
-  const [memoryLimit, setMemoryLimit] = useState();
-  const [submissionLimit, setSubmissionLimit] = useState();
-  const [description, setDescription] = useState("");
+const EditProblem = () => {
+  const location = useLocation();
+  const id = location.state?.id;
+  const problem = location.state?.problem;
 
-  // 用來管理 sample testcases 的 input/output
-  const [input, setInput] = useState([""]);
-  const [output, setOutput] = useState([""]);
-  const [testcaseCount, setTestcaseCount] = useState(1);
+  const [questionName, setQuestionName] = useState(problem.name);
+  const [difficulty, setDifficulty] = useState(problem.difficulty);
+  const [timeLimit, setTimeLimit] = useState(problem.time_limit);
+  const [memoryLimit, setMemoryLimit] = useState(problem.memory_limit);
+  const [submissionLimit, setSubmissionLimit] = useState();
+  const [description, setDescription] = useState(problem.description);
 
   // loading 狀態
   const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
-  const location = useLocation();
 
-  const id = location.state?.id;
-  const problemType = location.state?.problemtype;
-  // --------- 新增一筆 sample testcase ---------
-  const addTestcase = () => {
-    setInput([...input, ""]);
-    setOutput([...output, ""]);
-    setTestcaseCount(testcaseCount + 1);
-  };
-
-  // --------- 刪除最後一筆 sample testcase ---------
-  const handleDelete = () => {
-    if (testcaseCount > 0) {
-      const newInput = [...input];
-      const newOutput = [...output];
-      newInput.pop();
-      newOutput.pop();
-      setInput(newInput);
-      setOutput(newOutput);
-      setTestcaseCount(testcaseCount - 1);
-    }
-  };
   // --------- 送出表單 ---------
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    let data = {};
 
-    // 把 input / output 資料組合為 sampleTestcases 陣列
-    let sampleTestcases = [];
-    for (let i = 0; i < input.length; i++) {
-      sampleTestcases.push({
-        input: input[i],
-        expected_output: output[i],
-      });
-    }
-
-    // 決定傳給後端的 data 結構
-    if (problemType === "assignments") {
-      data = {
-        assignment_id: id,
-        difficulty: difficulty,
-        time_limit: timeLimit,
-        memory_limit: memoryLimit,
-        submission_limit: submissionLimit,
-        description: description,
-        test_cases: sampleTestcases,
-        question_name: questionName,
-      };
-    } else {
-      data = {
-        exam_id: id,
-        difficulty: difficulty,
-        time_limit: timeLimit,
-        memory_limit: memoryLimit,
-        submission_limit: submissionLimit,
-        description: description,
-        test_cases: sampleTestcases,
-        question_name: questionName,
-      };
+    let data = {
+      Difficulty: difficulty,
+      TimeLimit: timeLimit,
+      MemoryLimit: memoryLimit,
+      SubmissionLimit: submissionLimit,
+      Description: description,
+      Name: questionName,
     }
 
     try {
       console.log("Req:", data);
-      await axios.post(`${BACK_SERVER_URL}/teacher/questions`, data, {
+      await axios.put(`${BACK_SERVER_URL}/teacher/questions/${id}`, data, {
         headers: {
           Authorization: `Bear ${localStorage.getItem("access-token")}`,
         },
@@ -211,11 +160,7 @@ const AddProblem = () => {
       submissionLimit &&
       description.trim() !== "";
 
-    const hasValidTestcases =
-      input.every((i) => i.trim() !== "") &&
-      output.every((o) => o.trim() !== "");
-
-    return hasBasicFields && hasValidTestcases;
+    return hasBasicFields;
   }, [
     questionName,
     difficulty,
@@ -223,8 +168,6 @@ const AddProblem = () => {
     memoryLimit,
     submissionLimit,
     description,
-    input,
-    output,
   ]);
   // --------- 畫面呈現 ---------
   return (
@@ -256,7 +199,7 @@ const AddProblem = () => {
                 gutterBottom
                 sx={{ fontWeight: "bold", color: "#445E93" }}
               >
-                Add New Problem
+                Edit Problem
               </Typography>
               <Typography variant="body2" color="text.secondary">
                 Please fill in the problem information below
@@ -338,64 +281,6 @@ const AddProblem = () => {
                   placeholder="Submission times limit"
                 />
               </div>
-              <h3 style={{ color: "#445E93", fontWeight: "bold" }}>
-                Sample Testcase
-              </h3>
-              <TestcaseFormat />
-              {testcaseCount > 0 && (
-                <div>
-                  {Array.from({ length: testcaseCount }).map((_, index) => (
-                    <SampleTestcase
-                      key={index}
-                      i={index}
-                      input={input}
-                      setInput={setInput}
-                      output={output}
-                      setOutput={setOutput}
-                    />
-                  ))}
-                </div>
-              )}{" "}
-              <Box sx={{ display: "flex", gap: 2 }}>
-                <Button
-                  variant="contained"
-                  onClick={addTestcase}
-                  type="button"
-                  startIcon={<FontAwesomeIcon icon={faPlus} />}
-                  fullWidth
-                  sx={{
-                    height: 50,
-                    backgroundColor: "#445E93",
-                    color: "#fff",
-                    "&:hover": {
-                      backgroundColor: "#374B76",
-                    },
-                  }}
-                >
-                  Add Sample Testcase
-                </Button>
-                <Button
-                  variant="contained"
-                  fullWidth
-                  sx={{
-                    height: 50,
-                    backgroundColor: "#FA7272",
-                    color: "#fff",
-                    "&:hover": {
-                      backgroundColor: "#E56666",
-                    },
-                    "&:disabled": {
-                      backgroundColor: "#FFB6B6",
-                    },
-                  }}
-                  onClick={handleDelete}
-                  type="button"
-                  disabled={testcaseCount <= 1}
-                  startIcon={<FontAwesomeIcon icon={faTrash} />}
-                >
-                  Delete
-                </Button>
-              </Box>
               {/* 下方取消 / 送出按鈕 */}
               <Box sx={{ display: "flex", gap: 2, mt: 2 }}>
                 <Button
@@ -441,7 +326,7 @@ const AddProblem = () => {
   );
 };
 
-export default AddProblem;
+export default EditProblem;
 
 // --------- NumberField 子元件 ---------
 export const NumberField = ({ label, value, setValue, placeholder }) => {

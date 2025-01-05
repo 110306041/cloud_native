@@ -1,10 +1,13 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { useLocation, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { BeatLoader } from "react-spinners";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { BACK_SERVER_URL } from "../../config/config";
+import AddStudentButton from "../add/addStudent/AddStudentButton";
+import DeleteButton from "../editAndDelete/button/DeleteButton";
+import EditButton from "../editAndDelete/button/EditButton";
 import CourseExam from "./exam/CourseExam";
 import CourseHw from "./hw/CourseHw";
 
@@ -25,14 +28,18 @@ export default function Course() {
   const courseInfo = location.state?.courseInfo;
   console.log(courseInfo);
 
+  const navigate = useNavigate();
+
   const [hws, setHws] = useState([]);
   const [exams, setExams] = useState([]);
   const [loader, setLoader] = useState(true);
+
   useEffect(() => {
     if (location.state?.refresh) {
       setRefreshKey((prev) => prev + 1);
     }
   }, [location]);
+
   useEffect(() => {
     let apiUrl =
       localStorage.getItem("role") === "student"
@@ -66,6 +73,40 @@ export default function Course() {
       });
   }, [id, refreshKey]);
 
+  const handleAddStudentButtonClick = (id, courseInfo) => {
+    navigate(`/addStudent`, {
+      state: { id, courseInfo },
+    });
+  };
+
+  const handleEditButtonClick = (id) => {
+    navigate(`/editCourse`, {
+      state: { id },
+    });
+  };
+
+  const handleDeleteButtonClick = async (e) => {
+    try {
+      await axios.delete(`${BACK_SERVER_URL}/teacher/courses/${id}`, {
+        headers: {
+          Authorization: `Bear ${localStorage.getItem("access-token")}`,
+        },
+      });
+      navigate("/courses");
+    } catch (err) {
+      const error = err.response ? err.response.data.message : err.message;
+      toast.error(error, {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+    }
+  };
+
   return (
     <div>
       {loader ? (
@@ -76,9 +117,30 @@ export default function Course() {
         <div className="courses-container">
           <ToastContainer />
           <div className="courses-right">
-            <h1 style={styles.assignmentTitle}>
-              {courseInfo?.semester} {courseInfo?.name}
-            </h1>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                width: "100%",
+              }}
+            >
+              <h1 style={styles.assignmentTitle}>
+                {courseInfo?.semester} {courseInfo?.name}
+              </h1>
+              {localStorage.getItem("role") === "student" ? null : (
+                <div style={{ marginTop: 13 }}>
+                  <AddStudentButton onClick={() => handleAddStudentButtonClick(id)} />
+                  <EditButton
+                    title={"Edit Course"}
+                    onClick={() => handleEditButtonClick(id, courseInfo)}
+                  />
+                  <DeleteButton
+                    title={"Delete Course"}
+                    onClick={() => handleDeleteButtonClick()}
+                  />
+                </div>
+              )}
+            </div>
             <CourseHw hws={hws} courseInfo={courseInfo} />
             <CourseExam exams={exams} courseInfo={courseInfo} />
           </div>
