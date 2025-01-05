@@ -107,8 +107,7 @@ const AddProblem = () => {
   const location = useLocation();
 
   const id = location.state?.id;
-  const problemType = location.state?.problemType;
-
+  const problemType = location.state?.problemtype;
   // --------- 新增一筆 sample testcase ---------
   const addTestcase = () => {
     setInput([...input, ""]);
@@ -171,6 +170,7 @@ const AddProblem = () => {
     }
 
     try {
+      console.log("Req:", data);
       await axios.post(`${BACK_SERVER_URL}/teacher/questions`, data, {
         headers: {
           Authorization: `Bear ${localStorage.getItem("access-token")}`,
@@ -550,7 +550,6 @@ const SampleTestcase = ({ i, input, output, setInput, setOutput }) => {
             >
               [apple,banana,orange]
             </Box>{" "}
-         
           </Typography>
         </Box>
       </Box>
