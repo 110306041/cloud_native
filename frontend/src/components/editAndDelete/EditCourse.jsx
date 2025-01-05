@@ -83,6 +83,7 @@ const EditCourse = () => {
           courseInfo: {
             name: courseName,
             semester: courseSemester,
+            studentLimit: studentLimit,
           }
         }
       });
