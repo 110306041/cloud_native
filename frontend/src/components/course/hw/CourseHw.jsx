@@ -207,8 +207,11 @@ export default function CourseHw({ hws = [], courseInfo }) {
                               case "in progress":
                                 badgeColor = "#5AB2FF"; // 藍色
                                 break;
+                              case "not started":
+                                badgeColor = "#9E9E9E"; // 中性灰色
+                                break;
                               default:
-                                badgeColor = "#D9D9D9"; // 預設灰色，以防有其他狀態
+                                badgeColor = "#D9D9D9"; // 預設灰色
                             }
 
                             return (

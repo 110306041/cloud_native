@@ -74,13 +74,11 @@ export default function ProblemSet() {
         : `${BACK_SERVER_URL}/teacher/${problemsetInfo.problemType}/questions/${id}`;
 
     axios
-      .get(apiUrl,
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("access-token")}`,
-          },
-        }
-      )
+      .get(apiUrl, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("access-token")}`,
+        },
+      })
       .then((res) => {
         let problems = res.data.questions;
 
