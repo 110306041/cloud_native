@@ -21,7 +21,10 @@ import {
   problemsetStudentColumn,
   problemsetTeacherColumn,
 } from "../../utils";
+import DeleteButton from "../editAndDelete/button/DeleteButton";
+import EditButton from "../editAndDelete/button/EditButton";
 import "./problemset.css";
+
 let columns =
   localStorage.getItem("role") === "student"
     ? problemsetStudentColumn
@@ -61,6 +64,7 @@ export default function ProblemSet() {
   const location = useLocation();
   const problemsetInfo = location.state?.problemsetInfo;
   const navigate = useNavigate();
+  console.log(problemsetInfo);
 
   useLayoutEffect(() => {
     columns =
@@ -74,13 +78,11 @@ export default function ProblemSet() {
         : `${BACK_SERVER_URL}/teacher/${problemsetInfo.problemType}/questions/${id}`;
 
     axios
-      .get(apiUrl,
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("access-token")}`,
-          },
-        }
-      )
+      .get(apiUrl, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("access-token")}`,
+        },
+      })
       .then((res) => {
         let problems = res.data.questions;
 
@@ -140,6 +142,48 @@ export default function ProblemSet() {
     });
   };
 
+  const handleEditButtonClick = (id, problemsetInfo) => {
+    if (problemsetInfo.problemType === "assignments") {
+      navigate(`/editHw`, {
+        state: { id, problemsetInfo },
+      });
+    }
+    if (problemsetInfo.problemType === "exams") {
+      navigate(`/editExam`, {
+        state: { id, problemsetInfo },
+      });
+    }
+  };
+
+  const handleDeleteButtonClick = async (e) => {
+    // const type =
+    console.log(
+      `${BACK_SERVER_URL}/teacher/${problemsetInfo.problemType}/${id}`
+    );
+    try {
+      await axios.delete(
+        `${BACK_SERVER_URL}/teacher/${problemsetInfo.problemType}/${id}`,
+        {
+          headers: {
+            Authorization: `Bear ${localStorage.getItem("access-token")}`,
+          },
+        }
+      );
+      navigate("/courses/");
+    } catch (err) {
+      const error = err.response ? err.response.data.message : err.message;
+      toast.error(error, {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+    }
+  };
+
   return (
     <div className="courses-container">
       <ToastContainer />
@@ -154,9 +198,37 @@ export default function ProblemSet() {
           {problemsetInfo.courseInfo.semester} {problemsetInfo.courseInfo.name}
         </h1>
 
-        <h2 style={{ padding: "20px 0", color: "#222222" }}>
-          {problemsetInfo.problemsetName}
-        </h2>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            width: "100%",
+          }}
+        >
+          <h2 style={{ padding: "20px 0", color: "#222222" }}>
+            {problemsetInfo.problemsetName}
+          </h2>
+          {localStorage.getItem("role") === "student" ? null : (
+            <div style={{ marginTop: 13 }}>
+              <EditButton
+                title={
+                  problemsetInfo.problemType === "assignments"
+                    ? "Edit Assignment"
+                    : "Edit Exam"
+                }
+                onClick={() => handleEditButtonClick(id, problemsetInfo)}
+              />
+              <DeleteButton
+                title={
+                  problemsetInfo.problemType === "assignments"
+                    ? "Delete Assignment"
+                    : "Edit Exam"
+                }
+                onClick={() => handleDeleteButtonClick()}
+              />
+            </div>
+          )}
+        </div>
 
         <div style={styles.infoAndButton}>
           <div style={styles.problemsetInfo}>

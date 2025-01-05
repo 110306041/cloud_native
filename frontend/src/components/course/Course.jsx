@@ -128,7 +128,7 @@ export default function Course() {
                   />
                   <DeleteButton
                     title={"Delete Course"}
-                    onClick={() => handleDeleteButtonClick}
+                    onClick={() => handleDeleteButtonClick()}
                   />
                 </div>
               )}

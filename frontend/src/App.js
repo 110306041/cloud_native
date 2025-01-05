@@ -10,6 +10,8 @@ import AddProblem from "./components/add/addProblem/AddProblem";
 import Course from "./components/course/Course";
 import Courses from "./components/courses/Courses";
 import EditCourse from "./components/editAndDelete/EditCourse";
+import EditExam from "./components/editAndDelete/EditExam";
+import EditHw from "./components/editAndDelete/EditHw";
 import NavBar from "./components/navbar/Navbar";
 import Problem from "./components/problem/Problem";
 import ProblemSet from "./components/problemset/Problemset";
@@ -39,7 +41,9 @@ function App() {
             <Route path="/addHw" element={<AddHw />} />
             <Route path="/addExam" element={<AddExam />} />
             <Route path="/addProblem" element={<AddProblem />} />
-            <Route path="/editCourse" element={<EditCourse />}></Route>
+            <Route path="/editCourse" element={<EditCourse />} />
+            <Route path="/editHw" element={<EditHw />} />
+            <Route path="/editExam" element={<EditExam />} />
           </Routes>
         </Router>
       </div>
