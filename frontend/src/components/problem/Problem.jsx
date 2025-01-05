@@ -243,7 +243,9 @@ const Problem = () => {
                   <div className="sample-block">
                     <div className="sample-line">
                       <span className="sample-label">Input:</span>
-                      <span className="monospace">{testcase.input}</span>
+                      <span className="monospace">
+                        {testcase.input.replace(/^\[|\]$/g, "")}
+                      </span>{" "}
                     </div>
                     <div className="sample-line">
                       <span className="sample-label">Output:</span>
