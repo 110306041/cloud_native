@@ -53,7 +53,6 @@ const WS_PORT = process.env.SOCKET_PORT || 4000;
             `Task ${taskId} completed:`,
             JSON.stringify(result, null, 2)
           );
-          console.log("okokokok");
           console.log(metrics);
 
           if (pendingTasks.has(taskId)) {

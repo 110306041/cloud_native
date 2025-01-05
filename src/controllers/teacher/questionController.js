@@ -1,4 +1,4 @@
-import { Op, Sequelize } from "sequelize";
+import { json, Op, Sequelize } from "sequelize";
 
 import db from "../../../models/index.js";
 
@@ -281,7 +281,7 @@ export const createQuestion = async (req, res) => {
     if (test_cases && Array.isArray(test_cases)) {
       const testCaseData = test_cases.map((tc, index) => ({
         QuestionID: newQuestion.ID,
-        Input: tc.input,
+        Input: `[${tc.input}]`,
         Output: tc.expected_output,
         Sequence: index + 1,
       }));
