@@ -7,7 +7,7 @@ import FormControl from "@mui/material/FormControl";
 import InputLabel from "@mui/material/InputLabel";
 import Select from "@mui/material/Select";
 import Switch from "@mui/material/Switch";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import AceEditor from "react-ace";
 
 import "ace-builds/src-noconflict/ext-language_tools";
@@ -28,11 +28,29 @@ const CodeEditor = ({
   handleModeChange,
   onCodeChange,
   submit,
-  run,
+  // run,
   runLoading,
   submitLoading,
 }) => {
+  const [code, setCode] = useState("")
   const languageList = ["Javascript", "Java", "Python"];
+
+  const codeTemplates = {
+    Javascript: `exports.solution = function() {
+    
+};`,
+    Python: `def solution():
+    pass`,
+    Java: `public class Solution {
+    public static void solution() {
+        
+    }
+}`
+  };
+
+  useEffect(() => {
+    setCode(codeTemplates[language] || "");
+  }, [language]);
 
   const handleThemeChange = (e) => {
     handleModeChange(e.target.checked);
@@ -137,8 +155,14 @@ const CodeEditor = ({
       <div className="code-editor-wrapper">
         <AceEditor
           mode={getLanguage()}
+          value={code}
+          // defaultValue={getDefaultCode()}
           theme={darkMode === true ? "dracula" : "eclipse"}
-          onChange={onCodeChange}
+          // onChange={onCodeChange}
+          onChange={(newValue) => {
+            setCode(newValue);
+            onCodeChange(newValue);
+          }}
           name="UNIQUE_ID_OF_DIV"
           fontSize={14}
           width="100%"
