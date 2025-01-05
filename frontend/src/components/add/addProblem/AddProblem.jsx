@@ -11,9 +11,10 @@ import {
   ThemeProvider,
   Typography,
   createTheme,
+  Grid2,
 } from "@mui/material";
 import axios from "axios";
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -92,6 +93,7 @@ const AddProblem = () => {
   const [timeLimit, setTimeLimit] = useState();
   const [memoryLimit, setMemoryLimit] = useState();
   const [submissionLimit, setSubmissionLimit] = useState();
+  const [dueDate, setDueDate] = useState(""); // TODO: discard dueDate
   const [description, setDescription] = useState("");
 
   // 用來管理 sample testcases 的 input/output
@@ -107,7 +109,6 @@ const AddProblem = () => {
 
   const id = location.state?.id;
   const problemType = location.state?.problemtype;
-
   // --------- 新增一筆 sample testcase ---------
   const addTestcase = () => {
     setInput([...input, ""]);
@@ -118,8 +119,8 @@ const AddProblem = () => {
   // --------- 刪除最後一筆 sample testcase ---------
   const handleDelete = () => {
     if (testcaseCount > 0) {
-      let newInput = [...input];
-      let newOutput = [...output];
+      const newInput = [...input];
+      const newOutput = [...output];
       newInput.pop();
       newOutput.pop();
       setInput(newInput);
@@ -150,6 +151,7 @@ const AddProblem = () => {
         time_limit: timeLimit,
         memory_limit: memoryLimit,
         submission_limit: submissionLimit,
+        due_date: dueDate,
         description: description,
         test_cases: sampleTestcases,
         question_name: questionName,
@@ -161,6 +163,7 @@ const AddProblem = () => {
         time_limit: timeLimit,
         memory_limit: memoryLimit,
         submission_limit: submissionLimit,
+        due_date: dueDate,
         description: description,
         test_cases: sampleTestcases,
         question_name: questionName,
@@ -168,6 +171,7 @@ const AddProblem = () => {
     }
 
     try {
+      console.log("Req:", data);
       await axios.post(`${BACK_SERVER_URL}/teacher/questions`, data, {
         headers: {
           Authorization: `Bear ${localStorage.getItem("access-token")}`,
@@ -201,6 +205,31 @@ const AddProblem = () => {
     }
   };
 
+  // 確認每個 text field 都有資訊
+  const isFormValid = useMemo(() => {
+    const hasBasicFields =
+      questionName.trim() !== "" &&
+      difficulty !== "" &&
+      timeLimit &&
+      memoryLimit &&
+      submissionLimit &&
+      description.trim() !== "";
+
+    const hasValidTestcases =
+      input.every((i) => i.trim() !== "") &&
+      output.every((o) => o.trim() !== "");
+
+    return hasBasicFields && hasValidTestcases;
+  }, [
+    questionName,
+    difficulty,
+    timeLimit,
+    memoryLimit,
+    submissionLimit,
+    description,
+    input,
+    output,
+  ]);
   // --------- 畫面呈現 ---------
   return (
     <ThemeProvider theme={theme}>
@@ -262,6 +291,19 @@ const AddProblem = () => {
                 variant="outlined"
                 multiline
                 rows={4}
+              />
+              {/* TODO: remove dueDate */}
+              <TextField
+                label="Due Date"
+                type="datetime-local"
+                value={dueDate}
+                onChange={(e) => setDueDate(e.target.value)}
+                fullWidth
+                required
+                variant="outlined"
+                InputLabelProps={{
+                  shrink: true,
+                }}
               />
               {/* 難度選擇 */}
               <select
@@ -355,9 +397,13 @@ const AddProblem = () => {
                     "&:hover": {
                       backgroundColor: "#E56666",
                     },
+                    "&:disabled": {
+                      backgroundColor: "#FFB6B6",
+                    },
                   }}
                   onClick={handleDelete}
                   type="button"
+                  disabled={testcaseCount <= 1}
                   startIcon={<FontAwesomeIcon icon={faTrash} />}
                 >
                   Delete
@@ -382,15 +428,20 @@ const AddProblem = () => {
                 >
                   Cancel
                 </Button>
-
                 <Button
                   type="submit"
                   variant="contained"
                   fullWidth
-                  disabled={loading}
+                  disabled={loading || !isFormValid}
                   startIcon={
                     loading ? <CircularProgress size={20} /> : <Send />
                   }
+                  sx={{
+                    height: 50,
+                    "&:disabled": {
+                      backgroundColor: "#B1B1B1",
+                    },
+                  }}
                 >
                   {loading ? "Processing" : "Submit"}
                 </Button>
@@ -413,7 +464,7 @@ export const NumberField = ({ label, value, setValue, placeholder }) => {
       type="number"
       value={value}
       onChange={(e) => {
-        let newVal = e.target.value;
+        const newVal = e.target.value;
         if (/^\d*$/.test(newVal)) {
           setValue(newVal);
         }
@@ -429,22 +480,89 @@ export const NumberField = ({ label, value, setValue, placeholder }) => {
 // --------- SampleTestcase 子元件 ---------
 const SampleTestcase = ({ i, input, output, setInput, setOutput }) => {
   const handleInputChange = (e) => {
-    let newInput = [...input];
+    const newInput = [...input];
     newInput[i] = e.target.value;
     setInput(newInput);
   };
 
   const handleOutputChange = (e) => {
-    let newOutput = [...output];
+    const newOutput = [...output];
     newOutput[i] = e.target.value;
     setOutput(newOutput);
   };
 
+  const formats = [
+    { label: "Int", value: "5" },
+    { label: "String", value: '"hello"' },
+    { label: "Array", value: "[1,2]" },
+    { label: "Multiple Inputs", value: '["python",2]' },
+    {
+      label: "Object/JSON",
+      value: '{ "name": "Alice", "age": 25},\n{ "name": "Bob", "age": 20}',
+    },
+  ];
+
   return (
     <Box sx={{ mt: 2 }}>
-      <Typography variant="subtitle1" sx={{ mb: 2, color: "primary.main" }}>
+      <Typography
+        variant="subtitle1"
+        sx={{ mb: 2, color: "primary.main", fontWeight: "bold" }}
+      >
         Sample Testcase {i + 1}
       </Typography>
+
+      <Box
+        sx={{
+          mb: 3,
+          p: 2,
+          backgroundColor: "#f8f9fa",
+          borderRadius: 1,
+          border: "1px solid #e9ecef",
+        }}
+      >
+        <Typography
+          variant="subtitle2"
+          sx={{
+            mb: 2,
+            color: "#222222",
+            fontWeight: "bold",
+            fontSize: "0.875rem",
+          }}
+        >
+          Format Guide
+        </Typography>
+        {formats.map((format, idx) => (
+          <Box
+            key={idx}
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              mb: idx === formats.length - 1 ? 0 : 1.5, // 最後一行不添加 margin
+            }}
+          >
+            <Typography
+              variant="body2"
+              sx={{ color: "text.primary", fontWeight: 500, flexShrink: 0 }}
+            >
+              {format.label}:
+            </Typography>
+            <Box
+              sx={{
+                ml: 2,
+                p: 1,
+                borderRadius: 1,
+                fontFamily: "monospace",
+                fontSize: "0.875rem",
+                color: "#0d6efd",
+                flexGrow: 1,
+                overflowX: "auto",
+              }}
+            >
+              {format.value}
+            </Box>
+          </Box>
+        ))}
+      </Box>
 
       <TextField
         label="Sample Input"
@@ -453,9 +571,8 @@ const SampleTestcase = ({ i, input, output, setInput, setOutput }) => {
         fullWidth
         value={input[i] || ""}
         onChange={handleInputChange}
-        placeholder="Enter input test case"
         variant="outlined"
-        sx={{ mb: 2 }}
+        sx={{ mb: 2, fontFamily: "monospace" }}
       />
 
       <TextField
@@ -465,8 +582,8 @@ const SampleTestcase = ({ i, input, output, setInput, setOutput }) => {
         fullWidth
         value={output[i] || ""}
         onChange={handleOutputChange}
-        placeholder="Enter expected output"
         variant="outlined"
+        sx={{ fontFamily: "monospace" }}
       />
     </Box>
   );

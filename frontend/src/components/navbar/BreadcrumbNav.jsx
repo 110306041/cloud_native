@@ -8,91 +8,71 @@ const BreadcrumbNav = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const [breadcrumbs, setBreadcrumbs] = useState([]);
-  const [clickedIndex, setClickedIndex] = useState(null);
 
-  const handleClick = (e, index, isLast) => {
-    if (!isLast) {
+  const handleClick = (e, breadcrumb) => {
+    if (!breadcrumb.isLast && breadcrumb.link) {
       e.preventDefault();
-      setClickedIndex(index);
-      navigate(-1);
+      navigate(breadcrumb.link);
     }
   };
 
   useEffect(() => {
     const generateBreadcrumbs = () => {
       const pathnames = location.pathname.split("/").filter((x) => x);
-      let items = [];
+      const items = [];
 
-      if (!["/signin", "/signup"].includes(location.pathname)) {
-        items.push({ name: "Courses", isLast: false });
+      // Always start with "Home"
+      items.push({ name: "Home", link: "/", isLast: pathnames.length === 0 });
+
+      // Custom breadcrumb logic for dynamic paths
+      if (pathnames.includes("courses")) {
+        items.push({ name: "Courses", link: "/courses", isLast: false });
       }
 
-      if (pathnames[0] === "submissions") {
-        const hasAssignment = location.state?.fromAssignment;
-
-        if (hasAssignment) {
-          items.push({ name: "Assignments & Exams", isLast: false });
-          items.push({ name: "Problem Set", isLast: false });
-          items.push({ name: "Problem", isLast: false });
-        }
-
-        items.push({ name: "Submissions", isLast: true });
-        return items;
-      }
-
-      if (["course", "problemset", "problem"].includes(pathnames[0])) {
-        if (!["addHw", "addExam"].includes(pathnames[0])) {
-          items.push({
-            name: "Assignments & Exams",
-            isLast: pathnames[0] === "course",
-          });
-        }
-
-        if (["problemset", "problem"].includes(pathnames[0])) {
-          items.push({
-            name: "Problem Set",
-            isLast: pathnames[0] === "problemset",
-          });
-        }
-
-        if (pathnames[0] === "problem") {
-          items.push({
-            name: "Problem",
-            isLast: true,
-          });
-        }
-      }
-
-      if (["addHw", "addExam"].includes(pathnames[0])) {
+      if (pathnames.includes("course")) {
         items.push({
-          name: "Assignments & Exams",
+          name: `Course ${location.state?.courseId || ""}`,
+          link: location.pathname,
           isLast: false,
         });
-
-        items.push({
-          name: pathnames[0] === "addHw" ? "Add Assignment" : "Add Exam",
-          isLast: true,
-        });
       }
 
-      if (pathnames[0] === "addProblem") {
-        items.push({
-          name: "Assignments & Exams",
-          isLast: false,
-        });
+      if (pathnames.includes("problemset")) {
         items.push({
           name: "Problem Set",
-          isLast: false,
+          link: location.pathname,
+          isLast: pathnames[pathnames.length - 1] === "problemset",
         });
+      }
+
+      if (pathnames.includes("problem")) {
         items.push({
-          name: "Add Problem",
+          name: "Problem",
+          link: location.pathname,
           isLast: true,
         });
       }
 
-      if (pathnames[0] === "addCourse") {
+      if (pathnames.includes("submissions")) {
+        items.push({
+          name: "Submissions",
+          link: location.pathname,
+          isLast: true,
+        });
+      }
+
+      if (pathnames.includes("addCourse")) {
         items.push({
           name: "Add Course",
+          link: location.pathname,
+          isLast: true,
+        });
+      }
+
+      if (pathnames.includes("addProblem")) {
+        items.push({
+          name: "Add Problem",
+          link: location.pathname,
           isLast: true,
         });
       }
@@ -105,9 +85,9 @@ const BreadcrumbNav = () => {
 
   const breadcrumbStyle = {
     padding: "12px 24px",
-    backgroundColor: "#fff",
-    borderBottom: "1px solid #e0e0e0",
-    boxShadow: "0 1px 3px rgba(0,0,0,0.12)",
+    backgroundColor: "#f9f9f9",
+    borderBottom: "1px solid #ddd",
+    boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
   };
 
   if (["/signin", "/signup"].includes(location.pathname)) {
@@ -120,37 +100,30 @@ const BreadcrumbNav = () => {
         separator={<NavigateNextIcon fontSize="small" />}
         aria-label="breadcrumb"
       >
-        {breadcrumbs
-          .slice(0, clickedIndex !== null ? clickedIndex + 1 : undefined)
-          .map((breadcrumb, index) => {
-            const content = (
-              <>
-                {index === 0 && (
-                  <HomeIcon sx={{ mr: 0.5 }} fontSize="inherit" />
-                )}
-                {breadcrumb.name}
-              </>
-            );
+        {breadcrumbs.map((breadcrumb, index) => {
+          const content = (
+            <>
+              {index === 0 && <HomeIcon sx={{ mr: 0.5 }} fontSize="inherit" />}
+              {breadcrumb.name}
+            </>
+          );
 
-            return (
-              <Typography
-                key={index}
-                onClick={(e) => handleClick(e, index, breadcrumb.isLast)}
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  color:
-                    breadcrumb.name === "Courses" || !breadcrumb.isLast
-                      ? "#445E93"
-                      : "#666",
-                  textDecoration: "none",
-                  cursor: breadcrumb.isLast ? "default" : "pointer",
-                }}
-              >
-                {content}
-              </Typography>
-            );
-          })}
+          return (
+            <Typography
+              key={index}
+              onClick={(e) => handleClick(e, breadcrumb)}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                color: breadcrumb.isLast ? "#666" : "#445E93",
+                textDecoration: breadcrumb.isLast ? "none" : "underline",
+                cursor: breadcrumb.isLast ? "default" : "pointer",
+              }}
+            >
+              {content}
+            </Typography>
+          );
+        })}
       </Breadcrumbs>
     </div>
   );
