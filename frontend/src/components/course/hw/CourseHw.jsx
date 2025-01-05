@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { BeatLoader } from "react-spinners";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 import { Button } from "@mui/material";
@@ -148,17 +148,30 @@ export default function CourseHw({ hws = [], courseInfo }) {
                         role="checkbox"
                         tabIndex={-1}
                         key={index}
-                        onClick={() =>
-                          handleRowClick(
-                            allHws[page * rowsPerPage + index].id,
-                            {
-                              courseInfo: courseInfo,
-                              problemType: "assignments",
-                              problemsetName: row.name,
-                              startDate: row.startDate,
-                              dueDate: row.due_date,
-                            }
-                          )
+                        onClick={() => {
+                          if(row.start_date > new Date().toISOString()) {
+                            toast.error("This assignment is not open for submission yet.", {
+                              position: "top-right",
+                              autoClose: 5000,
+                              hideProgressBar: false,
+                              closeOnClick: true,
+                              pauseOnHover: true,
+                              draggable: true,
+                              progress: undefined,
+                            });
+                          } else {
+                            handleRowClick(
+                              allHws[page * rowsPerPage + index].id,
+                              {
+                                courseInfo: courseInfo,
+                                problemType: "assignments",
+                                problemsetName: row.name,
+                                startDate: row.start_date,
+                                dueDate: row.due_date,
+                              }
+                            )
+                          }
+                        }
                         }
                         style={{ cursor: "pointer" }}
                       >

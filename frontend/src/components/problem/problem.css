@@ -82,6 +82,10 @@
   transform: translate(-50%, -50%);
   z-index: 2;
 }
-.custom-color {
+.passed-color {
   color: #41a21e; /* 替換為您想要的顏色 */
+}
+
+.failed-color {
+  color: red;
 }
