@@ -92,7 +92,6 @@ const AddProblem = () => {
   const [timeLimit, setTimeLimit] = useState();
   const [memoryLimit, setMemoryLimit] = useState();
   const [submissionLimit, setSubmissionLimit] = useState();
-  const [dueDate, setDueDate] = useState(""); // TODO: discard dueDate
   const [description, setDescription] = useState("");
 
   // 用來管理 sample testcases 的 input/output
@@ -150,7 +149,6 @@ const AddProblem = () => {
         time_limit: timeLimit,
         memory_limit: memoryLimit,
         submission_limit: submissionLimit,
-        due_date: dueDate,
         description: description,
         test_cases: sampleTestcases,
         question_name: questionName,
@@ -162,7 +160,6 @@ const AddProblem = () => {
         time_limit: timeLimit,
         memory_limit: memoryLimit,
         submission_limit: submissionLimit,
-        due_date: dueDate,
         description: description,
         test_cases: sampleTestcases,
         question_name: questionName,
@@ -290,19 +287,6 @@ const AddProblem = () => {
                 variant="outlined"
                 multiline
                 rows={4}
-              />
-              {/* TODO: remove dueDate */}
-              <TextField
-                label="Due Date"
-                type="datetime-local"
-                value={dueDate}
-                onChange={(e) => setDueDate(e.target.value)}
-                fullWidth
-                required
-                variant="outlined"
-                InputLabelProps={{
-                  shrink: true,
-                }}
               />
               {/* 難度選擇 */}
               <select
@@ -542,7 +526,7 @@ const TestcaseFormat = () => {
       label: "Object/JSON",
       value: '{ "name": "Alice", "age": 25},\n{ "name": "Bob", "age": 20}',
     },
-    { label: "Multiple Inputs", value: '["python",2]' },
+    { label: "Multiple Inputs", value: '"python",2' },
   ];
 
   return (
