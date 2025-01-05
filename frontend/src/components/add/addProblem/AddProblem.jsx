@@ -10,7 +10,7 @@ import {
   TextField,
   ThemeProvider,
   Typography,
-  createTheme
+  createTheme,
 } from "@mui/material";
 import axios from "axios";
 import React, { useMemo, useState } from "react";
@@ -354,6 +354,10 @@ const AddProblem = () => {
                   placeholder="Submission times limit"
                 />
               </div>
+              <h3 style={{ color: "#445E93", fontWeight: "bold" }}>
+                Sample Testcase
+              </h3>
+              <TestcaseFormat />
               {testcaseCount > 0 && (
                 <div>
                   {Array.from({ length: testcaseCount }).map((_, index) => (
@@ -472,6 +476,11 @@ export const NumberField = ({ label, value, setValue, placeholder }) => {
       fullWidth
       required
       variant="outlined"
+      sx={{
+        "& .MuiInputBase-input::placeholder": {
+          fontSize: "10.5px",
+        },
+      }}
     />
   );
 };
@@ -490,78 +499,14 @@ const SampleTestcase = ({ i, input, output, setInput, setOutput }) => {
     setOutput(newOutput);
   };
 
-  const formats = [
-    { label: "Int", value: "5" },
-    { label: "String", value: '"hello"' },
-    { label: "Array", value: "[1,2]" },
-    { label: "Multiple Inputs", value: '["python",2]' },
-    {
-      label: "Object/JSON",
-      value: '{ "name": "Alice", "age": 25},\n{ "name": "Bob", "age": 20}',
-    },
-  ];
-
   return (
-    <Box sx={{ mt: 2 }}>
+    <Box sx={{ mb: 1.5 }}>
       <Typography
         variant="subtitle1"
         sx={{ mb: 2, color: "primary.main", fontWeight: "bold" }}
       >
-        Sample Testcase {i + 1}
+        Testcase {i + 1}
       </Typography>
-
-      <Box
-        sx={{
-          mb: 3,
-          p: 2,
-          backgroundColor: "#f8f9fa",
-          borderRadius: 1,
-          border: "1px solid #e9ecef",
-        }}
-      >
-        <Typography
-          variant="subtitle2"
-          sx={{
-            mb: 2,
-            color: "#222222",
-            fontWeight: "bold",
-            fontSize: "0.875rem",
-          }}
-        >
-          Format Guide
-        </Typography>
-        {formats.map((format, idx) => (
-          <Box
-            key={idx}
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              mb: idx === formats.length - 1 ? 0 : 1.5, // 最後一行不添加 margin
-            }}
-          >
-            <Typography
-              variant="body2"
-              sx={{ color: "text.primary", fontWeight: 500, flexShrink: 0 }}
-            >
-              {format.label}:
-            </Typography>
-            <Box
-              sx={{
-                ml: 2,
-                p: 1,
-                borderRadius: 1,
-                fontFamily: "monospace",
-                fontSize: "0.875rem",
-                color: "#0d6efd",
-                flexGrow: 1,
-                overflowX: "auto",
-              }}
-            >
-              {format.value}
-            </Box>
-          </Box>
-        ))}
-      </Box>
 
       <TextField
         label="Sample Input"
@@ -584,6 +529,74 @@ const SampleTestcase = ({ i, input, output, setInput, setOutput }) => {
         variant="outlined"
         sx={{ fontFamily: "monospace" }}
       />
+    </Box>
+  );
+};
+
+const TestcaseFormat = () => {
+  const formats = [
+    { label: "Int", value: "5" },
+    { label: "String", value: '"hello"' },
+    { label: "Array", value: "[1,2]" },
+    {
+      label: "Object/JSON",
+      value: '{ "name": "Alice", "age": 25},\n{ "name": "Bob", "age": 20}',
+    },
+    { label: "Multiple Inputs", value: '["python",2]' },
+  ];
+
+  return (
+    <Box
+      sx={{
+        mb: -1,
+        p: 2,
+        backgroundColor: "#f8f9fa",
+        borderRadius: 1,
+        border: "1px solid #e9ecef",
+      }}
+    >
+      <Typography
+        variant="subtitle2"
+        sx={{
+          mb: 2,
+          color: "#222222",
+          fontWeight: "bold",
+          fontSize: "0.875rem",
+        }}
+      >
+        Testcase Format Guide
+      </Typography>
+      {formats.map((format, idx) => (
+        <Box
+          key={idx}
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            mb: idx === formats.length - 1 ? 0 : 1.5, // 最後一行不添加 margin
+          }}
+        >
+          <Typography
+            variant="body2"
+            sx={{ color: "text.primary", fontWeight: 500, flexShrink: 0 }}
+          >
+            {format.label}:
+          </Typography>
+          <Box
+            sx={{
+              ml: 2,
+              p: 1,
+              borderRadius: 1,
+              fontFamily: "monospace",
+              fontSize: "0.875rem",
+              color: "#0d6efd",
+              flexGrow: 1,
+              overflowX: "auto",
+            }}
+          >
+            {format.value}
+          </Box>
+        </Box>
+      ))}
     </Box>
   );
 };
