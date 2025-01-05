@@ -1,30 +1,5 @@
 export const userType = ["Student", "Teacher"];
 
-export const tagsData = [
-  "Binary Search",
-  "Bitmasks",
-  "Bruteforce",
-  "Combinatorics",
-  "Constructive Algorithms",
-  "Data Structures",
-  "DFS and Similar",
-  "Divide and Conquer",
-  "Dynamic Programming",
-  "DSU",
-  "Flows",
-  "Games",
-  "Graphs",
-  "Greedy",
-  "Implementation",
-  "Math",
-  "Number Theory",
-  "Shortest Paths",
-  "Sortings",
-  "Ternary Search",
-  "Trees",
-  "Two Pointers",
-];
-
 export const getDifficulty = (problem) => {
   if (problem.countTotal === 0) {
     return "Hard";

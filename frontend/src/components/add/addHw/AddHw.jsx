@@ -12,7 +12,7 @@ import {
   createTheme,
 } from "@mui/material";
 import axios from "axios";
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -76,6 +76,24 @@ const AddHw = () => {
     console.log("Current courseId:", courseId);
   }, [courseId, navigate]);
 
+  const validateDueDate = (value) => {
+    const selectedDueDate = new Date(value);
+    const selectedStartDate = new Date(startDate);
+    if (startDate && selectedDueDate < selectedStartDate) {
+      toast.error("Due date cannot be earlier than the start date.", {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+    } else {
+      setDueDate(value);
+    }
+  };
+
   const onFormSubmit = (e) => {
     e.preventDefault();
     setLoadingSpinner(true);
@@ -105,7 +123,7 @@ const AddHw = () => {
         setLoadingSpinner(false);
         toast.success("HW Created Successfully");
         // 修改這行，添加 state 參數
-        navigate(`/course/${courseId}`, {
+        navigate(-1, {
           state: {
             refresh: true,
           },
@@ -193,7 +211,7 @@ const AddHw = () => {
                 label="Due Date"
                 type="datetime-local"
                 value={dueDate}
-                onChange={(e) => setDueDate(e.target.value)}
+                onChange={(e) => validateDueDate(e.target.value)}
                 fullWidth
                 required
                 variant="outlined"
@@ -218,7 +236,7 @@ const AddHw = () => {
                 <Button
                   variant="outlined"
                   fullWidth
-                  onClick={() => navigate(`/course/${courseId}`)}
+                  onClick={() => navigate(-1)}
                   sx={{
                     borderColor: "#445E93",
                     color: "#445E93",

@@ -96,7 +96,7 @@ const AddExam = () => {
           draggable: true,
           progress: undefined,
         });
-        navigate(`/course/${courseId}`);
+        navigate(-1);
       })
       .catch((err) => {
         setLoadingSpinner(false);
@@ -225,7 +225,7 @@ const AddExam = () => {
                 <Button
                   variant="outlined"
                   fullWidth
-                  onClick={() => navigate(`/course/${courseId}`)}
+                  onClick={() => navigate(-1)}
                   sx={{
                     borderColor: "#445E93",
                     color: "#445E93",

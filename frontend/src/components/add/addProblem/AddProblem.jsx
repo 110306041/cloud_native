@@ -368,7 +368,7 @@ const AddProblem = () => {
                 <Button
                   variant="outlined"
                   fullWidth
-                  onClick={() => navigate("/courses")}
+                  onClick={() => navigate(-1)}
                   disabled={loading}
                   sx={{
                     height: 50,

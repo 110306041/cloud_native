@@ -2,7 +2,7 @@
 import axios from "axios";
 import React, { useLayoutEffect, useState } from "react";
 import { BeatLoader } from "react-spinners";
-import { ToastContainer } from "react-toastify";
+import { ToastContainer, toast } from "react-toastify";
 import { BACK_SERVER_URL } from "../../config/config";
 import "../courses/courses.css";
 
@@ -10,9 +10,7 @@ import "react-toastify/dist/ReactToastify.css";
 // import "./userSubmission.css";
 
 import Chip from "@mui/material/Chip";
-import Modal from "@mui/material/Modal";
 import Paper from "@mui/material/Paper";
-// import { makeStyles } from "@material-ui/core/styles";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
@@ -22,7 +20,6 @@ import TablePagination from "@mui/material/TablePagination";
 import TableRow from "@mui/material/TableRow";
 import { Link } from "react-router-dom";
 
-import { getDateTime } from "../../utils";
 import Submission from "./submission/Submission";
 
 const columns = [
@@ -35,24 +32,6 @@ const columns = [
   { id: "Score", align: "center", label: "Score", minWidth: 70 },
   // { id: "verdict", align: "center", label: "Verdict", minWidth: 70 },
 ];
-
-// const useStyles = makeStyles((theme) => ({
-//   paper: {
-//     position: "absolute",
-//     width: 1000,
-//     backgroundColor: theme.palette.background.paper,
-//     border: "2px solid #000",
-//     boxShadow: theme.shadows[5],
-//     padding: theme.spacing(2, 4, 3),
-//   },
-//   root: {
-//     width: "100%",
-//     height: "calc(100vh - 100px)",
-//   },
-//   container: {
-//     maxHeight: "75vh",
-//   },
-// }));
 const styles = {
   assignmentTitle: {
     marginTop: "0.6rem",
@@ -123,13 +102,6 @@ export default function UserSubmissions() {
     }
   };
 
-  const langMap = {
-    c: "C",
-    cpp: "C++",
-    java: "Java8",
-    python: "Python3",
-  };
-
   useLayoutEffect(() => {
     // const parseJwt = (token) => {
     //   var base64Url = token.split(".")[1];
@@ -156,15 +128,15 @@ export default function UserSubmissions() {
       })
       .catch((err) => {
         const error = err.response ? err.response.data.message : err.message;
-        // toast.error(error, {
-        //   position: "top-right",
-        //   autoClose: 5000,
-        //   hideProgressBar: false,
-        //   closeOnClick: true,
-        //   pauseOnHover: true,
-        //   draggable: true,
-        //   progress: undefined,
-        // });
+        toast.error(error, {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
       });
   }, []);
 
@@ -242,11 +214,9 @@ export default function UserSubmissions() {
         </div>
         <h1 style={styles.assignmentTitle}>Submissions</h1>
 
-        {/* <Paper className={classes.root}> */}
         <Paper
           sx={{
             width: "100%",
-            minHeight: "600px",
             borderRadius: "16px",
             overflow: "hidden",
             marginTop: "30px",
@@ -254,7 +224,6 @@ export default function UserSubmissions() {
           }}
         >
           {" "}
-          {/* <TableContainer className={classes.container}> */}
           <TableContainer className={{ maxHeight: "75vh" }}>
             <Table stickyHeader aria-label="sticky table">
               <TableHead>
@@ -300,35 +269,48 @@ export default function UserSubmissions() {
                                     color: "#222222",
                                   }}
                                 >
-                                  {getDateTime(value)}
+                                  {value}
+                                  {/* {getDateTime(value)} */}
                                 </span>
                               </TableCell>
                             );
                           } else if (column.id === "problemName") {
                             return (
                               <TableCell key={column.id} align={column.align}>
-                                <a
-                                  href="#"
-                                  onClick={() => handleClick(index)}
+                                <span
                                   style={{
-                                    fontWeight: "bold",
+                                    fontWeight: "regular",
                                     fontSize: "16px",
-                                    textDecoration: "none",
-
-                                    color: "#445E93 ",
+                                    color: "#222222",
                                   }}
                                 >
-                                  {value}
-                                </a>
-                                <Modal
-                                  open={modalState.open}
-                                  onClose={handleClose}
-                                  aria-labelledby="simple-modal-title"
-                                  aria-describedby="simple-modal-description"
-                                >
-                                  {body}
-                                </Modal>
+                                  {/* {getDateTime(value)} */}
+                                  {row.Question.question_name}
+                                </span>
                               </TableCell>
+                              // <TableCell key={column.id} align={column.align}>
+                              //   <a
+                              //     href="#"
+                              //     onClick={() => handleClick(index)}
+                              //     style={{
+                              //       fontWeight: "bold",
+                              //       fontSize: "16px",
+                              //       textDecoration: "none",
+
+                              //       color: "#445E93 ",
+                              //     }}
+                              //   >
+                              //     {value}
+                              //   </a>
+                              //   <Modal
+                              //     open={modalState.open}
+                              //     onClose={handleClose}
+                              //     aria-labelledby="simple-modal-title"
+                              //     aria-describedby="simple-modal-description"
+                              //   >
+                              //     {body}
+                              //   </Modal>
+                              // </TableCell>
                             );
                           } else if (column.id === "verdict") {
                             return (
@@ -354,9 +336,7 @@ export default function UserSubmissions() {
                                     color: "#222222",
                                   }}
                                 >
-                                  {column.id === "lang"
-                                    ? langMap[value]
-                                    : value}
+                                  {value}
                                 </span>
                               </TableCell>
                             );
@@ -369,7 +349,7 @@ export default function UserSubmissions() {
             </Table>
           </TableContainer>
           <TablePagination
-            rowsPerPageOptions={[10, 25, 100]}
+            rowsPerPageOptions={[5, 10, 25]}
             component="div"
             count={rows.length}
             rowsPerPage={rowsPerPage}
