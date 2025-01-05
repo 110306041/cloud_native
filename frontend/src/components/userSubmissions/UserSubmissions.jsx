@@ -20,6 +20,7 @@ import TablePagination from "@mui/material/TablePagination";
 import TableRow from "@mui/material/TableRow";
 import { Link } from "react-router-dom";
 
+import { getDateTime } from "../../utils";
 import Submission from "./submission/Submission";
 
 const columns = [
@@ -259,7 +260,7 @@ export default function UserSubmissions() {
                         {columns.map((column) => {
                           const value =
                             column.id === "id" ? index + 1 : row[column.id];
-                          if (column.id === "date") {
+                          if (column.id === "CreatedAt") {
                             return (
                               <TableCell key={column.id} align={column.align}>
                                 <span
@@ -269,8 +270,7 @@ export default function UserSubmissions() {
                                     color: "#222222",
                                   }}
                                 >
-                                  {value}
-                                  {/* {getDateTime(value)} */}
+                                  {getDateTime(value)}
                                 </span>
                               </TableCell>
                             );
@@ -284,7 +284,6 @@ export default function UserSubmissions() {
                                     color: "#222222",
                                   }}
                                 >
-                                  {/* {getDateTime(value)} */}
                                   {row.Question.question_name}
                                 </span>
                               </TableCell>
