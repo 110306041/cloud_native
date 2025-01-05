@@ -78,7 +78,14 @@ const EditCourse = () => {
           Authorization: `Bear ${localStorage.getItem("access-token")}`,
         },
       });
-      navigate("/courses");
+      navigate(`/course/${id}`, {
+        state: {
+          courseInfo: {
+            name: courseName,
+            semester: courseSemester,
+          }
+        }
+      });
     } catch (err) {
       const error = err.response ? err.response.data.message : err.message;
       toast.error(error, {
@@ -176,7 +183,7 @@ const EditCourse = () => {
                 <Button
                   variant="outlined"
                   fullWidth
-                  onClick={() => navigate("/courses")}
+                  onClick={() => navigate(-1)}
                   disabled={loading}
                   sx={{
                     borderColor: "#445E93",
