@@ -149,14 +149,10 @@ export default function CourseHw({ hws = [], courseInfo }) {
                         tabIndex={-1}
                         key={index}
                         onClick={() => {
-<<<<<<< HEAD
                           if (
                             row.start_date > new Date().toISOString() &&
                             localStorage.getItem("role") === "student"
                           ) {
-=======
-                          if (row.start_date > new Date().toISOString()) {
->>>>>>> upstream/feat/frontend
                             toast.error(
                               "This assignment is not open for submission yet.",
                               {
