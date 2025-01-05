@@ -58,7 +58,7 @@ const EditCourse = () => {
 
   const [courseName, setCourseName] = useState(courseInfo.name);
   const [courseSemester, setCourseSemester] = useState(courseInfo.semester);
-  const [studentLimit, setStudentLimit] = useState("");
+  const [studentLimit, setStudentLimit] = useState(courseInfo.studentLimit);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 

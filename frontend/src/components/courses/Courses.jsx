@@ -191,6 +191,7 @@ export default function Courses() {
                             {
                               semester: row.semester,
                               name: row.name,
+                              studentLimit: row.student_limit,
                             }
                           )
                         }
