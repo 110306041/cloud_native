@@ -324,6 +324,25 @@ export default function ProblemSet() {
                                 />
                               </TableCell>
                             );
+                          } else if (column.id === "name") {
+                            return (
+                              <TableCell key={column.id} align={column.align}>
+                                <span
+                                  style={{
+                                    fontWeight: "regular",
+                                    fontSize: "16px",
+                                    color: "#222222",
+                                    display: "block",
+                                    whiteSpace: "normal",
+                                    overflow: "hidden",
+                                    textOverflow: "ellipsis",
+                                    maxWidth: 200,
+                                  }}
+                                >
+                                  {value}
+                                </span>
+                              </TableCell>
+                            );
                           } else {
                             return (
                               <TableCell key={column.id} align={column.align}>
