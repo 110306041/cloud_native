@@ -524,7 +524,7 @@ const SampleTestcase = ({ i, input, output, setInput, setOutput }) => {
               component="span"
               sx={{ ml: 1, color: "#0d6efd", fontFamily: "monospace" }}
             >
-              123
+              5
             </Box>
           </Typography>
           <Typography
@@ -548,7 +548,7 @@ const SampleTestcase = ({ i, input, output, setInput, setOutput }) => {
               component="span"
               sx={{ ml: 1, color: "#0d6efd", fontFamily: "monospace" }}
             >
-              [apple,banana,orange]
+              [apple,banana,orange],[1,2]
             </Box>{" "}
           </Typography>
         </Box>

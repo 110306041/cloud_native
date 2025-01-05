@@ -149,16 +149,19 @@ export default function CourseHw({ hws = [], courseInfo }) {
                         tabIndex={-1}
                         key={index}
                         onClick={() => {
-                          if(row.start_date > new Date().toISOString()) {
-                            toast.error("This assignment is not open for submission yet.", {
-                              position: "top-right",
-                              autoClose: 5000,
-                              hideProgressBar: false,
-                              closeOnClick: true,
-                              pauseOnHover: true,
-                              draggable: true,
-                              progress: undefined,
-                            });
+                          if (row.start_date > new Date().toISOString()) {
+                            toast.error(
+                              "This assignment is not open for submission yet.",
+                              {
+                                position: "top-right",
+                                autoClose: 5000,
+                                hideProgressBar: false,
+                                closeOnClick: true,
+                                pauseOnHover: true,
+                                draggable: true,
+                                progress: undefined,
+                              }
+                            );
                           } else {
                             handleRowClick(
                               allHws[page * rowsPerPage + index].id,
@@ -169,10 +172,9 @@ export default function CourseHw({ hws = [], courseInfo }) {
                                 startDate: row.start_date,
                                 dueDate: row.due_date,
                               }
-                            )
+                            );
                           }
-                        }
-                        }
+                        }}
                         style={{ cursor: "pointer" }}
                       >
                         {columns.map((column) => {
@@ -211,7 +213,7 @@ export default function CourseHw({ hws = [], courseInfo }) {
                           } else if (column.id === "status") {
                             let badgeColor;
                             switch (value) {
-                              case "completed":
+                              case "Completed":
                                 badgeColor = "#8ACB88"; // 綠色
                                 break;
                               case "overdue":
