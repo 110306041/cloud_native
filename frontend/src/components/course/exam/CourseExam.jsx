@@ -161,7 +161,6 @@ export default function CourseHw({ exams = [], courseInfo }) {
                             progress: undefined,
                           });
                         } else {
-                          console.log("else", row.start_date)
                           handleRowClick(
                             allExams[page * rowsPerPage + index].id,
                             {
