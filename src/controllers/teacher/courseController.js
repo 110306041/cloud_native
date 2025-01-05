@@ -20,7 +20,7 @@ export const getCoursesByTeacher = async (req, res) => {
       where: { UserID: teacherId, DeletedAt: null },
       include: {
         model: Course,
-        attributes: ["ID", "Name", "Semester"],
+        attributes: ["ID", "Name", "Semester","StudentLimit","StudentCount"],
         where: { DeletedAt: null },
       },
       order: [[{ model: Course }, "Semester", "DESC"]],
@@ -58,6 +58,7 @@ export const getCoursesByTeacher = async (req, res) => {
           id: courseId,
           name: uc.Course?.Name || "Unknown",
           semester: uc.Course?.Semester || "Unknown",
+          student_limit: uc.Course?.StudentLimit || null,
           total_assignments: totalAssignments,
           completed_assignments: completedAssignments,
           active_exams: activeExams,

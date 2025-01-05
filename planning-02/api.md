@@ -253,6 +253,7 @@ Response: (200 OK)
             "id": "string",
             "name": "string",
             "semester": int,
+            "student_limit": int,
             "total_assignments": int,
             "completed_assignments": int,
             "active_exams": int,
