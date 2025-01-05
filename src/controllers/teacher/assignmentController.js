@@ -25,7 +25,7 @@ export const getAssignmentsAndExams = async (req, res) => {
     }
 
     const assignments = await Assignment.findAll({
-      where: { CourseID: courseID },
+      where: { CourseID: courseID, DeletedAt: null },
       attributes: [
         "ID",
         "Name",

@@ -62,7 +62,7 @@ export const getAssignmentsAndExams = async (req, res) => {
     });
 
     function determineAssignmentStatus(assignment, isComplete) {
-      const currentDate = new Date().toISOString(); 
+      const currentDate = new Date().toISOString();
 
       const startDate = new Date(assignment.StartDate).toISOString();
       const dueDate = new Date(assignment.DueDate).toISOString();
@@ -114,8 +114,10 @@ export const getAssignmentsAndExams = async (req, res) => {
 
         let isComplete = completedQuestions.size === totalQuestions;
 
-        console.log(questionIds);
-        const questionIdsString = questionIds.map((id) => `'${id}'`).join(",");
+        const questionIdsString =
+          questionIds.length === 0
+            ? null
+            : questionIds.map((id) => `'${id}'`).join(",");
 
         const scoreResult = await Submission.sequelize.query(
           `
@@ -123,10 +125,10 @@ export const getAssignmentsAndExams = async (req, res) => {
             FROM (
               SELECT MAX("Score") AS "maxScore"
               FROM public."Submission"
+              WHERE "UserID" = '${studentID}'
+                AND "QuestionID" IN (${questionIdsString})  
               GROUP BY "QuestionID", "UserID"
-              HAVING "UserID" = '${studentID}'
-                AND "QuestionID" IN  (${questionIdsString})
-            ) AS max_scores
+            ) AS max_scores;
           `,
           {
             type: Sequelize.QueryTypes.SELECT,
