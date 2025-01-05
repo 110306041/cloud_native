@@ -169,7 +169,7 @@ export default function ProblemSet() {
           },
         }
       );
-      navigate("/courses/");
+      navigate(-1);
     } catch (err) {
       const error = err.response ? err.response.data.message : err.message;
       toast.error(error, {
