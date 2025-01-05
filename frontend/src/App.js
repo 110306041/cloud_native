@@ -7,6 +7,7 @@ import AddCourse from "./components/add/addCourse/AddCourse";
 import AddExam from "./components/add/addExam/AddExam";
 import AddHw from "./components/add/addHw/AddHw";
 import AddProblem from "./components/add/addProblem/AddProblem";
+import AddStudent from "./components/add/addStudent/AddStudent";
 import Course from "./components/course/Course";
 import Courses from "./components/courses/Courses";
 import EditCourse from "./components/editAndDelete/EditCourse";
@@ -41,6 +42,7 @@ function App() {
             <Route path="/addHw" element={<AddHw />} />
             <Route path="/addExam" element={<AddExam />} />
             <Route path="/addProblem" element={<AddProblem />} />
+            <Route path="/addStudent" element={<AddStudent />} />
             <Route path="/editCourse" element={<EditCourse />} />
             <Route path="/editHw" element={<EditHw />} />
             <Route path="/editExam" element={<EditExam />} />

@@ -5,6 +5,7 @@ import { BeatLoader } from "react-spinners";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { BACK_SERVER_URL } from "../../config/config";
+import AddStudentButton from "../add/addStudent/AddStudentButton";
 import DeleteButton from "../editAndDelete/button/DeleteButton";
 import EditButton from "../editAndDelete/button/EditButton";
 import CourseExam from "./exam/CourseExam";
@@ -72,9 +73,15 @@ export default function Course() {
       });
   }, [id, refreshKey]);
 
-  const handleEditButtonClick = (id, courseInfo) => {
-    navigate(`/editCourse`, {
+  const handleAddStudentButtonClick = (id, courseInfo) => {
+    navigate(`/addStudent`, {
       state: { id, courseInfo },
+    });
+  };
+
+  const handleEditButtonClick = (id) => {
+    navigate(`/editCourse`, {
+      state: { id },
     });
   };
 
@@ -122,6 +129,7 @@ export default function Course() {
               </h1>
               {localStorage.getItem("role") === "student" ? null : (
                 <div style={{ marginTop: 13 }}>
+                  <AddStudentButton onClick={() => handleAddStudentButtonClick(id)} />
                   <EditButton
                     title={"Edit Course"}
                     onClick={() => handleEditButtonClick(id, courseInfo)}
