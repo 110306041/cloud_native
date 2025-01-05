@@ -3,12 +3,14 @@ import CheckCircleTwoToneIcon from "@mui/icons-material/CheckCircleTwoTone";
 import Chip from "@mui/material/Chip";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import { Navigate, useParams } from "react-router-dom";
+import { Navigate, useNavigate, useParams } from "react-router-dom";
 import { BeatLoader } from "react-spinners";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 import { BACK_SERVER_URL } from "../../config/config";
+import DeleteButton from "../editAndDelete/button/DeleteButton";
+import EditButton from "../editAndDelete/button/EditButton";
 import CodeEditor from "./codeEditor/CodeEditor";
 import "./problem.css";
 
@@ -26,6 +28,7 @@ const Problem = () => {
   const [teacherProblemDetails, setTeacherProblemDetails] = useState({});
 
   const { id } = useParams();
+  const navigate = useNavigate();
 
   const languageExtension = {
     Javascript: "javascript",
@@ -193,10 +196,32 @@ const Problem = () => {
     }
   };
 
-  const handleRun = () => {
-    setRunLoading(true);
-    // Implement run logic here
-    setRunLoading(false);
+  const handleEditButtonClick = (id, problem) => {
+    navigate(`/editProblem`, {
+      state: { id, problem },
+    });
+  };
+
+  const handleDeleteButtonClick = async (e) => {
+    try {
+      await axios.delete(`${BACK_SERVER_URL}/teacher/questions/${id}`, {
+        headers: {
+          Authorization: `Bear ${localStorage.getItem("access-token")}`,
+        },
+      });
+      navigate(-1);
+    } catch (err) {
+      const error = err.response ? err.response.data.message : err.message;
+      toast.error(error, {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+    }
   };
 
   if (problemDoesNotExists) return <Navigate to="/nocontent" />;
@@ -215,22 +240,44 @@ const Problem = () => {
           <div
             style={{
               display: "flex",
+              justifyContent: "space-between",
               alignItems: "center",
-              gap: "1rem",
-              padding: "20px 0",
             }}
           >
-            <h2 style={{ margin: 0 }}>{problem.name}</h2>
-            <Chip
-              label={problem.difficulty}
+            <div
               style={{
-                fontWeight: "bold",
-                color: "white",
-                backgroundColor: badgeColor,
-                textTransform: "capitalize",
-                height: "30px",
+                display: "flex",
+                alignItems: "center",
+                gap: "1rem",
+                padding: "20px 0",
               }}
-            />
+            >
+              <h2 style={{ margin: 0 }}>{problem.name}</h2>
+              <Chip
+                label={problem.difficulty}
+                style={{
+                  fontWeight: "bold",
+                  color: "white",
+                  backgroundColor: badgeColor,
+                  textTransform: "capitalize",
+                  height: "30px",
+                }}
+              />
+            </div>
+            {localStorage.getItem("role") === "student" ? (
+              null
+            ) : (
+              <div>
+                <EditButton
+                  title={"Edit Problem"}
+                  onClick={() => handleEditButtonClick(id, problem)}
+                />
+                <DeleteButton
+                  title={"Delete Problem"}
+                  onClick={() => handleDeleteButtonClick()}
+                />
+              </div>
+            )}
           </div>
           <div className="problem-container">
             <div className="section-title">Description</div>
@@ -318,7 +365,7 @@ const Problem = () => {
                     handleModeChange={handleModeChange}
                     onCodeChange={handleCodeChange}
                     submit={handleSubmit}
-                    run={handleRun}
+                    // run={handleRun}
                     runLoading={runLoading}
                     submitLoading={submitLoading}
                   />
