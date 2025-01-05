@@ -3,15 +3,9 @@ dotenv.config();
 
 import app from "./app.js";
 import db from "../models/index.js";
-// import redisClient from "../connectRedis.js"; // Redis client
 import { createServer } from "http";
 import { WebSocketServer } from "ws";
 
-/**
- * We keep these in memory:
- * connectedAgents: key=agentId, value=WebSocket instance
- * pendingTasks: key=taskId, value={ resolve, reject }
- */
 const connectedAgents = new Map();
 const pendingTasks = new Map();
 
@@ -22,13 +16,6 @@ const WS_PORT = process.env.SOCKET_PORT || 4000;
 
 (async () => {
   try {
-    // 1. Check Redis connection
-    // const isRedisConnected = await redisClient.ping();
-    // if (isRedisConnected !== "PONG") {
-    //   throw new Error("Redis not connected");
-    // }
-    // console.log("Redis is ready");
-
     await db.sequelize.authenticate();
     console.log("Database connected successfully!");
 
@@ -81,8 +68,6 @@ const WS_PORT = process.env.SOCKET_PORT || 4000;
           );
 
           if (pendingTasks.has(taskId)) {
-            // pendingTasks.get(taskId).reject(new Error(error || "Task error"));
-            // pendingTasks.delete(taskId);
             pendingTasks.get(taskId).resolve({
               success: false,
               data: error,
@@ -97,16 +82,17 @@ const WS_PORT = process.env.SOCKET_PORT || 4000;
           const existingAgent = connectedAgents.get(message.agentId);
 
           if (existingAgent) {
-            // Update only the resource-related fields
             connectedAgents.set(message.agentId, {
-              ...existingAgent, // Preserve other fields like endpoint
+              ...existingAgent,
               total_cpu: message.metrics.cpu.total,
               cpu_usage: message.metrics.cpu.used,
               total_memory: message.metrics.memory.total,
               memory_usage: message.metrics.memory.used,
             });
           } else {
-            console.warn(`Agent ${message.agentId} not found. Cannot update resources.`);
+            console.warn(
+              `Agent ${message.agentId} not found. Cannot update resources.`
+            );
           }
         }
       });
@@ -117,9 +103,8 @@ const WS_PORT = process.env.SOCKET_PORT || 4000;
           if (agent.endpoint === ws) {
             console.log(`Agent ${agentId} disconnected`);
             connectedAgents.delete(agentId);
-            console.log('logging connectedAgent maps')
+            console.log("logging connectedAgent maps");
             console.log(connectedAgents);
-
 
             break;
           }

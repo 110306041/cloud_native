@@ -1,8 +1,17 @@
 import db from "../../../models/index.js";
 import { Op, Sequelize } from "sequelize";
 
-const { UserCourse, Course, Assignment, Submission, Exam, User, Question } = db;
-
+const {
+  UserCourse,
+  User,
+  Course,
+  Assignment,
+  Submission,
+  Exam,
+  Question,
+  TestCase,
+  sequelize,
+} = db;
 export const getAssignmentsAndExams = async (req, res) => {
   try {
     const { courseID } = req.params;
@@ -32,7 +41,7 @@ export const getAssignmentsAndExams = async (req, res) => {
             WHERE "Question"."AssignmentID" = "Assignment"."ID"
               AND "Question"."DeletedAt" IS NULL
           )`),
-          "question_ids", 
+          "question_ids",
         ],
       ],
       include: [
@@ -52,11 +61,15 @@ export const getAssignmentsAndExams = async (req, res) => {
       raw: false,
     });
 
-    // todo
     function determineAssignmentStatus(assignment, isComplete) {
-      const currentDate = new Date(); // Get the current date
-      const startDate = new Date(assignment.start_date);
-      const dueDate = new Date(assignment.due_date);
+      const currentDate = new Date().toISOString(); 
+
+      const startDate = new Date(assignment.StartDate).toISOString();
+      const dueDate = new Date(assignment.DueDate).toISOString();
+
+      if (isComplete) {
+        return "Completed";
+      }
 
       if (currentDate > dueDate) {
         return "overdue";
@@ -66,21 +79,15 @@ export const getAssignmentsAndExams = async (req, res) => {
         return "not started";
       }
 
-      if (isComplete===2) {
-        return "completed";
-      }
-
-      
-
       if (currentDate >= startDate && currentDate <= dueDate) {
-        return "in progress"
+        return "in progress";
       }
 
       if (currentDate < startDate) {
         return "not started";
       }
 
-      return "Unknown"; 
+      return "Unknown";
     }
 
     const assignmentsWithScore = await Promise.all(
@@ -105,23 +112,14 @@ export const getAssignmentsAndExams = async (req, res) => {
           )
         );
 
-        let isComplete;
-
-        if (completedQuestions.size === totalQuestions) {
-          isComplete = 2;
-        } else if (completedQuestions.size !== totalQuestions && completedQuestions.size > 0) {
-          isComplete = 1;
-        } else {
-          isComplete = 0;
-        }
-                
+        let isComplete = completedQuestions.size === totalQuestions;
 
         console.log(questionIds);
-        const questionIdsString = questionIds.map((id) => `'${id}'`).join(","); 
+        const questionIdsString = questionIds.map((id) => `'${id}'`).join(",");
 
         const scoreResult = await Submission.sequelize.query(
           `
-            SELECT SUM("maxScore") AS score
+            SELECT AVG("maxScore") AS score
             FROM (
               SELECT MAX("Score") AS "maxScore"
               FROM public."Submission"
@@ -144,7 +142,7 @@ export const getAssignmentsAndExams = async (req, res) => {
           due_date: assignment.DueDate,
           start_date: assignment.StartDate,
           question_count: totalQuestions,
-          score: score,
+          score: parseInt(score) || 0,
           status: status,
         };
       })
@@ -160,14 +158,14 @@ export const getAssignmentsAndExams = async (req, res) => {
           where: { DeletedAt: null },
         },
       ],
-      raw: false, 
+      raw: false,
     });
 
     const examsWithActiveStatus = await Promise.all(
       exams.map(async (exam) => {
         const scoreResult = await Submission.sequelize.query(
           `
-            (SELECT SUM("maxScore") AS score
+            (SELECT AVG("maxScore") AS score
             FROM (
               SELECT MAX("Score") AS "maxScore"
               FROM public."Submission"
@@ -193,11 +191,11 @@ export const getAssignmentsAndExams = async (req, res) => {
           start_date: exam.StartDate,
           due_date: exam.DueDate,
           course: {
-            id: exam.Course?.ID || null, 
+            id: exam.Course?.ID || null,
             name: exam.Course?.Name || null,
           },
           is_active: new Date() >= exam.StartDate && new Date() <= exam.DueDate,
-          score: score || 0,
+          score: parseInt(score) || 0,
         };
       })
     );

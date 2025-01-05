@@ -1,20 +1,28 @@
 import db from "../../../models/index.js";
-import { Op, Sequelize } from "sequelize";
+import { Sequelize } from "sequelize";
 
-const { UserCourse, Course, Assignment, Submission, Exam, User, Question } = db;
-
+const {
+  UserCourse,
+  User,
+  Course,
+  Assignment,
+  Submission,
+  Exam,
+  Question,
+  TestCase,
+  sequelize,
+} = db;
 export const createExam = async (req, res) => {
   try {
     const { courseID } = req.params;
     const { exam_name, start_date, due_date, description } = req.body;
-    const teacherID = req.user.id; // Assuming authentication middleware provides the teacher ID
+    const teacherID = req.user.id;
 
     if (start_date > due_date) {
       return res
         .status(400)
         .json({ error: "start_date have to less than due_date." });
     }
-    // Validate if the course exists and the user is its teacher
     const isTeacher = await User.findOne({
       where: { ID: teacherID, Type: "teacher", DeletedAt: null },
     });
@@ -33,7 +41,6 @@ export const createExam = async (req, res) => {
       });
     }
 
-    // Check if an exam with the same name already exists in the course
     const existingExam = await Exam.findOne({
       where: {
         CourseID: courseID,
@@ -48,9 +55,7 @@ export const createExam = async (req, res) => {
       });
     }
 
-    // Create a new exam
     const newExam = await Exam.create({
-      // ID: uuidv4(), // Generate a unique ID for the exam
       Name: exam_name,
       StartDate: new Date(start_date),
       DueDate: new Date(due_date),
@@ -58,22 +63,7 @@ export const createExam = async (req, res) => {
       CourseID: courseID,
     });
 
-    // Return the created exam
     res.status(201).end();
-    // .json({
-    //     message: 'Exam created successfully.',
-    //     exam: {
-    //         id: newExam.ID,
-    //         name: newExam.Name,
-    //         start_date: newExam.StartDate,
-    //         due_date: newExam.DueDate,
-    //         description: newExam.Description,
-    //         course: {
-    //             id: course.ID,
-    //             name: course.Name,
-    //         },
-    //     },
-    // });
   } catch (error) {
     console.error("Error creating exam:", error);
     res.status(500).json({ error: "Failed to create exam." });
@@ -81,10 +71,9 @@ export const createExam = async (req, res) => {
 };
 
 export const deleteExam = async (req, res) => {
-  const transaction = await Exam.sequelize.transaction(); 
+  const transaction = await Exam.sequelize.transaction();
 
   try {
-    // Soft delete the Exam
     const { examID } = req.params;
     const examResult = await Exam.update(
       { DeletedAt: Sequelize.fn("NOW") },
@@ -112,34 +101,43 @@ export const deleteExam = async (req, res) => {
   }
 };
 
-
 export const updateExam = async (req, res) => {
-    try {
-      const {examID} = req.params; 
-      const updatedData = req.body; 
-  
-      const excludedFields = ['ID', 'CreatedAt', 'DeletedAt', 'UpdatedAt', 'CourseID'];
-  
-      const filteredData = {};
-      Object.keys(updatedData).forEach((key) => {
-        if (!excludedFields.includes(key)) {
-          filteredData[key] = updatedData[key];
-        }
-      });
-  
-      filteredData.UpdatedAt = new Date();
-  
-      const [affectedRows] = await Exam.update(filteredData, {
-        where: { ID: examID, DeletedAt: null }, 
-      });
-  
-      if (affectedRows === 0) {
-        return res.status(404).json({message: 'exam not found or already deleted.' });
+  try {
+    const { examID } = req.params;
+    const updatedData = req.body;
+
+    const excludedFields = [
+      "ID",
+      "CreatedAt",
+      "DeletedAt",
+      "UpdatedAt",
+      "CourseID",
+    ];
+
+    const filteredData = {};
+    Object.keys(updatedData).forEach((key) => {
+      if (!excludedFields.includes(key)) {
+        filteredData[key] = updatedData[key];
       }
-  
-      return res.status(200).json({ message: 'exam updated successfully.' });
-    } catch (error) {
-      console.error('Error updating exam:', error);
-      return res.status(500).json({ message: 'An error occurred while updating the exam.' });
+    });
+
+    filteredData.UpdatedAt = new Date();
+
+    const [affectedRows] = await Exam.update(filteredData, {
+      where: { ID: examID, DeletedAt: null },
+    });
+
+    if (affectedRows === 0) {
+      return res
+        .status(404)
+        .json({ message: "exam not found or already deleted." });
     }
-  };
+
+    return res.status(200).json({ message: "exam updated successfully." });
+  } catch (error) {
+    console.error("Error updating exam:", error);
+    return res
+      .status(500)
+      .json({ message: "An error occurred while updating the exam." });
+  }
+};

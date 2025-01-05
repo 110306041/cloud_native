@@ -1,38 +1,34 @@
 import db from "../../../models/index.js";
-import { Op, Sequelize } from "sequelize";
 import { v4 as uuidv4 } from "uuid";
 import { connectedAgents, pendingTasks } from "../../server.js";
 
-
-
 const {
   UserCourse,
+  User,
   Course,
   Assignment,
   Submission,
   Exam,
-  User,
   Question,
   TestCase,
+  sequelize,
 } = db;
-
 export const getSubmissionByStudent = async (req, res) => {
   try {
     const studentID = req.user.id;
 
     const submissions = await Submission.findAll({
-        where: {
-          UserID: studentID,
+      where: {
+        UserID: studentID,
+      },
+      include: [
+        {
+          model: Question,
+          attributes: [["Name", "question_name"]],
+          where: { DeletedAt: null },
         },
-        include: [
-          {
-            model: Question,
-            attributes: [['Name', 'question_name']], 
-            where: { DeletedAt: null }, 
-          },
-        ],
-      });
-
+      ],
+    });
 
     res.status(200).json({
       submissions: submissions,
@@ -42,8 +38,6 @@ export const getSubmissionByStudent = async (req, res) => {
     res.status(500).json({ error: "Failed to fetch submission" });
   }
 };
-
-
 
 const languageResources = {
   python: { cpu: 0.3, memory: 128 },
@@ -58,15 +52,7 @@ export function getAllVMStats() {
   }));
 }
 
-export function updateVMStats(vmId, updatedStats) {
-  if (connectedAgents.has(vmId)) {
-    const currentStats = connectedAgents.get(vmId);
-    connectedAgents.set(vmId, { ...currentStats, ...updatedStats });
-    // console.log(`Updated stats for VM ${vmId}:`, connectedAgents.get(vmId));
-  } else {
-    console.error(`VM with ID ${vmId} not found.`);
-  }
-}
+
 
 export function selectBestVM(requiredCpu, requiredMemory) {
   const vmStats = getAllVMStats();
@@ -124,19 +110,17 @@ export async function submitCode(req, res) {
     const submissionCount = await Submission.count({
       where: { UserID: studentID, QuestionID: questionID },
     });
-    // console.log(submissionCount);
     const question = await Question.findOne({
       where: { ID: questionID, DeletedAt: null },
       attributes: ["SubmissionLimit"],
     });
-    // console.log(question.SubmissionLimit);
 
     if (question && submissionCount >= question.SubmissionLimit) {
       return res.status(403).json({ error: "Submission limit reached." });
     }
 
     function parseInputOrOutput(value) {
-      if (!value) return []; 
+      if (!value) return [];
 
       const str = String(value).trim();
 
@@ -152,10 +136,7 @@ export async function submitCode(req, res) {
       where: { QuestionID: questionID, DeletedAt: null },
       order: [["Sequence", "ASC"]],
     });
-    // const formattedTestCases = testCases.map((testCase) => ({
-    //   input: testCase.Input, // Assuming 'Input' is an array
-    //   expected: testCase.Output, // Assuming 'Output' is an array
-    // }));
+
     const formattedTestCases = testCases.map((testCase) => ({
       input: parseInputOrOutput(testCase.Input),
       expected: parseInputOrOutput(testCase.Output),
@@ -188,38 +169,26 @@ export async function submitCode(req, res) {
       allocatedResource.memory
     );
     if (!bestVM) {
-      return res.status(503).json({ message: "No worker available Current Server is too busy, please send it later" });
+      return res
+        .status(503)
+        .json({
+          message:
+            "No worker available Current Server is too busy, please send it later",
+        });
     }
 
-    const agentId = bestVM.agentId; 
+    const agentId = bestVM.agentId;
     const fullVMDetails = connectedAgents.get(agentId);
     const agentWs = fullVMDetails.endpoint;
 
-    // VM checkpoint
     if (!agentWs) {
       return res.status(503).json({ message: "Selected VM is not connected" });
     }
 
-    // await updateVMStats(agentId, {
-    //   cpu_usage: parseFloat(fullVMDetails.cpu_usage) + allocatedResource.cpu,
-    //   memory_usage:
-    //     parseFloat(fullVMDetails.memory_usage) + allocatedResource.memory,
-    //   num_runners: parseInt(fullVMDetails.num_runners) + 1,
-    // });
-
     const agentPromise = new Promise((resolve, reject) => {
       pendingTasks.set(taskId, { resolve, reject });
-
-      // Optional timeout: if agent doesn't respond in X seconds, reject
-      // setTimeout(() => {
-      //   if (pendingTasks.has(taskId)) {
-      //     pendingTasks.delete(taskId);
-      //     reject(new Error("Agent timed out"));
-      //   }
-      // }, 30000);
     });
 
-    // 7) Send the request to the agent
     agentWs.send(
       JSON.stringify({
         type: "task",
@@ -228,40 +197,19 @@ export async function submitCode(req, res) {
       (err) => {
         if (err) {
           pendingTasks.delete(taskId);
-          // updateVMStats(agentId, {
-          //   cpu_usage: parseFloat(fullVMDetails.cpu_usage),
-          //   memory_usage: parseFloat(fullVMDetails.memory_usage),
-          //   num_runners: parseInt(fullVMDetails.num_runners),
-          // });
+
           return res
             .status(500)
             .json({ message: "Failed to send task to agent" });
         }
       }
     );
-    
 
-    // 8) Await the agent's response
     try {
       const response = await agentPromise;
       let resourcesReverted = false;
       console.log("recording metrics in tasking");
       console.log(connectedAgents);
-      
-
-      // const currentStats = connectedAgents.get(agentId);
-      // const revertResources = async () => {
-      //   if (!resourcesReverted) {
-      //     // await updateVMStats(agentId, {
-      //     //   cpu_usage:
-      //     //     parseFloat(currentStats.cpu_usage) - allocatedResource.cpu,
-      //     //   memory_usage:
-      //     //     parseFloat(currentStats.memory_usage) - allocatedResource.memory,
-      //     //   num_runners: parseInt(currentStats.num_runners) - 1,
-      //     // });
-      //     // resourcesReverted = true;
-      //   }
-      // };
 
       if (!response.success) {
         const errorDetails = response.data.match(/code (\d+)/);
@@ -278,7 +226,7 @@ export async function submitCode(req, res) {
         };
         console.log("recording metrics after tasking");
         console.log(connectedAgents);
-        
+
         return res.status(202).json({ status: "error", errorRes });
       }
       const result = response.data.result;
@@ -315,17 +263,12 @@ export async function submitCode(req, res) {
         MemoryUsage: output.memory_usage,
       });
 
-
       console.log("recording metrics after tasking");
       console.log(connectedAgents);
 
       return res.json({ status: "success", output });
     } catch (error) {
       console.error("Agent error:", error);
-
-      // Revert usage stats
-      // if (!resourcesReverted) {
-      
 
       return res.status(500).json({
         status: "error",

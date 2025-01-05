@@ -1,5 +1,6 @@
-
 import { Sequelize } from "sequelize";
+import moment from "moment-timezone";
+import { compareSync } from "bcrypt";
 
 export default (sequelize, DataTypes) => {
   const Assignment = sequelize.define(
@@ -21,14 +22,14 @@ export default (sequelize, DataTypes) => {
         onDelete: "CASCADE",
       },
       StartDate: { type: DataTypes.DATE, allowNull: true },
-      CreatedAt: {type:DataTypes.DATE, defaultValue:Sequelize.NOW},
-      UpdatedAt: {type:DataTypes.DATE, defaultValue:Sequelize.NOW},
-      DeletedAt: {type:DataTypes.DATE, allowNull: true}
-      
+      CreatedAt: { type: DataTypes.DATE, defaultValue: Sequelize.NOW },
+      UpdatedAt: { type: DataTypes.DATE, defaultValue: Sequelize.NOW },
+      DeletedAt: { type: DataTypes.DATE, allowNull: true },
     },
     {
       tableName: "Assignment",
-      timestamps: false, 
+      timestamps: false,
+      
     }
   );
   return Assignment;

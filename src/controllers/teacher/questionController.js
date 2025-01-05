@@ -264,10 +264,8 @@ export const createQuestion = async (req, res) => {
         }.`,
       });
     }
-    // Create a new question
     const newQuestion = await Question.create(
       {
-        //   ID: uuidv4(),
         ExamID: exam_id || null,
         AssignmentID: assignment_id || null,
         Name: question_name,
@@ -280,7 +278,6 @@ export const createQuestion = async (req, res) => {
       { transaction: transaction }
     );
 
-    // Create associated test cases
     if (test_cases && Array.isArray(test_cases)) {
       const testCaseData = test_cases.map((tc, index) => ({
         QuestionID: newQuestion.ID,
@@ -293,22 +290,7 @@ export const createQuestion = async (req, res) => {
     }
     await transaction.commit();
 
-    // Return the created question
     res.status(201).end();
-    // .json({
-    //   message: "Question created successfully.",
-    //   question: {
-    //     id: newQuestion.ID,
-    //     name:question_name,
-    //     difficulty: newQuestion.Difficulty,
-    //     time_limit: newQuestion.TimeLimit,
-    //     memory_limit:newQuestion.MemoryLimit,
-    //     submission_limit: newQuestion.SubmissionLimit,
-    //     due_date: newQuestion.DueDate,
-    //     description: newQuestion.Description,
-    //     test_cases: test_cases || [],
-    //   },
-    // });
   } catch (error) {
     await transaction.rollback();
     console.error("Error creating question:", error);
@@ -321,7 +303,6 @@ export const deleteQuestion = async (req, res) => {
 
   try {
     const { questionID } = req.params;
-    // Soft delete the Question
     const questionResult = await Question.update(
       { DeletedAt: Sequelize.fn("NOW") },
       { where: { ID: questionID, DeletedAt: null }, transaction: transaction }
@@ -334,7 +315,6 @@ export const deleteQuestion = async (req, res) => {
         .json({ error: "error occur when deleting course." });
     }
 
-    // Soft delete related Test Cases
     await TestCase.update(
       { DeletedAt: Sequelize.fn("NOW") },
       {
@@ -358,7 +338,6 @@ export const updateQuestion = async (req, res) => {
     const { questionID } = req.params;
     const updatedData = req.body;
 
-    // Fields to exclude from update
     const excludedFields = [
       "ID",
       "CreatedAt",
@@ -368,7 +347,6 @@ export const updateQuestion = async (req, res) => {
       "ExamID",
     ];
 
-    // Filter out excluded fields
     const filteredData = {};
     Object.keys(updatedData).forEach((key) => {
       if (!excludedFields.includes(key)) {
@@ -376,12 +354,10 @@ export const updateQuestion = async (req, res) => {
       }
     });
 
-    // Add manual UpdatedAt since timestamps are disabled in the model
     filteredData.UpdatedAt = new Date();
 
-    // Perform the update
     const [affectedRows] = await Question.update(filteredData, {
-      where: { ID: questionID, DeletedAt: null }, // Only update non-deleted courses
+      where: { ID: questionID, DeletedAt: null },
     });
 
     if (affectedRows === 0) {

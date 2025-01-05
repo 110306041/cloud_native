@@ -1,7 +1,16 @@
 import db from "../../../models/index.js";
 
-const { UserCourse, Course, Assignment, Submission, Exam, User, Question } = db;
-
+const {
+  UserCourse,
+  User,
+  Course,
+  Assignment,
+  Submission,
+  Exam,
+  Question,
+  TestCase,
+  sequelize,
+} = db;
 import { Sequelize, Op } from "sequelize";
 
 export const getAssignmentsAndExams = async (req, res) => {
@@ -15,7 +24,6 @@ export const getAssignmentsAndExams = async (req, res) => {
       return res.status(500).json({ error: "The course has been deleted." });
     }
 
-    // Fetch assignments for the specified course
     const assignments = await Assignment.findAll({
       where: { CourseID: courseID },
       attributes: [
@@ -46,7 +54,6 @@ export const getAssignmentsAndExams = async (req, res) => {
       raw: false,
     });
 
-    // Transform assignments response
     const formattedAssignments = assignments.map((assignment) => ({
       id: assignment.ID,
       name: assignment.Name,
@@ -60,7 +67,6 @@ export const getAssignmentsAndExams = async (req, res) => {
       },
     }));
 
-    // Fetch exams for the specified course
     const exams = await Exam.findAll({
       where: { CourseID: courseID, DeletedAt: null },
       attributes: ["ID", "Name", "StartDate", "DueDate"],
@@ -73,7 +79,6 @@ export const getAssignmentsAndExams = async (req, res) => {
       ],
     });
 
-    // Transform exams response
     const formattedExams = exams.map((exam) => ({
       id: exam.ID,
       name: exam.Name,
@@ -85,7 +90,6 @@ export const getAssignmentsAndExams = async (req, res) => {
       },
     }));
 
-    // Send response
     res.status(200).json({
       assignments: formattedAssignments,
       exams: formattedExams,
@@ -108,7 +112,6 @@ export const createAssignment = async (req, res) => {
         .json({ error: "start_date have to less than due_date." });
     }
 
-    // Validate if the course exists and the user is its teacher
     const isTeacher = await User.findOne({
       where: { ID: teacherID, DeletedAt: null, Type: "teacher" },
     });
@@ -143,9 +146,7 @@ export const createAssignment = async (req, res) => {
       });
     }
 
-    // Create a new assignment
     const newAssignment = await Assignment.create({
-      // ID: uuidv4(), // Generate a unique ID for the assignment
       Name: assignment_name,
       DueDate: new Date(due_date),
       StartDate: new Date(start_date),
@@ -153,22 +154,6 @@ export const createAssignment = async (req, res) => {
       CourseID: courseID,
     });
     res.status(201).end();
-
-    // Return the created assignment
-    // res.status(201)
-    // .json({
-    //   message: "Assignment created successfully.",
-    //   assignment: {
-    //     id: newAssignment.ID,
-    //     name: newAssignment.Name,
-    //     due_date: newAssignment.DueDate,
-    //     description: newAssignment.Description,
-    //     course: {
-    //       id: course.ID,
-    //       name: course.Name,
-    //     },
-    //   },
-    // });
   } catch (error) {
     console.error("Error creating assignment:", error);
     res.status(500).json({ error: "Failed to create assignment." });
@@ -180,7 +165,6 @@ export const deleteAssignment = async (req, res) => {
 
   try {
     const { assignmentID } = req.params;
-    // Soft delete the Assignment
     const assignmentResult = await Assignment.update(
       { DeletedAt: Sequelize.fn("NOW") },
       { where: { ID: assignmentID, DeletedAt: null }, transaction: transaction }
@@ -193,10 +177,12 @@ export const deleteAssignment = async (req, res) => {
         .json({ error: "error occur when deleting assignment." });
     }
 
-    // Soft delete related Questions
     await Question.update(
       { DeletedAt: Sequelize.fn("NOW") },
-      { where: { AssignmentID: assignmentID, DeletedAt: null }, transaction: transaction }
+      {
+        where: { AssignmentID: assignmentID, DeletedAt: null },
+        transaction: transaction,
+      }
     );
 
     await transaction.commit();
@@ -204,7 +190,9 @@ export const deleteAssignment = async (req, res) => {
   } catch (error) {
     await transaction.rollback();
     console.error("Error deleting assignment:", error);
-    return res.status(500).json({ error: "error occur when deleting assignment." });
+    return res
+      .status(500)
+      .json({ error: "error occur when deleting assignment." });
   }
 };
 
@@ -213,7 +201,6 @@ export const updateAssignment = async (req, res) => {
     const { assignmentID } = req.params;
     const updatedData = req.body;
 
-    // Fields to exclude from update
     const excludedFields = [
       "ID",
       "CreatedAt",
@@ -222,7 +209,6 @@ export const updateAssignment = async (req, res) => {
       "CourseID",
     ];
 
-    // Filter out excluded fields
     const filteredData = {};
     Object.keys(updatedData).forEach((key) => {
       if (!excludedFields.includes(key)) {
@@ -230,12 +216,10 @@ export const updateAssignment = async (req, res) => {
       }
     });
 
-    // Add manual UpdatedAt since timestamps are disabled in the model
     filteredData.UpdatedAt = new Date();
 
-    // Perform the update
     const [affectedRows] = await Assignment.update(filteredData, {
-      where: { ID: assignmentID, DeletedAt: null }, // Only update non-deleted courses
+      where: { ID: assignmentID, DeletedAt: null },
     });
 
     if (affectedRows === 0) {
