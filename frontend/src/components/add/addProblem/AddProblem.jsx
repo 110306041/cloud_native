@@ -11,6 +11,7 @@ import {
   ThemeProvider,
   Typography,
   createTheme,
+  Grid2,
 } from "@mui/material";
 import axios from "axios";
 import React, { useState, useMemo } from "react";
@@ -490,6 +491,17 @@ const SampleTestcase = ({ i, input, output, setInput, setOutput }) => {
     setOutput(newOutput);
   };
 
+  const formats = [
+    { label: "Int", value: "5" },
+    { label: "String", value: '"hello"' },
+    { label: "Array", value: "[1,2]" },
+    { label: "Multiple Inputs", value: '["python",2]' },
+    {
+      label: "Object/JSON",
+      value: '{ "name": "Alice", "age": 25},\n{ "name": "Bob", "age": 20}',
+    },
+  ];
+
   return (
     <Box sx={{ mt: 2 }}>
       <Typography
@@ -510,48 +522,46 @@ const SampleTestcase = ({ i, input, output, setInput, setOutput }) => {
       >
         <Typography
           variant="subtitle2"
-          sx={{ mb: 1, color: "primary.main", fontWeight: "bold" }}
+          sx={{
+            mb: 2,
+            color: "#222222",
+            fontWeight: "bold",
+            fontSize: "0.875rem",
+          }}
         >
-          Format Guide:
+          Format Guide
         </Typography>
-        <Box sx={{ pl: 2 }}>
-          <Typography
-            variant="body2"
-            sx={{ mb: 1, display: "flex", alignItems: "center" }}
+        {formats.map((format, idx) => (
+          <Box
+            key={idx}
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              mb: idx === formats.length - 1 ? 0 : 1.5, // 最後一行不添加 margin
+            }}
           >
-            • Int:{" "}
-            <Box
-              component="span"
-              sx={{ ml: 1, color: "#0d6efd", fontFamily: "monospace" }}
+            <Typography
+              variant="body2"
+              sx={{ color: "text.primary", fontWeight: 500, flexShrink: 0 }}
             >
-              5
+              {format.label}:
+            </Typography>
+            <Box
+              sx={{
+                ml: 2,
+                p: 1,
+                borderRadius: 1,
+                fontFamily: "monospace",
+                fontSize: "0.875rem",
+                color: "#0d6efd",
+                flexGrow: 1,
+                overflowX: "auto",
+              }}
+            >
+              {format.value}
             </Box>
-          </Typography>
-          <Typography
-            variant="body2"
-            sx={{ mb: 1, display: "flex", alignItems: "center" }}
-          >
-            • String:{" "}
-            <Box
-              component="span"
-              sx={{ ml: 1, color: "#0d6efd", fontFamily: "monospace" }}
-            >
-              "hello"
-            </Box>
-          </Typography>
-          <Typography
-            variant="body2"
-            sx={{ display: "flex", alignItems: "center" }}
-          >
-            • Array:{" "}
-            <Box
-              component="span"
-              sx={{ ml: 1, color: "#0d6efd", fontFamily: "monospace" }}
-            >
-              [apple,banana,orange],[1,2]
-            </Box>{" "}
-          </Typography>
-        </Box>
+          </Box>
+        ))}
       </Box>
 
       <TextField
