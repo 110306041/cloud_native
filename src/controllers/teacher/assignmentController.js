@@ -16,7 +16,6 @@ import { Sequelize, Op } from "sequelize";
 export const getAssignmentsAndExams = async (req, res) => {
   try {
     const { courseID } = req.params;
-
     const isDeleted = await Course.findOne({
       where: { ID: courseID, DeletedAt: { [Op.ne]: null } },
     });

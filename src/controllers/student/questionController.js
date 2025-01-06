@@ -15,6 +15,7 @@ const {
 export const getAssignmentQuestions = async (req, res) => {
   try {
     const { assignmentID } = req.params;
+    const userID = req.user.id;
 
     const isDeleted = await Assignment.findOne({
       where: { ID: assignmentID, DeletedAt: { [Op.ne]: null } },
@@ -34,7 +35,7 @@ export const getAssignmentQuestions = async (req, res) => {
     const questionsWithScores = await Promise.all(
       questions.map(async (question) => {
         const highestScore = await Submission.max("Score", {
-          where: { QuestionID: question.ID },
+          where: { QuestionID: question.ID, UserID: userID },
         });
 
         return {
@@ -59,6 +60,7 @@ export const getAssignmentQuestions = async (req, res) => {
 export const getExamQuestions = async (req, res) => {
   try {
     const { examID } = req.params;
+    const userID = req.user.id;
     const isDeleted = await Exam.findOne({
       where: { ID: examID, DeletedAt: { [Op.ne]: null } },
     });
@@ -75,7 +77,7 @@ export const getExamQuestions = async (req, res) => {
     const questionsWithScores = await Promise.all(
       questions.map(async (question) => {
         const highestScore = await Submission.max("Score", {
-          where: { QuestionID: question.ID },
+          where: { QuestionID: question.ID, UserID: userID },
         });
 
         return {
